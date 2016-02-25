@@ -1,0 +1,119 @@
+html * {
+    font-family: Verdana !important;
+}
+
+body {
+    background: url("../images/bkg-home.jpg") no-repeat right top fixed;
+    background-color: rgb(51, 51, 51);
+}
+
+label {
+    color: #ff9e45;
+}
+
+hr {
+    border-color: black;
+}
+
+fieldset {
+    border: 1px solid black;
+}
+
+legend {
+    font-size: 14px;
+    /*border:1px solid #ff9e45;*/
+}
+
+.mainContainer {
+    background-color: #252221;
+    max-width: 980px;
+}
+
+.fatal {
+    color: #ff160c;
+    font-weight: bold;
+}
+
+.warning {
+    color: #a66616;
+    font-weight: bold;
+}
+
+.info {
+    color: #2dce2e;
+    font-weight: bold;
+}
+
+.profileMenu {
+
+}
+
+.profileMenu li{
+    margin-bottom: 20px;
+}
+
+/*JQUERY UI*/
+.ui-datepicker select.ui-datepicker-month, .ui-datepicker select.ui-datepicker-year {
+    color: black;
+    font-size: 10px;
+}
+
+/*******************/
+
+/*BOOTSTRAP*/
+.accordion-toggle:after {
+    /* symbol for "opening" panels */
+    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+    float: right;        /* adjust as needed */
+    color: grey;         /* adjust as needed */
+}
+.accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+}
+/*******************/
+
+.tag {
+    font-size: 12px;
+    font-weight: bold;
+    /*-webkit-border-radius: 40%;
+    -moz-border-radius: 40%;
+    border-radius: 40%;*/
+    border-style: solid;
+    border-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    /*border-color: black;*/
+    /*max-width: 20%;*/
+    background-color: #eae1ec;
+    float: left;
+    min-width: 100px;
+}
+
+.tag span {
+    float: left;
+    margin-left: 0px;
+}
+
+.tag img {
+    float: right;
+    cursor: pointer;
+}
+
+.profileMenu a {
+    color: #ffa200;
+}
+
+.profileMenu .active a {
+    background-color: #ffa200;
+    color: white;
+    font-weight: bold;
+}
+
+.clickable {
+    cursor: pointer;
+}
+

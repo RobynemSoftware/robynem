@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--
+    <util:properties id="commonProperties" location="classpath:/config/configuration.properties"/>
+
+    <context:property-placeholder location="classpath:config/configuration.properties"></context:property-placeholder>
+    -->
+    <util:properties id="commonProperties" location="file:${catalina.home}/conf/mit-configuration.properties"/>
+
+    <context:property-placeholder location="file:${catalina.home}/conf/mit-configuration.properties"></context:property-placeholder>
+
+    <context:component-scan base-package="com.robynem.mit.web.util" ></context:component-scan>
+
+    <!--<bean id="connectionFactoryLocator" class="org.springframework.social.connect.support.ConnectionFactoryRegistry">
+        <property name="connectionFactories">
+            <list>
+                <bean class="org.springframework.social.google.connect.GoogleConnectionFactory">
+                    <constructor-arg value="${google.apy-key}" />
+                    &lt;!&ndash;<constructor-arg value="${google.consumerSecret}" />&ndash;&gt;
+                </bean>
+            </list>
+        </property>
+    </bean>-->
+</beans>

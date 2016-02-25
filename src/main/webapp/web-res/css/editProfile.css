@@ -1,0 +1,49 @@
+
+.pageContent {
+    background-color: white;
+}
+
+
+
+.editProfileContainer {
+    border-left-style: solid;
+    border-left-width: thin;
+    border-left-color: black;
+    height: auto;
+}
+
+
+
+.musicianFormTitle {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ff9e45;
+}
+
+.formSelect {
+    width: 80%;
+
+}
+
+#musicianForm fieldset .row {
+    margin-left: 20px;
+    margin-bottom: 0px;
+}
+
+#musicianForm fieldset .line {
+    margin-left: 20px;
+    margin-bottom: 0px;
+}
+
+.musicianFormButtons {
+    margin-top: 30px;
+}
+
+.charsLeft {
+    max-width: 20%;
+    font-size: 10px;
+}
+
+.charsLeft span {
+    font-size: 10px;
+}

@@ -1,0 +1,97 @@
+/*.carousel-inner{
+    width:100%;
+    max-height: 200px !important;
+} */
+
+#slidesCarousel .item {
+    min-height: 200px;
+}
+
+#firstGrouping {
+    background-color: #060200;
+}
+
+#advices > .item {
+     max-height: 150px;
+}
+
+#nextEventsCarousel {
+    background-color: white;
+    vertical-align: middle;
+    min-height: 400px;
+    margin: auto;
+}
+
+#nextEventsCarousel .item {
+    vertical-align: middle;
+    margin-top: 50px;
+    /*margin-left: 50px;*/
+}
+
+.img-event {
+    width: 200px;
+    height: 200px;
+}
+
+.img-artist {
+    width: 140px;
+    height: 140px;
+}
+
+.advice {
+    margin-bottom: 50px;
+}
+
+.nextEventData {
+    width: 100%;
+    text-align: center;
+}
+
+.nextEventCarouselArrow {
+    max-height: 30%;
+    vertical-align: middle;
+}
+
+/*ARTISTS*/
+#newArtistsCarousel {
+    background-color: white;
+    vertical-align: middle;
+    min-height: 250px;
+    margin: auto;
+}
+
+#newArtistsCarousel .item {
+    vertical-align: middle;
+    margin-top: 50px;
+    /*margin-left: 50px;*/
+}
+
+.newArtistsRow {
+    margin-top: 50px;
+}
+
+#newArtistsContainer {
+    margin-bottom: 50px;
+}
+
+/*CLUBS*/
+#newClubsCarousel {
+    background-color: white;
+    vertical-align: middle;
+    min-height: 250px;
+    margin: auto;
+}
+
+#newClubsCarousel .item {
+    vertical-align: middle;
+    margin-top: 50px;
+    /*margin-left: 50px;*/
+}
+
+.newClubsRow {
+    /*margin-top: 50px;*/
+}
+
+#newClubsContainer {
+    margin-bottom: 50px;
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+        <context:component-scan base-package="com.robynem.mit.web.persistence"></context:component-scan>
+
+       <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+              <property name="jndiName" value="java:comp/env/jdbc/mit-db"></property>
+              <property name="lookupOnStartup" value="true"></property>
+              <property name="cache" value="true"></property>
+              <property name="proxyInterface" value="javax.sql.DataSource"></property>
+       </bean>
+
+       <bean name="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
+             scope="singleton">
+              <property name="dataSource" ref="dataSource"/>
+              <property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration"/>
+
+              <property name="annotatedClasses">
+                     <list>
+                         <value>com.robynem.mit.web.persistence.entity.UserEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.ImageEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.MusicGenreEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.MusicalInstrumentEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.BandOwnershipEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.BandEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.OwnerTypeEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.VideoEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.EntityStatusEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.BandComponentEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.BandContactEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.AudioEntity</value>
+                     </list>
+              </property>
+
+              <property name="hibernateProperties">
+                     <util:properties location="classpath:/spring/hibernate.properties"/>
+              </property>
+       </bean>
+
+       <bean name="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+              <property name="sessionFactory" ref="sessionFactory"/>
+              <property name="dataSource" ref="dataSource"/>
+       </bean>
+
+       <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+              <property name="sessionFactory" ref="sessionFactory"/>
+       </bean>
+
+        <tx:annotation-driven transaction-manager="transactionManager" mode="proxy" proxy-target-class="true"></tx:annotation-driven>
+
+        <!--
+        <tx:advice id = "txAdvice" transaction-manager="transactionManager">
+            <tx:attributes>
+                <tx:method name="*" propagation="REQUIRED" />
+            </tx:attributes>
+        </tx:advice>
+        -->
+</beans>
