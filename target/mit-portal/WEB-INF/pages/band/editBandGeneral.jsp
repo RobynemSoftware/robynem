@@ -408,8 +408,11 @@
 
     function initGeneralFormFields() {
 
+        initGeneralForm();
+
         $("#saveGeneralInfoLink").click(function() {
             $("#editBandGeneralForm").submit();
+
         });
 
         var genresTagViewer = new TagViewer({
@@ -450,6 +453,38 @@
             }
 
         });
+    }
+
+    function initGeneralForm() {
+        var options = {
+            beforeSubmit: function() {
+                return execInSession(null);
+            },
+            beforeSend: function()
+            {
+
+            },
+            uploadProgress: function(event, position, total, percentComplete)
+            {
+
+
+            },
+            success: function(data)
+            {
+                $("#tabs-general").html(data);
+            },
+            complete: function(response)
+            {
+
+            },
+            error: function()
+            {
+
+            }
+
+        };
+
+        $("#editBandGeneralForm").ajaxForm(options);
     }
 
     <c:set var="biographyMaxLenght" >

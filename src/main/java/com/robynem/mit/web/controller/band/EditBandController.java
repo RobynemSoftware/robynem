@@ -219,6 +219,9 @@ public class EditBandController extends BaseController {
                     }
 
                     this.saveGeneralTab(bandModel);
+
+                    mv.setViewName("forward:/private/editBand/showGeneralInfo");
+
                     break;
 
                 case MEDIA:
