@@ -20,7 +20,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
 import java.io.ByteArrayInputStream;
@@ -62,7 +61,10 @@ public class EditBandController extends BaseController {
     private UtilsDao<MusicalInstrumentEntity> instrumentsUtilsDao;
 
     @Value("${media.image.max-size}")
-    private long maxFileSize;
+    private long maxImageFileSize;
+
+    @Value("${media.audio.max-size}")
+    private long maxAudioFileSize;
 
 
     @RequestMapping(value = "/edit")
@@ -76,6 +78,12 @@ public class EditBandController extends BaseController {
                 this.removeSessionAddtribute(Constants.EDIT_BAND_ID);
                 modelMap.addAttribute("setName", true);
             } else {
+                // Checks if current user is allowed to edit this band
+                if (!this.canEdit(bandId)) {
+                    this.addApplicationMessage(this.getMessage("band.user-not-allowed-to-edit"), MessageSeverity.WARNING, null, null);
+
+                    return new ModelAndView("forward:/private/dashboard");
+                }
                 modelMap.addAttribute("bandId", bandId);
             }
 
@@ -105,11 +113,11 @@ public class EditBandController extends BaseController {
                 bandEntity = this.getBandToEdit(false, bandId, EditBandTabIndex.GENERAL);
 
                 // Checks if current user is allowed to edit this band
-                if (!this.canEdit(bandEntity)) {
+                /*if (!this.canEdit(bandEntity)) {
                     this.addApplicationMessage(this.getMessage("band.user-not-allowed-to-edit"), MessageSeverity.WARNING, null, null);
 
                     return new ModelAndView("forward:/private/dashboard");
-                }
+                }*/
 
             } else if (this.getSessionAttribute(Constants.EDIT_BAND_ID) != null) {
                 // If we have band id in session, populate model.
@@ -121,6 +129,93 @@ public class EditBandController extends BaseController {
             modelMap.addAttribute("bandModel", bandModel);
         } catch (Exception e) {
             this.manageException(e, LOG, modelMap);
+        } finally {
+            System.gc();
+        }
+
+        mv.addObject(modelMap);
+
+        return mv;
+
+    }
+
+    @RequestMapping(value = "/showComponents")
+    public ModelAndView showComponents(@RequestParam(required = false) Long bandId, ModelMap modelMap) {
+
+        ModelAndView mv = new ModelAndView("band/editBandComponents");
+
+        try {
+
+            BandEntity bandEntity = null;
+
+            BandModel bandModel = null;
+
+            if (bandId != null) {
+                // ENTERING IN EDIT MODE
+                bandEntity = this.getBandToEdit(false, bandId, EditBandTabIndex.COMPONENTS);
+
+                // Checks if current user is allowed to edit this band
+                /*if (!this.canEdit(bandEntity)) {
+                    this.addApplicationMessage(this.getMessage("band.user-not-allowed-to-edit"), MessageSeverity.WARNING, null, null);
+
+                    return new ModelAndView("forward:/private/dashboard");
+                }*/
+
+            } else if (this.getSessionAttribute(Constants.EDIT_BAND_ID) != null) {
+                // If we have band id in session, populate model.
+                bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.COMPONENTS);
+            }
+
+            bandModel = this.getBandModel(bandEntity, EditBandTabIndex.COMPONENTS);
+
+            modelMap.addAttribute("bandModel", bandModel);
+
+        } catch (Exception e) {
+            this.manageException(e, LOG, modelMap);
+        } finally {
+            System.gc();
+        }
+
+        mv.addObject(modelMap);
+
+        return mv;
+
+    }
+
+    @RequestMapping(value = "/showMedia")
+    public ModelAndView showMedia(@RequestParam(required = false) Long bandId, ModelMap modelMap) {
+
+        ModelAndView mv = new ModelAndView("band/editBandMedia");
+
+        try {
+
+            BandEntity bandEntity = null;
+
+            BandModel bandModel = null;
+
+            if (bandId != null) {
+                // ENTERING IN EDIT MODE
+                bandEntity = this.getBandToEdit(false, bandId, EditBandTabIndex.MEDIA);
+
+                // Checks if current user is allowed to edit this band
+                /*if (!this.canEdit(bandEntity)) {
+                    this.addApplicationMessage(this.getMessage("band.user-not-allowed-to-edit"), MessageSeverity.WARNING, null, null);
+
+                    return new ModelAndView("forward:/private/dashboard");
+                }*/
+
+            } else if (this.getSessionAttribute(Constants.EDIT_BAND_ID) != null) {
+                // If we have band id in session, populate model.
+                bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.MEDIA);
+            }
+
+            bandModel = this.getBandModel(bandEntity, EditBandTabIndex.MEDIA);
+
+            modelMap.addAttribute("bandModel", bandModel);
+        } catch (Exception e) {
+            this.manageException(e, LOG, modelMap);
+        } finally {
+            System.gc();
         }
 
         mv.addObject(modelMap);
@@ -138,7 +233,7 @@ public class EditBandController extends BaseController {
                 if (!StringUtils.trimToEmpty(pictureFile.getContentType()).toLowerCase().contains("image")) {
                     this.addApplicationMessage(this.getMessage("profile.validation.invalid-image"),
                             MessageSeverity.FATAL, null, modelMap);
-                } else if (pictureFile.getSize() > this.maxFileSize) {
+                } else if (pictureFile.getSize() > this.maxImageFileSize) {
                     this.addApplicationMessage(this.getMessage("profile.validation.image-to-large"),
                             MessageSeverity.FATAL, null, modelMap);
                 } else {
@@ -442,19 +537,47 @@ public class EditBandController extends BaseController {
                 if (!StringUtils.trimToEmpty(image.getContentType()).toLowerCase().contains("image")) {
                     this.addApplicationMessage(this.getMessage("profile.validation.invalid-image"),
                             MessageSeverity.FATAL, null, modelMap);
-                } else if (image.getSize() > this.maxFileSize) {
+                } else if (image.getSize() > this.maxImageFileSize) {
                     this.addApplicationMessage(this.getMessage("profile.validation.image-to-large"),
                             MessageSeverity.FATAL, null, modelMap);
                 } else {
 
                     ByteArrayInputStream bais = new ByteArrayInputStream(image.getBytes());
 
-                    BandEntity bandToEdit = this.getBandToEdit(true, null, EditBandTabIndex.MEDIA);
-
                     Long imageId = this.mediaDao.addBandGalleryImage(this.getSessionAttribute(Constants.EDIT_BAND_ID), bais);
 
                     modelMap.put("success", true);
                     modelMap.put("uploadedImageId", imageId);
+                }
+            }
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
+    @RequestMapping(value = "/addAudio", method = RequestMethod.POST)
+    public AbstractView addAudio(@RequestParam MultipartFile audio, @RequestParam String name, ModelMap modelMap) {
+
+        try {
+            if (!audio.isEmpty()) {
+
+                if (!StringUtils.trimToEmpty(audio.getContentType()).toLowerCase().contains("mp3")) {
+                    this.addApplicationMessage(this.getMessage("profile.validation.invalid-image"),
+                            MessageSeverity.FATAL, null, modelMap);
+                } else if (audio.getSize() > this.maxAudioFileSize) {
+                    this.addApplicationMessage(this.getMessage("band.validation.audio-to-large"),
+                            MessageSeverity.FATAL, null, modelMap);
+                } else {
+
+                    ByteArrayInputStream bais = new ByteArrayInputStream(audio.getBytes());
+
+                    Long audioId = this.mediaDao.addBandAudio(this.getSessionAttribute(Constants.EDIT_BAND_ID), bais, name);
+
+                    modelMap.put("success", true);
+                    modelMap.put("uploadedAudioId", audioId);
                 }
             }
         } catch (Throwable e) {
@@ -666,6 +789,16 @@ public class EditBandController extends BaseController {
                 bandModel.getMediaModel().getImageIds().add(i.getId());
             });
         }
+
+        if (bandEntity.getAudios() != null) {
+            bandEntity.getAudios().stream().forEach(a -> {
+                AudioEntity audioEntity = new AudioEntity();
+                audioEntity.setId(a.getId());
+                audioEntity.setName(a.getName());
+
+                bandModel.getMediaModel().getAudios().add(audioEntity);
+            });
+        }
     }
 
     /**
@@ -803,6 +936,28 @@ public class EditBandController extends BaseController {
 
     private boolean canEdit(BandEntity bandEntity) {
         boolean canEdit = false;
+
+        Collection<BandOwnershipEntity> owners = bandEntity.getOwners();
+
+        PortalUserModel currentUser = this.getAuthenticatedUser();
+
+        Collection<String> allowedOwers = Arrays.asList(OwnerType.ADMINISTRATOR.toString(), OwnerType.OWNER.toString());
+
+        // Checks if current user is one of allowed band's owners for editing
+        canEdit = (owners.stream().filter(
+                o -> o.getUser() != null
+                        && currentUser.getId() != null
+                        && currentUser.getId().equals(o.getUser().getId())
+                        && allowedOwers.contains(o.getOwnerType().getCode()))
+                .collect(Collectors.toList()).size() > 0);
+
+        return canEdit;
+    }
+
+    private boolean canEdit(Long bandId) {
+        boolean canEdit = false;
+
+        BandEntity bandEntity = this.bandUtilsDao.getByIdWithFetchedObjects(BandEntity.class, bandId, "owners");
 
         Collection<BandOwnershipEntity> owners = bandEntity.getOwners();
 

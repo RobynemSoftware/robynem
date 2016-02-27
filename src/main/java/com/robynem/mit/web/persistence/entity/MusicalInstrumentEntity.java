@@ -35,11 +35,11 @@ public class MusicalInstrumentEntity extends BaseEntity {
         this.name = name;
     }
 
-    public Set<UserEntity> getUsers() {
+    /*public Set<UserEntity> getUsers() {
         return users;
     }
 
     public void setUsers(Set<UserEntity> users) {
         this.users = users;
-    }
+    }*/
 }

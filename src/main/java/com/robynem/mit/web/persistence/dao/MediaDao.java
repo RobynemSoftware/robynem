@@ -1,5 +1,6 @@
 package com.robynem.mit.web.persistence.dao;
 
+import com.robynem.mit.web.persistence.entity.AudioEntity;
 import com.robynem.mit.web.persistence.entity.ImageEntity;
 
 import java.io.InputStream;
@@ -18,4 +19,8 @@ public interface MediaDao {
     void removeBandGalleryImage(Long bandId, Long imageId);
 
     ImageEntity getImageById(Long id);
+
+    AudioEntity getAudioById(Long id);
+
+    Long addBandAudio(Long bandId, InputStream audioStream, String name);
 }

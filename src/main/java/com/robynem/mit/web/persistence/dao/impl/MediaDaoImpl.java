@@ -2,6 +2,7 @@ package com.robynem.mit.web.persistence.dao.impl;
 
 import com.robynem.mit.web.persistence.dao.BaseDao;
 import com.robynem.mit.web.persistence.dao.MediaDao;
+import com.robynem.mit.web.persistence.entity.AudioEntity;
 import com.robynem.mit.web.persistence.entity.BandEntity;
 import com.robynem.mit.web.persistence.entity.ImageEntity;
 import com.robynem.mit.web.persistence.entity.UserEntity;
@@ -436,5 +437,55 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
     @Override
     public ImageEntity getImageById(Long id) {
         return this.hibernateTemplate.get(ImageEntity.class, id);
+    }
+
+    @Override
+    public AudioEntity getAudioById(Long id) {
+        return this.hibernateTemplate.get(AudioEntity.class, id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public Long addBandAudio(Long bandId, InputStream audioStream, String name) {
+        Long newAudioId = null;
+
+        try {
+
+            // Retrieves band entity
+            BandEntity bandEntity = this.hibernateTemplate.get(BandEntity.class, bandId);
+
+            // Creates a new AudioEntity
+            AudioEntity audio = new AudioEntity();
+            audio.setCreated(Calendar.getInstance().getTime());
+
+            audio.setName(StringUtils.trimToEmpty(name));
+            audio.setFile(PortalHelper.getBlob(audioStream));
+
+            newAudioId = (Long) this.hibernateTemplate.save(audio);
+
+            if (bandEntity.getAudios() == null) {
+                bandEntity.setAudios(new HashSet<AudioEntity>());
+            }
+
+            bandEntity.getAudios().add(audio);
+
+            bandEntity.setUpdated(Calendar.getInstance().getTime());
+
+            this.hibernateTemplate.update(bandEntity);
+
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } finally {
+            if (audioStream != null) {
+                try {
+                    audioStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return newAudioId;
     }
 }

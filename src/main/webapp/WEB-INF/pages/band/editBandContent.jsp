@@ -108,6 +108,14 @@
                     case "tabs-general":
                         loadGeneralTab();
                         break;
+
+                    case "tabs-components":
+                        loadComponentsTab();
+                        break;
+
+                    case "tabs-media":
+                        loadMediaTab();
+                        break;
                 }
             }
         });
@@ -166,6 +174,36 @@
                 dataType : "html",
                 success : function(data) {
                     $("#tabs-general").html(data);
+                }
+            });
+        });
+    }
+
+    function loadComponentsTab() {
+        execInSession(function() {
+            $.ajax({
+                url : "${contextPath}/private/editBand/showComponents",
+                data : {
+                    bandId : ${bandId}
+                },
+                dataType : "html",
+                success : function(data) {
+                    $("#tabs-components").html(data);
+                }
+            });
+        });
+    }
+
+    function loadMediaTab() {
+        execInSession(function() {
+            $.ajax({
+                url : "${contextPath}/private/editBand/showMedia",
+                data : {
+                    bandId : ${bandId}
+                },
+                dataType : "html",
+                success : function(data) {
+                    $("#tabs-media").html(data);
                 }
             });
         });

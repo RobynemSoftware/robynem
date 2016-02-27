@@ -4,6 +4,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<jsp:include page="../common/messagesDisplayerAsync.jsp"></jsp:include>
+
 <div class="row">
 
     <div class="col-md-12">
@@ -127,6 +129,75 @@
                 </div>
             </div>
 
+            <br>
+
+            <!-- AUDIO -->
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#editBandMediaAccordion" href="#collapseAudio">
+                        <span><spring:message code="band.media.audio"></spring:message> </span>
+                    </a>
+                </div>
+                <div id="collapseAudio" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+
+                        <form:form id="audioForm" method="post"
+                                   action="${contextPath}/private/editBand/addAudio"
+                                   modelAttribute="bandModel" enctype="multipart/form-data">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <label for="addAudioFile"><spring:message
+                                            code="band.media.audio.add-audio"></spring:message> </label>
+                                </div>
+
+                                <div class="col-md-6">
+
+                                    <input id="addAudioFile" type="file" name="audio" class="form-control"/>
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-md-3">
+
+                                    <label for="addAudioName"><spring:message code="band.media.audio.name"></spring:message> </label>
+                                </div>
+
+                                <div class="col-md-3">
+
+                                    <input id="addAudioName" type="text" name="name" class="form-control"/>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <button id="addAudioButton" class="button btn-default"><spring:message
+                                            code="global.add"></spring:message></button>
+                                </div>
+                            </div>
+
+                            <!-- Progress bar -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div  class="progress progress-striped">
+                                        <div id="audioProgress" class="progress-bar progress-success" role="progressbar" aria-valuenow="0"
+                                             aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                                            <span class="sr-only"></span>
+                                            <span ></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form:form>
+
+                        <div id="audioContainerRow" class="row">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
 
 
@@ -175,6 +246,9 @@
 
         // inits gallery form
         initGalleryForm();
+
+        // inits audio form
+        initAudioForm();
 
     });
 
@@ -271,6 +345,64 @@
         $("#galleryForm").ajaxForm(options);
     }
 
+    function initAudioForm() {
+        <c:forEach var="picId" items="${bandModel.mediaModel.imageIds}">
+        //addGalleryImage(${picId});
+        </c:forEach>
+
+        $("#audioProgress").parent().hide();
+
+        var options = {
+            beforeSubmit: function() {
+
+                if ($.trim($("#addAudioFile").val()) == "" ) {
+                    return false;
+                }
+
+                return execInSession(null);
+            },
+            beforeSend: function()
+            {
+                $("#audioProgress").parent().show();
+
+                $("#audioProgress").addClass("active");
+                $("#audioProgress").attr("aria-valuenow", "0");
+                $("#audioProgress").children("span").html("0%");
+            },
+            uploadProgress: function(event, position, total, percentComplete)
+            {
+                $("#audioProgress").attr("aria-valuenow", percentComplete);
+                $("#audioProgress").children("span").html(percentComplete + "%");
+
+            },
+            success: function(data)
+            {
+
+                showApplicationMessages(data);
+
+                $("#audioProgress").removeClass("active");
+                $("#audioProgress").attr("aria-valuenow", "100");
+                $("#audioProgress").children("span").html("100");
+
+                //console.log("uploadedImageId: " + data.uploadedImageId);
+                if (data.uploadedAudioId != null) {
+                    //addGalleryImage(data.uploadedImageId);
+                }
+            },
+            complete: function(response)
+            {
+                $("#addAudioFile").val("");
+            },
+            error: function()
+            {
+
+            }
+
+        };
+
+        $("#audioForm").ajaxForm(options);
+    }
+
     function addGalleryImage(imageId) {
 
 
@@ -304,6 +436,58 @@
 
                 $.ajax({
                    url : "${contextPath}/private/editBand/removeGalleryImage",
+                    data : {
+                        imageId : imageId
+                    },
+                    async : true,
+                    type : "post",
+                    dataType : "json",
+                    success : function(data) {
+                        showApplicationMessages(data);
+
+                        if (data.success == true) {
+                            col.remove();
+                        }
+                    }
+                });
+
+            });
+        });
+    }
+
+    function addAudio(audioId, name) {
+
+
+
+        var url = CONTEXT_PATH + "/media/getAudio?audioId=" + audioId;
+
+        var notSupportedMessage = "<spring:message code="global.html5.audio-not-supported"></spring:message>";
+
+        var audio = $("<audio controls><source src='" + url + "'>" + notSupportedMessage + "</audio>");
+
+        var row = $("#audioContainerRow");
+        var col = $("<div id='" + imageId + "' class='col-md-4 galleryImageCol'></div>");
+
+        col = col.append(img);
+
+        col = col.appendTo(row);
+
+        var del = $("<img src='" + CONTEXT_PATH + "/resources/images/delete_16x16.png' />");
+        del = del.css("cursor", "pointer");
+
+        del.appendTo(col);
+
+        del = del.position({
+            my: "right top",
+            at: "right top",
+            of: img
+        });
+
+        del.click(function() {
+            execInSession(function() {
+
+                $.ajax({
+                    url : "${contextPath}/private/editBand/removeGalleryImage",
                     data : {
                         imageId : imageId
                     },

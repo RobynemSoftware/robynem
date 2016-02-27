@@ -1,12 +1,11 @@
 package com.robynem.mit.web.controller.media;
 
 import com.robynem.mit.web.controller.BaseController;
-import com.robynem.mit.web.persistence.dao.AccountDao;
 import com.robynem.mit.web.persistence.dao.MediaDao;
+import com.robynem.mit.web.persistence.entity.AudioEntity;
 import com.robynem.mit.web.persistence.entity.ImageEntity;
 import com.robynem.mit.web.util.ImageSize;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +102,32 @@ public class MediaController extends BaseController {
                 }
             }
 
+            // Force garbage collector to free memory.
+            System.gc();
+        }
+
+        return null;
+    }
+
+    @RequestMapping("/getAudio")
+    public ResponseEntity<byte[]> getAudio(@RequestParam Long audioId, HttpServletResponse response) {
+
+        ResponseEntity<byte[]> responseEntity = null;
+        try {
+            AudioEntity audioEntity = this.mediaDao.getAudioById(audioId);
+
+            try(InputStream is = audioEntity.getFile().getBinaryStream()) {
+                final HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+                responseEntity = new ResponseEntity<byte[]>(IOUtils.toByteArray(is), headers, HttpStatus.CREATED);
+            }
+
+            return responseEntity;
+
+        } catch (Throwable e) {
+            LOG.error(e.getMessage(), e);
+        } finally {
             // Force garbage collector to free memory.
             System.gc();
         }

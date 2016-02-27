@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<%--<jsp:include page="../common/messagesDisplayer.jsp"></jsp:include>--%>
+<jsp:include page="../common/messagesDisplayerAsync.jsp"></jsp:include>
 
 <div class="row">
 

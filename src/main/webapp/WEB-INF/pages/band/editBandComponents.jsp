@@ -3,7 +3,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%--<form:form id="editBandComponentsForm" cssClass="formFields" action="${contextPath}/private/editBand/save" method="post" modelAttribute="bandModel" onsubmit="javascript:$.blockUI();">--%>
+
+<jsp:include page="../common/messagesDisplayerAsync.jsp"></jsp:include>
+
     <input type="hidden" name="currentTabIndex" value="0">
 
     <div class="row">
