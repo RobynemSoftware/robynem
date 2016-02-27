@@ -1,5 +1,6 @@
 <%@ page import="com.robynem.mit.web.util.Constants" %>
 <%@ page import="com.robynem.mit.web.util.ImageSize" %>
+<%@ page import="com.robynem.mit.web.util.MessageSeverity" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -346,8 +347,8 @@
     }
 
     function initAudioForm() {
-        <c:forEach var="picId" items="${bandModel.mediaModel.imageIds}">
-        //addGalleryImage(${picId});
+        <c:forEach var="audio" items="${bandModel.mediaModel.audios}">
+            addAudio(${audio.id}, "${audio.name}");
         </c:forEach>
 
         $("#audioProgress").parent().hide();
@@ -356,6 +357,20 @@
             beforeSubmit: function() {
 
                 if ($.trim($("#addAudioFile").val()) == "" ) {
+                    return false;
+                }
+
+                if ($.trim($("#addAudioName").val()) == "") {
+                    showApplicationMessages({
+                        "<%=Constants.APPLICATION_MESSAGES_KEY%>" : [
+                            {
+                                message : "<spring:message code="band.validation.insert-audio-name"></spring:message>",
+                                severity: "<%=MessageSeverity.FATAL%>",
+                                link : null
+                            }
+                        ]
+                    });
+
                     return false;
                 }
 
@@ -385,13 +400,14 @@
                 $("#audioProgress").children("span").html("100");
 
                 //console.log("uploadedImageId: " + data.uploadedImageId);
-                if (data.uploadedAudioId != null) {
-                    //addGalleryImage(data.uploadedImageId);
+                if (data.success == true && data.uploadedAudioId != null && data.uploadedAudioName != null) {
+                    addAudio(data.uploadedAudioId, data.uploadedAudioName);
                 }
             },
             complete: function(response)
             {
                 $("#addAudioFile").val("");
+                $("#addAudioName").val("");
             },
             error: function()
             {
@@ -447,6 +463,59 @@
 
                         if (data.success == true) {
                             col.remove();
+                        }
+                    }
+                });
+
+            });
+        });
+    }
+
+    function addAudio(audioId, name) {
+
+
+        var url = CONTEXT_PATH + "/media/getAudio?audioId=" + audioId;
+
+        var notSupportedMessage = "<spring:message code="global.html5.audio-not-supported"></spring:message>";
+
+        var audio = $("<audio controls><source src='" + url + "'>" + notSupportedMessage + "</audio>");
+        var audioName = $("<span>" + name + "</span>");
+        var audioDelete = $("<img src='" + CONTEXT_PATH + "/resources/images/delete_32x32.png' class='img-responsive' />");
+        audioDelete.css("cursor", "pointer");
+
+        var row = $("<div class='row'></div>");
+        var colAudio = $("<div class='col-md-6'></div>");
+        var colName = $("<div class='col-md-4'></div>");
+        var colDelete = $("<div class='col-md-2'></div>");
+
+        colAudio.append(audio);
+        colName.append(audioName);
+        colDelete.append(audioDelete);
+
+        row.append(colAudio).append(colName).append(colDelete);
+
+        var container = $("#audioContainerRow");
+
+        container.append(row);
+
+
+
+        audioDelete.click(function() {
+            execInSession(function() {
+
+                $.ajax({
+                    url : "${contextPath}/private/editBand/removeAudio",
+                    data : {
+                        audioId : audioId
+                    },
+                    async : true,
+                    type : "post",
+                    dataType : "json",
+                    success : function(data) {
+                        showApplicationMessages(data);
+
+                        if (data.success == true) {
+                            row.remove();
                         }
                     }
                 });

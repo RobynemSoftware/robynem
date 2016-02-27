@@ -5,6 +5,9 @@ import com.robynem.mit.web.persistence.dao.MediaDao;
 import com.robynem.mit.web.persistence.entity.AudioEntity;
 import com.robynem.mit.web.persistence.entity.ImageEntity;
 import com.robynem.mit.web.util.ImageSize;
+import net.sourceforge.javaflacencoder.AudioStreamEncoder;
+import net.sourceforge.javaflacencoder.FLACEncoder;
+import net.sourceforge.javaflacencoder.FLAC_FileEncoder;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import java.io.*;
 
 /**
@@ -58,6 +63,7 @@ public class MediaController extends BaseController {
     public ResponseEntity<byte[]> getImage(@RequestParam Long imageId, @RequestParam(required = false) ImageSize size, HttpServletResponse response) {
 
         InputStream is = null;
+
         try {
             ImageEntity imageEntity = this.mediaDao.getImageById(imageId);
 
@@ -89,7 +95,7 @@ public class MediaController extends BaseController {
             final HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_PNG);
 
-            return new ResponseEntity<byte[]>(IOUtils.toByteArray(is), headers, HttpStatus.CREATED);
+            return new ResponseEntity<byte[]>(IOUtils.toByteArray(is), headers, HttpStatus.OK);
 
         } catch (Throwable e) {
             LOG.error(e.getMessage(), e);
@@ -117,10 +123,11 @@ public class MediaController extends BaseController {
             AudioEntity audioEntity = this.mediaDao.getAudioById(audioId);
 
             try(InputStream is = audioEntity.getFile().getBinaryStream()) {
+
                 final HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
-                responseEntity = new ResponseEntity<byte[]>(IOUtils.toByteArray(is), headers, HttpStatus.CREATED);
+                responseEntity = new ResponseEntity<byte[]>(IOUtils.toByteArray(is), headers, HttpStatus.OK);
             }
 
             return responseEntity;

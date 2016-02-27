@@ -391,6 +391,13 @@
             <version>${spring.social.google.version}</version>
         </dependency>-->
 
+        <dependency>
+            <groupId>net.sourceforge.javaflacencoder</groupId>
+            <artifactId>java-flac-encoder</artifactId>
+            <version>0.3.6</version>
+        </dependency>
+
+
 
     </dependencies>
 

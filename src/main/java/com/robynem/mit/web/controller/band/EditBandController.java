@@ -578,6 +578,7 @@ public class EditBandController extends BaseController {
 
                     modelMap.put("success", true);
                     modelMap.put("uploadedAudioId", audioId);
+                    modelMap.put("uploadedAudioName", name);
                 }
             }
         } catch (Throwable e) {
