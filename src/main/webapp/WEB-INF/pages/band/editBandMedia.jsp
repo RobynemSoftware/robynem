@@ -166,12 +166,12 @@
                                     <label for="addAudioName"><spring:message code="band.media.audio.name"></spring:message> </label>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-6">
 
                                     <input id="addAudioName" type="text" name="name" class="form-control"/>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-3" style="text-align: right;">
                                     <button id="addAudioButton" class="button btn-default"><spring:message
                                             code="global.add"></spring:message></button>
                                 </div>
@@ -250,6 +250,8 @@
 
         // inits audio form
         initAudioForm();
+
+        initAudioControls();
 
     });
 
@@ -478,7 +480,7 @@
 
         var notSupportedMessage = "<spring:message code="global.html5.audio-not-supported"></spring:message>";
 
-        var audio = $("<audio controls><source src='" + url + "'>" + notSupportedMessage + "</audio>");
+        var audio = $("<audio controls class='audio' preload='none'><source src='" + url + "' type='audio/mpeg'>" + notSupportedMessage + "</audio>");
         var audioName = $("<span>" + name + "</span>");
         var audioDelete = $("<img src='" + CONTEXT_PATH + "/resources/images/delete_32x32.png' class='img-responsive' />");
         audioDelete.css("cursor", "pointer");
@@ -521,6 +523,12 @@
                 });
 
             });
+        });
+    }
+
+    function initAudioControls() {
+        $(".audio").bind("onerror", function() {
+            $(this).load();
         });
     }
 

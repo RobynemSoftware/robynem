@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.rowset.serial.SerialBlob;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.rmi.server.UID;
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -128,4 +126,27 @@ public class PortalHelper {
 
         return String.format(placeholder, builder.toString());
     }
+
+    public static void createDirectory(String name) throws Exception {
+        File dir = new File(name);
+
+        if (!dir.exists()) {
+            dir.mkdirs();
+            dir.setWritable(true);
+        }
+    }
+
+    public static void saveFile(InputStream stream, String directory, String destinationFileName) throws Exception {
+
+        createDirectory(directory);
+
+        try (FileOutputStream fos = new FileOutputStream(directory + destinationFileName)) {
+            byte[] buff = new byte[stream.available()];
+            stream.read(buff);
+
+            fos.write(buff);
+        }
+    }
+
+
 }

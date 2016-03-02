@@ -32,8 +32,8 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
 
     static final Logger LOG = LoggerFactory.getLogger(MediaDaoImpl.class);
 
-    @Value("${media.users-images.folder}")
-    private String userImagesBasePath;
+    @Value("${media.audio.base-path}")
+    private String audioBasePath;
 
     @Value("${media.bands-images.folder}")
     private String bandImagesBasePath;
@@ -451,6 +451,8 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
 
         try {
 
+            String uniqueName = StringUtils.trimToEmpty(name) + "_" + PortalHelper.getUniqueId() + ".mp3";
+
             // Retrieves band entity
             BandEntity bandEntity = this.hibernateTemplate.get(BandEntity.class, bandId);
 
@@ -459,7 +461,7 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
             audio.setCreated(Calendar.getInstance().getTime());
 
             audio.setName(StringUtils.trimToEmpty(name));
-            audio.setFile(PortalHelper.getBlob(audioStream));
+            audio.setFileName(uniqueName);
 
             newAudioId = (Long) this.hibernateTemplate.save(audio);
 
@@ -472,6 +474,8 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
             bandEntity.setUpdated(Calendar.getInstance().getTime());
 
             this.hibernateTemplate.update(bandEntity);
+
+            PortalHelper.saveFile(audioStream, this.audioBasePath, uniqueName);
 
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);

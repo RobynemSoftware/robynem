@@ -103,16 +103,7 @@ public class ImageHelper {
         }
     }
 
-    public static void createDirectory(String name) throws Exception {
-        File dir = new File(name);
 
-        if (!dir.exists()) {
-            dir.mkdirs();
-            dir.setWritable(true);
-        }
-
-
-    }
 
     public static void deleteImage(String fileName) throws Exception {
         File image = new File(fileName);

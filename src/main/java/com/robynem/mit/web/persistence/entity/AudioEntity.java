@@ -20,6 +20,9 @@ public class AudioEntity extends BaseEntity {
     @Lob
     private Blob file;
 
+    @Column
+    private String fileName;
+
     public String getName() {
         return name;
     }
@@ -34,5 +37,13 @@ public class AudioEntity extends BaseEntity {
 
     public void setFile(Blob file) {
         this.file = file;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }
