@@ -473,6 +473,15 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                     hCriteria.add(Restrictions.eq("user.placeId", criteria.getPlaceId()));
                 }
 
+                if (criteria.isSinger()) {
+                    hCriteria = hCriteria.add(Restrictions.eq("user.singer", true));
+                }
+
+                if (criteria.isDj()) {
+                    hCriteria = hCriteria.add(Restrictions.eq("user.discJockey", true));
+                }
+
+
                 hCriteria = hCriteria.add(Restrictions.eq("user.musician", true));
                 hCriteria = hCriteria.add(Restrictions.eq("user.engagementAvailable", true));
 

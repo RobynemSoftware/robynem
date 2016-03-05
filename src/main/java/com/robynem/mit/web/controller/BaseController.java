@@ -199,6 +199,18 @@ public class BaseController {
         this.session.removeAttribute(attributeName);
     }
 
+    public void addRequestAttribute(String attributeName, Object attributeValue) {
+        this.request.setAttribute(attributeName, attributeValue);
+    }
+
+    public <T> T getRequestAttribute(String attributeName) {
+        return (T) this.request.getAttribute(attributeName);
+    }
+
+    public void removeRequestAddtribute(String attributeName) {
+        this.request.removeAttribute(attributeName);
+    }
+
     public String getContextPath() {
         return this.request.getContextPath();
     }

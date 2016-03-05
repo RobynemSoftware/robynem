@@ -23,4 +23,6 @@ public interface MediaDao {
     AudioEntity getAudioById(Long id);
 
     Long addBandAudio(Long bandId, InputStream audioStream, String name);
+
+    void removeBandAudio(Long bandId, Long audioId);
 }

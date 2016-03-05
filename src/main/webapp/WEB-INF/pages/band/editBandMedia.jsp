@@ -503,26 +503,28 @@
 
 
         audioDelete.click(function() {
-            execInSession(function() {
+            if (confirm("<spring:message code="band.media.audio.confirm-delete"></spring:message>")) {
+                execInSession(function() {
 
-                $.ajax({
-                    url : "${contextPath}/private/editBand/removeAudio",
-                    data : {
-                        audioId : audioId
-                    },
-                    async : true,
-                    type : "post",
-                    dataType : "json",
-                    success : function(data) {
-                        showApplicationMessages(data);
+                    $.ajax({
+                        url : "${contextPath}/private/editBand/removeAudio",
+                        data : {
+                            audioId : audioId
+                        },
+                        async : true,
+                        type : "post",
+                        dataType : "json",
+                        success : function(data) {
+                            showApplicationMessages(data);
 
-                        if (data.success == true) {
-                            row.remove();
+                            if (data.success == true) {
+                                row.remove();
+                            }
                         }
-                    }
-                });
+                    });
 
-            });
+                });
+            }
         });
     }
 

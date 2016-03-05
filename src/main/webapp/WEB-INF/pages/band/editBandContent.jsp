@@ -124,7 +124,16 @@
         $("#tabs").tabs("option", "active", "${currentTabIndex}");
         </c:if>
 
-        loadGeneralTab();
+        <c:choose>
+            <c:when test="${not empty bandId}">
+                loadGeneralTab();
+            </c:when>
+            <c:otherwise>
+               <c:set var="bandId" value="0"></c:set>
+            </c:otherwise>
+        </c:choose>
+
+
     }
 
 

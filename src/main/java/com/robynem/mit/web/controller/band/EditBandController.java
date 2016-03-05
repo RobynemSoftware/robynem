@@ -73,6 +73,11 @@ public class EditBandController extends BaseController {
 
         try {
 
+            // try to retrieve bandId from request params frist and then from request attribute. (It for sure comes from saveName action).
+            if (bandId == null) {
+                bandId = this.getRequestAttribute("bandId");
+            }
+
             if (create) {
                 // ENTERING IN CREATE MODE
                 this.removeSessionAddtribute(Constants.EDIT_BAND_ID);
@@ -264,13 +269,15 @@ public class EditBandController extends BaseController {
     @RequestMapping(value = "/saveName", method = RequestMethod.POST)
     public ModelAndView saveName(@RequestParam String bandName, ModelMap modelMap) {
         ModelAndView mv = new ModelAndView();
-
+        BandEntity bandEntity = null;
         try {
-            BandEntity bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.GENERAL);
+            bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.GENERAL);
 
             bandEntity.setName(StringUtils.trimToEmpty(bandName));
 
             this.bandDao.update(bandEntity);
+
+            this.addRequestAttribute("bandId", bandEntity.getId());
         } catch (Throwable e) {
             this.manageException(e, LOG, modelMap);
         }
@@ -469,7 +476,8 @@ public class EditBandController extends BaseController {
 
     @RequestMapping("/searchComponents")
     public ModelAndView searchComponents(@RequestParam(required = false) String selectedInstrument, @RequestParam(required = false) String selectedGenre,
-                                         @RequestParam(required = false) String keyword, @RequestParam(required = false) String placeId, ModelMap modelMap) {
+                                         @RequestParam(required = false) String keyword, @RequestParam(required = false) String placeId,
+                                         @RequestParam(required = false) boolean singer, @RequestParam(required = false) boolean dj, ModelMap modelMap) {
 
         ModelAndView modelAndView = new ModelAndView("band/searchComponentsResult");
 
@@ -492,6 +500,10 @@ public class EditBandController extends BaseController {
                 bandComponentsCriteria.setPlaceId(StringUtils.trimToEmpty(placeId));
             }
 
+            bandComponentsCriteria.setSinger(singer);
+
+            bandComponentsCriteria.setDj(dj);
+
             bandComponentsCriteria.setBandId(this.getSessionAttribute(Constants.EDIT_BAND_ID));
 
             List<UserEntity> searchResult = this.bandDao.searchBandComponents(bandComponentsCriteria);
@@ -513,10 +525,11 @@ public class EditBandController extends BaseController {
         ModelAndView modelAndView = new ModelAndView("band/musicianInfoContent");
 
         try {
-            UserEntity userEntity = this.acconDao.getUserById(userId);
+            UserEntity userEntity = this.userUtilsDao.getByIdWithFetchedObjects(UserEntity.class, userId, "playedMusicInstruments");
 
             modelMap.addAttribute("town", userEntity.getTown());
             modelMap.addAttribute("biography", userEntity.getBiography());
+            modelMap.addAttribute("playedInstruments", userEntity.getPlayedMusicInstruments());
 
         } catch (Throwable e) {
             modelMap.addAttribute("success", false);
@@ -595,6 +608,22 @@ public class EditBandController extends BaseController {
         try {
 
             this.mediaDao.removeBandGalleryImage(this.getSessionAttribute(Constants.EDIT_BAND_ID), imageId);
+
+            modelMap.put("success", true);
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
+    @RequestMapping(value = "/removeAudio", method = RequestMethod.POST)
+    public AbstractView removeAudio(@RequestParam Long audioId, ModelMap modelMap) {
+
+        try {
+
+            this.mediaDao.removeBandAudio(this.getSessionAttribute(Constants.EDIT_BAND_ID), audioId);
 
             modelMap.put("success", true);
         } catch (Throwable e) {

@@ -15,6 +15,10 @@ public class BandComponentsCriteria {
 
     protected Long bandId;
 
+    protected boolean singer;
+
+    protected boolean dj;
+
     public Long getInstrumentId() {
         return instrumentId;
     }
@@ -53,5 +57,21 @@ public class BandComponentsCriteria {
 
     public void setBandId(Long bandId) {
         this.bandId = bandId;
+    }
+
+    public boolean isSinger() {
+        return singer;
+    }
+
+    public void setSinger(boolean singer) {
+        this.singer = singer;
+    }
+
+    public boolean isDj() {
+        return dj;
+    }
+
+    public void setDj(boolean dj) {
+        this.dj = dj;
     }
 }

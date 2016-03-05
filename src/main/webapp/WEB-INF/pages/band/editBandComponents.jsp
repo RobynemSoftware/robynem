@@ -135,6 +135,24 @@
 
                                      </div>
 
+                                    <div class="row">
+
+                                        <!-- Singer -->
+                                        <div class="col-md-6 col-xs-12">
+                                            <input id="searchComponentSinger" type="checkbox" name="singer" class="checkbox-inline" value="true" />
+
+                                            <label for="searchComponentSinger" ><spring:message code="profile.musician-form.singer"></spring:message></label>
+                                        </div>
+
+                                        <!-- Dj -->
+                                        <div class="col-md-6 col-xs-12">
+                                            <input id="searchComponentDj" type="checkbox" name="dj" class="checkbox-inline" value="true" />
+
+                                            <label for="searchComponentDj" ><spring:message code="profile.musician-form.dj"></spring:message></label>
+                                        </div>
+
+                                    </div>
+
                                     <!-- Buttons -->
                                     <button id="searchComponentBtnSearch" type="submit" class="btn btn-default">
                                         <spring:message code="band.component.search-component.filter.btn.search"></spring:message>
@@ -261,7 +279,8 @@
         // Validation
         var validationError = null;
         if ($("#searchComponentInstrument").val() == "" && $("#searchComponentGenre").val() == "" && $("#searchComponentPlaceId").val() == ""
-                    && $.trim($("#searchComponentKeyword").val()) == "" && $.trim($("#searchComponentLocation").val()) == "") {
+                    && $.trim($("#searchComponentKeyword").val()) == "" && $.trim($("#searchComponentLocation").val()) == ""
+                    && !$("#searchComponentSinger").is(":checked") && !$("#searchComponentDj").is(":checked")) {
             validationError = "<spring:message code="band.validation.select-a-filter"></spring:message>";
         } else if ($("#searchComponentPlaceId").val() == "" && $.trim($("#searchComponentLocation").val()) != "") {
             validationError = "<spring:message code="band.validation.select-a-location"></spring:message>";

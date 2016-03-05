@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -491,5 +492,40 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
         }
 
         return newAudioId;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public void removeBandAudio(Long bandId, Long audioId) {
+        this.hibernateTemplate.execute(session -> {
+
+            BandEntity bandEntity = (BandEntity) session.get(BandEntity.class, bandId);
+
+            List<AudioEntity> audiosToDelete = new ArrayList<AudioEntity>();
+
+            if (bandEntity.getAudios() != null) {
+                bandEntity.getAudios().stream().filter(a -> a.getId().equals(audioId)).forEach(i -> {
+                    audiosToDelete.add(i);
+                });
+            }
+
+            audiosToDelete.stream().forEach(i -> {
+                bandEntity.getAudios().remove(i);
+            });
+
+            session.update(bandEntity);
+
+            // Removes physical files
+            String folder = this.audioBasePath;
+            audiosToDelete.stream().forEach(a -> {
+                File file = new File(this.audioBasePath + a.getFileName());
+
+                if (file.exists()) {
+                    file.delete();
+                }
+            });
+
+            return null;
+        });
     }
 }
