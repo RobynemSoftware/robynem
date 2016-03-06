@@ -95,6 +95,11 @@
             </c:if>
         </div>
 
+        <!-- REMOVE -->
+        <div class="col-md-3 col-xs-6">
+            <a href="javascript:removeComponent(${component.userId})" class="removeBandComponent"><spring:message code="band.component.remove-component"></spring:message></a>
+        </div>
+
 
 
     </div>
@@ -187,5 +192,23 @@
                 }
             });
         });
+    }
+
+    function removeComponent(userId) {
+        if (confirm("<spring:message code="band.component.confirm-component-removal"></spring:message>")) {
+            execInSession(function() {
+                $.ajax({
+                    url: "${contextPath}/private/editBand/removeComponent",
+                    type: "post",
+                    dataType: "html",
+                    data: {
+                        userId : userId
+                    },
+                    success: function(data) {
+                        $("#editBandComponentsList").html(data);
+                    }
+                });
+            });
+        }
     }
 </script>

@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.sound.sampled.AudioFormat;
@@ -147,7 +148,7 @@ public class MediaController extends BaseController {
     }
 
     @RequestMapping("/getAudio")
-    public void getAudio(@RequestParam Long audioId, HttpServletResponse response) {
+    public @ResponseBody void getAudio(@RequestParam Long audioId, HttpServletResponse response) {
 
         try {
             AudioEntity audioEntity = this.mediaDao.getAudioById(audioId);
@@ -160,21 +161,11 @@ public class MediaController extends BaseController {
                 response.addHeader("Content-Disposition", String.format("attachment; filename=%s", audioEntity.getFileName()));
                 response.addHeader("Accept-Ranges", "bytes");
 
-                int buffSize = 3072;
+                int buffSize = 1024;
 
-                byte[] buff = new byte[buffSize];
+                response.setBufferSize(buffSize);
 
-                int read = 0;
-                int actuals = 0;
-                while((actuals = is.read(buff, 0, buffSize)) > 0) {
-                    IOUtils.copy(new ByteArrayInputStream(buff), response.getOutputStream());
-
-                    read = actuals;
-
-                    response.flushBuffer();
-
-                    buff = new byte[buffSize];
-                }
+                IOUtils.copyLarge(is, response.getOutputStream());
             }
 
         } catch (Throwable e) {

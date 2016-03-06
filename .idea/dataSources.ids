@@ -7,6 +7,17 @@
     </database-info>
     <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower"/>
     <schema name="" catalog="mit"/>
+    <table name="mit_audio" schema="" catalog="mit" type="TABLE">
+      <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
+      <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="file" sqlType="LONGBLOB" precision="2147483647" scale="0" nullable="true" jdbcType="-4"/>
+      <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="fileName" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <exported-key name="FK5C69D17A3F215BB7" table="mit_bandaudio" schema="" catalog="mit" columns="audioId"/>
+      <index name="id" unique="true" columns="id"/>
+    </table>
     <table name="mit_band" schema="" catalog="mit" type="TABLE">
       <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
       <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
@@ -28,7 +39,11 @@
       <foreign-key name="FKB8A94FBCB0847D69" columns="publishedBandId" ref-table="mit_band" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="FKB8A94FBCB7008126" columns="createdByUserId" ref-table="mit_user" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="FKB8A94FBCB0847D69" table="mit_band" schema="" catalog="mit" columns="publishedBandId"/>
+      <exported-key name="FK5C69D17AE8B085FB" table="mit_bandaudio" schema="" catalog="mit" columns="bandId"/>
+      <exported-key name="FK294FE0A1E8B085FB" table="mit_bandcomponent" schema="" catalog="mit" columns="bandId"/>
+      <exported-key name="FK495C80C4E8B085FB" table="mit_bandcontact" schema="" catalog="mit" columns="bandId"/>
       <exported-key name="FK5CD6DEFFE8B085FB" table="mit_bandimage" schema="" catalog="mit" columns="bandId"/>
+      <exported-key name="FKEB80EB3AE8B085FB" table="mit_bandmusicgenre" schema="" catalog="mit" columns="bandId"/>
       <exported-key name="FK7DDBFF13E8B085FB" table="mit_bandownership" schema="" catalog="mit" columns="bandId"/>
       <exported-key name="FK5D8C4A1FE8B085FB" table="mit_bandvideo" schema="" catalog="mit" columns="bandId"/>
       <index name="id" unique="true" columns="id"/>
@@ -38,6 +53,53 @@
       <index name="FKB8A94FBCB0847D69" unique="false" columns="publishedBandId"/>
       <index name="FKB8A94FBCB7008126" unique="false" columns="createdByUserId"/>
     </table>
+    <table name="mit_bandaudio" schema="" catalog="mit" type="TABLE">
+      <column name="bandId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="audioId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <primary-key name="PRIMARY" columns="bandId,audioId"/>
+      <foreign-key name="FK5C69D17A3F215BB7" columns="audioId" ref-table="mit_audio" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK5C69D17AE8B085FB" columns="bandId" ref-table="mit_band" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="FK5C69D17A3F215BB7" unique="false" columns="audioId"/>
+      <index name="FK5C69D17AE8B085FB" unique="false" columns="bandId"/>
+    </table>
+    <table name="mit_bandcomponent" schema="" catalog="mit" type="TABLE">
+      <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
+      <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="confirmed" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
+      <column name="bandId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="userId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="discJockey" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
+      <column name="singer" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <foreign-key name="FK294FE0A1D6063B27" columns="userId" ref-table="mit_user" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK294FE0A1E8B085FB" columns="bandId" ref-table="mit_band" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <exported-key name="FK9CCB8B68DCBA11BB" table="mit_bandcomponentinstrument" schema="" catalog="mit" columns="bandComponentId"/>
+      <index name="id" unique="true" columns="id"/>
+      <index name="FK294FE0A1D6063B27" unique="false" columns="userId"/>
+      <index name="FK294FE0A1E8B085FB" unique="false" columns="bandId"/>
+    </table>
+    <table name="mit_bandcomponentinstrument" schema="" catalog="mit" type="TABLE">
+      <column name="bandComponentId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="musicalInstrumentId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <primary-key name="PRIMARY" columns="bandComponentId,musicalInstrumentId"/>
+      <foreign-key name="FK9CCB8B684B173599" columns="musicalInstrumentId" ref-table="mit_musicalinstrument" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FK9CCB8B68DCBA11BB" columns="bandComponentId" ref-table="mit_bandcomponent" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="FK9CCB8B684B173599" unique="false" columns="musicalInstrumentId"/>
+      <index name="FK9CCB8B68DCBA11BB" unique="false" columns="bandComponentId"/>
+    </table>
+    <table name="mit_bandcontact" schema="" catalog="mit" type="TABLE">
+      <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
+      <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="emailAddress" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="phoneNumber" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="bandId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <foreign-key name="FK495C80C4E8B085FB" columns="bandId" ref-table="mit_band" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="id" unique="true" columns="id"/>
+      <index name="FK495C80C4E8B085FB" unique="false" columns="bandId"/>
+    </table>
     <table name="mit_bandimage" schema="" catalog="mit" type="TABLE">
       <column name="bandId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="imageId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
@@ -46,6 +108,15 @@
       <foreign-key name="FK5CD6DEFFE8B085FB" columns="bandId" ref-table="mit_band" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <index name="FK5CD6DEFF3FCD31C1" unique="false" columns="imageId"/>
       <index name="FK5CD6DEFFE8B085FB" unique="false" columns="bandId"/>
+    </table>
+    <table name="mit_bandmusicgenre" schema="" catalog="mit" type="TABLE">
+      <column name="bandId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="musicGenreId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <primary-key name="PRIMARY" columns="bandId,musicGenreId"/>
+      <foreign-key name="FKEB80EB3AC2164B2D" columns="musicGenreId" ref-table="mit_musicgenre" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FKEB80EB3AE8B085FB" columns="bandId" ref-table="mit_band" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="FKEB80EB3AC2164B2D" unique="false" columns="musicGenreId"/>
+      <index name="FKEB80EB3AE8B085FB" unique="false" columns="bandId"/>
     </table>
     <table name="mit_bandownership" schema="" catalog="mit" type="TABLE">
       <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
@@ -85,15 +156,11 @@
       <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
       <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
-      <column name="filePath" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="largeFileName" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="mediumFileName" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="originalFileName" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="smallFileName" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="largeFile" sqlType="MEDIUMBLOB" precision="16777215" scale="0" nullable="true" jdbcType="-4"/>
       <column name="mediumFile" sqlType="MEDIUMBLOB" precision="16777215" scale="0" nullable="true" jdbcType="-4"/>
       <column name="originalFile" sqlType="MEDIUMBLOB" precision="16777215" scale="0" nullable="true" jdbcType="-4"/>
       <column name="smallFile" sqlType="MEDIUMBLOB" precision="16777215" scale="0" nullable="true" jdbcType="-4"/>
+      <column name="filePath" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="FKB8A94FBC5EB00F6B" table="mit_band" schema="" catalog="mit" columns="bandLogo"/>
       <exported-key name="FK5CD6DEFF3FCD31C1" table="mit_bandimage" schema="" catalog="mit" columns="imageId"/>
@@ -115,6 +182,7 @@
       <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
+      <exported-key name="FK9CCB8B684B173599" table="mit_bandcomponentinstrument" schema="" catalog="mit" columns="musicalInstrumentId"/>
       <exported-key name="FKBE1A8EF04B173599" table="mit_masterinstrument" schema="" catalog="mit" columns="musicalInstrumentId"/>
       <exported-key name="FKC9D949E54B173599" table="mit_usermusicalinstrument" schema="" catalog="mit" columns="musicalInstrumentId"/>
       <index name="id" unique="true" columns="id"/>
@@ -126,9 +194,39 @@
       <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
+      <exported-key name="FKEB80EB3AC2164B2D" table="mit_bandmusicgenre" schema="" catalog="mit" columns="musicGenreId"/>
       <exported-key name="FK53704D50C2164B2D" table="mit_usermusicgenre" schema="" catalog="mit" columns="musicGenreId"/>
       <index name="id" unique="true" columns="id"/>
       <index name="name" unique="true" columns="name"/>
+    </table>
+    <table name="mit_notification" schema="" catalog="mit" type="TABLE">
+      <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
+      <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="data" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="message" sqlType="LONGTEXT" precision="2147483647" scale="0" nullable="true" jdbcType="-1"/>
+      <column name="readDate" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="receiverEmailAddress" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="receiverUserId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="senderUserId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="typeId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <foreign-key name="FKE4B35B725070B5D6" columns="receiverUserId" ref-table="mit_user" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FKE4B35B725134B9D0" columns="typeId" ref-table="mit_notificationtype" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FKE4B35B7275B5199C" columns="senderUserId" ref-table="mit_user" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="id" unique="true" columns="id"/>
+      <index name="FKE4B35B725070B5D6" unique="false" columns="receiverUserId"/>
+      <index name="FKE4B35B725134B9D0" unique="false" columns="typeId"/>
+      <index name="FKE4B35B7275B5199C" unique="false" columns="senderUserId"/>
+    </table>
+    <table name="mit_notificationtype" schema="" catalog="mit" type="TABLE">
+      <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
+      <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="code" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <exported-key name="FKE4B35B725134B9D0" table="mit_notification" schema="" catalog="mit" columns="typeId"/>
+      <index name="id" unique="true" columns="id"/>
     </table>
     <table name="mit_ownertype" schema="" catalog="mit" type="TABLE">
       <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
@@ -160,12 +258,16 @@
       <column name="musicMaster" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
       <column name="singer" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
       <column name="musician" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
+      <column name="discJockey" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="FKB8B235521754275D" columns="profileImage" ref-table="mit_image" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <exported-key name="FKB8A94FBC18F49407" table="mit_band" schema="" catalog="mit" columns="modifiedByUserId"/>
       <exported-key name="FKB8A94FBCB7008126" table="mit_band" schema="" catalog="mit" columns="createdByUserId"/>
+      <exported-key name="FK294FE0A1D6063B27" table="mit_bandcomponent" schema="" catalog="mit" columns="userId"/>
       <exported-key name="FK7DDBFF13D6063B27" table="mit_bandownership" schema="" catalog="mit" columns="userId"/>
       <exported-key name="FKBE1A8EF0D6063B27" table="mit_masterinstrument" schema="" catalog="mit" columns="userId"/>
+      <exported-key name="FKE4B35B725070B5D6" table="mit_notification" schema="" catalog="mit" columns="receiverUserId"/>
+      <exported-key name="FKE4B35B7275B5199C" table="mit_notification" schema="" catalog="mit" columns="senderUserId"/>
       <exported-key name="FKC9D949E5D6063B27" table="mit_usermusicalinstrument" schema="" catalog="mit" columns="userId"/>
       <exported-key name="FK53704D50D6063B27" table="mit_usermusicgenre" schema="" catalog="mit" columns="userId"/>
       <index name="emailAddress" unique="true" columns="emailAddress"/>

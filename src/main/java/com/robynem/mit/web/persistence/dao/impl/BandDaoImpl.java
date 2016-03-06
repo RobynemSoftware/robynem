@@ -3,6 +3,7 @@ package com.robynem.mit.web.persistence.dao.impl;
 import com.robynem.mit.web.persistence.criteria.BandComponentsCriteria;
 import com.robynem.mit.web.persistence.dao.BandDao;
 import com.robynem.mit.web.persistence.dao.BaseDao;
+import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.dao.UtilsDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.EntityStatus;
@@ -33,6 +34,9 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
     @Autowired
     private UtilsDao<VideoEntity> utilsVideoDao;
+
+    @Autowired
+    private NotificationDao notificationDao;
 
     /**
      * Createa a new band, with NOT_PUBLISHED statu and its stage version.
@@ -277,7 +281,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public BandEntity addSelectedComponent(Long bandId, Long userId) {
+    public BandEntity addSelectedComponent(Long bandId, Long userId, Long operationUserId) {
 
         return this.hibernateTemplate.execute(session -> {
             // Retrieves selected component
@@ -305,6 +309,35 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             bandEntity.getComponents().add(bandComponentEntity);
 
             session.update(bandEntity);
+
+            // Sends notification
+            this.notificationDao.sendBandInvitation(operationUserId, userId, bandEntity.getId());
+
+            return bandEntity;
+        });
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public BandEntity removeComponent(Long bandId, Long userId, Long operationUserId) {
+        return this.hibernateTemplate.execute(session -> {
+
+            BandEntity bandEntity = (BandEntity) session.get(BandEntity.class, bandId);
+
+            // Retrieves selected component
+            BandComponentEntity bandComponentEntity = bandEntity.getComponents().stream().filter(bc -> bc.getUser().getId().equals(userId)).findFirst().get();
+
+            // Removes component
+            session.delete(bandComponentEntity);
+            /*bandEntity.getComponents().remove(bandComponentEntity);
+
+            session.update(bandComponentEntity);
+            session.update(bandEntity);*/
+
+            session.flush();
+
+            // Sends notification
+            this.notificationDao.sendBandComponentRemoval(operationUserId, userId, bandEntity.getId());
 
             return bandEntity;
         });

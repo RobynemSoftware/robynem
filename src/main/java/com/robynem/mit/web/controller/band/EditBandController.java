@@ -308,6 +308,8 @@ public class EditBandController extends BaseController {
             switch (tabIndex) {
                 case GENERAL:
 
+                    mv.setViewName("forward:/private/editBand/showGeneralInfo");
+
                     if (emailContact != null) {
                         emailContact.stream().distinct().forEach(c -> {
                             bandModel.getEmailContacts().add(new ContactModel(c));
@@ -321,8 +323,6 @@ public class EditBandController extends BaseController {
                     }
 
                     this.saveGeneralTab(bandModel);
-
-                    mv.setViewName("forward:/private/editBand/showGeneralInfo");
 
                     break;
 
@@ -409,7 +409,33 @@ public class EditBandController extends BaseController {
 
         try {
             // Add component
-            this.bandDao.addSelectedComponent(this.getSessionAttribute(Constants.EDIT_BAND_ID), userId);
+            this.bandDao.addSelectedComponent(this.getSessionAttribute(Constants.EDIT_BAND_ID), userId, this.getAuthenticatedUser().getId());
+
+            BandEntity bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.COMPONENTS);
+
+            //Creates the model
+            BandModel bandModel = new BandModel();
+            this.setComponentsModel(bandModel, bandEntity);
+
+            modelMap.addAttribute("bandModel", bandModel);
+
+
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        modelAndView.addObject(modelMap);
+
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/removeComponent", method = RequestMethod.POST)
+    public ModelAndView removeComponent(@RequestParam Long userId, ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("band/editBandComponentsList");
+
+        try {
+            // Add component
+            this.bandDao.removeComponent(this.getSessionAttribute(Constants.EDIT_BAND_ID), userId, this.getAuthenticatedUser().getId());
 
             BandEntity bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.COMPONENTS);
 
@@ -656,11 +682,13 @@ public class EditBandController extends BaseController {
         // Email
         bandModel.getEmailContacts().stream().forEach(c -> {
             bandEntity.getContacts().add(new BandContactEntity(StringUtils.trimToNull(c.getValue()), null, bandEntity));
+            //bandEntity.getContacts().add(new BandContactEntity(StringUtils.trimToNull(c.getValue()), null));
         });
 
         // Phone numbers
         bandModel.getPhoneNumberContacts().stream().forEach(c -> {
             bandEntity.getContacts().add(new BandContactEntity(null, StringUtils.trimToNull(c.getValue()), bandEntity));
+            //bandEntity.getContacts().add(new BandContactEntity(null, StringUtils.trimToNull(c.getValue())));
         });
 
 

@@ -112,3 +112,9 @@
 .galleryImageCol {
     margin-bottom: 50px;
 }
+
+.ui-widget-content .removeBandComponent {
+    font-size: 10px;
+    color: red;
+    text-decoration: underline;
+}

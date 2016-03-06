@@ -83,7 +83,7 @@ public class BandEntity extends BaseEntity {
     )
     protected Set<MusicGenreEntity> musicGenres;
 
-    @OneToMany(mappedBy = "band", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "band", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
     protected Set<BandComponentEntity> components;
 
     @OneToMany(mappedBy = "band", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

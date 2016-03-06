@@ -32,6 +32,8 @@
                          <value>com.robynem.mit.web.persistence.entity.BandComponentEntity</value>
                          <value>com.robynem.mit.web.persistence.entity.BandContactEntity</value>
                          <value>com.robynem.mit.web.persistence.entity.AudioEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.NotificationTypeEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.NotificationEntity</value>
                      </list>
               </property>
 

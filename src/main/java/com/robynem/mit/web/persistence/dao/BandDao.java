@@ -33,7 +33,9 @@ public interface BandDao {
 
     BandEntity getBandById(Long bandId);
 
-    BandEntity addSelectedComponent(Long bandId, Long userId);
+    BandEntity addSelectedComponent(Long bandId, Long userId, Long operationUserId);
+
+    BandEntity removeComponent(Long bandId, Long userId, Long operationUserId);
 
     BandEntity getBandToEdit(Long bandId);
 

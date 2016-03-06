@@ -1,5 +1,7 @@
 package com.robynem.mit.web.persistence.entity;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 
 /**

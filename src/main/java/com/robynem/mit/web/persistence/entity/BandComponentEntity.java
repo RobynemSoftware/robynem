@@ -10,11 +10,11 @@ import java.util.Set;
 @Table(name = "mit_bandComponent")
 public class BandComponentEntity extends BaseEntity {
 
-    @ManyToOne( cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
     protected UserEntity user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "bandId", nullable = false)
     protected BandEntity band;
 
@@ -33,7 +33,7 @@ public class BandComponentEntity extends BaseEntity {
     @Column(columnDefinition = "TINYINT DEFAULT 0")
     protected boolean confirmed;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "mit_bandComponentInstrument",
             joinColumns = {@JoinColumn(name = "bandComponentId", nullable = false) },
             inverseJoinColumns = { @JoinColumn(name = "musicalInstrumentId", nullable = false)}
