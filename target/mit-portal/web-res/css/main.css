@@ -61,12 +61,31 @@ legend {
 /*******************/
 
 /*BOOTSTRAP*/
+
+.accordion-heading {
+    background-color: gray;
+    border-radius: 25px;
+    -webkit-border-radius: 25px;
+    -moz-border-radius: 25px;
+}
+
+.accordion-heading span {
+    color: white;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.accordion-toggle a {
+    text-decoration-color: gray;
+}
+
 .accordion-toggle:after {
     /* symbol for "opening" panels */
     font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
     content: "\e114";    /* adjust as needed, taken from bootstrap.css */
     float: right;        /* adjust as needed */
-    color: grey;         /* adjust as needed */
+    color: white;         /* adjust as needed */
+    font-weight: bold;
 }
 .accordion-toggle.collapsed:after {
     /* symbol for "collapsed" panels */

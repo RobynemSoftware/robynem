@@ -26,3 +26,16 @@
     margin-bottom: 20px;
 }
 
+
+
+#dashboardAccordion .accordion-group {
+    margin-top: 50px;
+}
+
+.accordion-inner {
+    max-width: 80%;
+    margin-left: 50px;
+}
+
+
+

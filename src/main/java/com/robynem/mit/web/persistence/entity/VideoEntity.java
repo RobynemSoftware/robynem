@@ -3,6 +3,7 @@ package com.robynem.mit.web.persistence.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Calendar;
 
 /**
  * Created by robyn_000 on 09/01/2016.
@@ -13,6 +14,15 @@ public class VideoEntity extends BaseEntity {
 
     @Column
     protected String youtubeUrl;
+
+    public VideoEntity() {
+
+    }
+
+    public VideoEntity(String youtubeUrl) {
+        this.youtubeUrl = youtubeUrl;
+        this.created = Calendar.getInstance().getTime();
+    }
 
     public String getYoutubeUrl() {
         return youtubeUrl;

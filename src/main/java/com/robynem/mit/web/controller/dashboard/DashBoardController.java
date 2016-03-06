@@ -30,6 +30,13 @@ public class DashBoardController extends BaseController {
     public ModelAndView view(ModelMap modelMap) {
         ModelAndView modelAndView = new ModelAndView("dashboard/dashboard");
 
+        return modelAndView;
+    }
+
+    @RequestMapping("/viewOwnedBands")
+    public ModelAndView viewOwnedBands(ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("dashboard/dashboardOwnedBands");
+
         try {
 
             // Retrieves owned band

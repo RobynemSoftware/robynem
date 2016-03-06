@@ -58,6 +58,7 @@ public class BandEntity extends BaseEntity {
             joinColumns = {@JoinColumn(name = "bandId", nullable = false) },
             inverseJoinColumns = { @JoinColumn(name = "videoId", nullable = false) }
     )
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     protected Set<VideoEntity> videos;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by robyn_000 on 06/03/2016.
@@ -83,5 +84,10 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
         });
 
 
+    }
+
+    @Override
+    public List<NotificationEntity> getUnreadNotifications(Long receiverUserId) {
+        return this.hibernateTemplate.findByNamedQueryAndNamedParam("@HQL_GET_UNREAD_NOTIFICATIONS", "receiverUserId", receiverUserId);
     }
 }

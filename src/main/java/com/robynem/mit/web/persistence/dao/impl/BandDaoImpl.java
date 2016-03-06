@@ -337,7 +337,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             session.flush();
 
             // Sends notification
-            this.notificationDao.sendBandComponentRemoval(operationUserId, userId, bandEntity.getId());
+            //this.notificationDao.sendBandComponentRemoval(operationUserId, userId, bandEntity.getId());
 
             return bandEntity;
         });
@@ -640,6 +640,46 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             if (videosToDelete.size() > 0) {
                 this.utilsVideoDao.deleteOrphanVideos(videosToDelete);
             }
+
+            return null;
+        });
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public Long addBandVideo(Long bandId, VideoEntity videoEntity) {
+        return this.hibernateTemplate.execute(session -> {
+
+            BandEntity bandEntity = (BandEntity) session.get(BandEntity.class, bandId);
+
+            if (bandEntity.getVideos() == null) {
+                bandEntity.setVideos(new HashSet<VideoEntity>());
+            }
+
+            bandEntity.getVideos().add(videoEntity);
+
+            session.update(bandEntity);
+
+            session.flush();
+
+            return videoEntity.getId();
+        });
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public void removeBandVideo(Long bandId, Long videoId) {
+        this.hibernateTemplate.execute(session -> {
+
+            BandEntity bandEntity = (BandEntity) session.get(BandEntity.class, bandId);
+
+            VideoEntity videoEntity = (VideoEntity) session.get(VideoEntity.class, videoId);
+
+            if (bandEntity.getVideos() != null && videoEntity != null) {
+                bandEntity.getVideos().remove(videoEntity);
+            }
+
+            session.update(bandEntity);
 
             return null;
         });

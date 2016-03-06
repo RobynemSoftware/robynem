@@ -348,7 +348,7 @@ public class EditBandController extends BaseController {
             }
         } catch (Throwable e) {
             this.manageException(e, LOG, modelMap);
-            modelMap.addAttribute("success", "false");
+            modelMap.addAttribute("success", false);
         }
 
         mv.addObject(modelMap);
@@ -356,23 +356,43 @@ public class EditBandController extends BaseController {
         return mv;
     }
 
-    @RequestMapping(value = "/saveVideos", method = RequestMethod.POST)
-    public AbstractView saveVideos(@ModelAttribute BandModel bandModel,
-                                   @RequestParam(required = false) List<String> youtubeUrl,
+    @RequestMapping(value = "/saveVideo", method = RequestMethod.POST)
+    public AbstractView saveVideo(@ModelAttribute BandModel bandModel,
+                                   @RequestParam(required = false) String youtubeUrl,
                                    ModelMap modelMap) {
         try {
 
-            if (youtubeUrl != null) {
-                youtubeUrl.stream().forEach(u -> {
-                    bandModel.getMediaModel().getYoutubeUrl().add(u);
-                });
+            Long videoId = null;
+            if (StringUtils.isNotBlank(youtubeUrl)) {
+                videoId = this.bandDao.addBandVideo(this.getSessionAttribute(Constants.EDIT_BAND_ID), new VideoEntity(StringUtils.trimToEmpty(youtubeUrl)));
             }
 
-            this.saveVideos(bandModel);
+            modelMap.addAttribute("success", true);
+            modelMap.addAttribute("newVideoId", videoId);
 
         } catch (Throwable e) {
             this.manageException(e, LOG, modelMap);
-            modelMap.addAttribute("success", "false");
+            modelMap.addAttribute("success", false);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
+    @RequestMapping(value = "/removeVideo", method = RequestMethod.POST)
+    public AbstractView removeVideo(@ModelAttribute BandModel bandModel,
+                                  @RequestParam Long videoId,
+                                  ModelMap modelMap) {
+        try {
+
+            if (videoId != null) {
+                this.bandDao.removeBandVideo(this.getSessionAttribute(Constants.EDIT_BAND_ID), videoId);
+            }
+
+            modelMap.addAttribute("success", true);
+
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+            modelMap.addAttribute("success", false);
         }
 
         return this.getJsonView(modelMap);
@@ -695,24 +715,7 @@ public class EditBandController extends BaseController {
         this.bandDao.update(bandEntity);
     }
 
-    private void saveVideos(BandModel bandModel) {
-        Long bandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
 
-        // Videos
-        Set<VideoEntity> videos = new HashSet<VideoEntity>();
-
-        if (bandModel.getMediaModel() != null && bandModel.getMediaModel().getYoutubeUrl() != null) {
-            bandModel.getMediaModel().getYoutubeUrl().stream().forEach(u -> {
-                VideoEntity videoEntity = new VideoEntity();
-
-                videoEntity.setYoutubeUrl(u);
-
-                videos.add(videoEntity);
-            });
-        }
-
-        this.bandDao.saveBandVideos(bandId, videos);
-    }
 
     private BandModel getBandModel(BandEntity bandEntity, EditBandTabIndex tabIndex) {
         BandModel bandModel = null;
@@ -838,7 +841,7 @@ public class EditBandController extends BaseController {
 
         if (bandEntity.getVideos() != null) {
             bandEntity.getVideos().stream().forEach(v -> {
-                bandModel.getMediaModel().getYoutubeUrl().add(v.getYoutubeUrl());
+                bandModel.getMediaModel().getVideos().add(v);
             });
         }
 

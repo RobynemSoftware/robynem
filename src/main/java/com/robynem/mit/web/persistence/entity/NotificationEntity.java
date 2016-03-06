@@ -8,6 +8,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "mit_notification")
+@NamedQueries({
+        @NamedQuery(name = "@HQL_GET_UNREAD_NOTIFICATIONS",
+                query = "from NotificationEntity n inner join fetch n.type t where n.readDate is null and n.receiverUser.id = :receiverUserId order by n.created desc ")
+})
 public class NotificationEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

@@ -56,4 +56,8 @@ public interface BandDao {
     void saveBandComponentDiscJockey(Long bandId, Long bandComponentId, boolean value);
 
     void saveBandVideos(Long bandId, Set<VideoEntity> videos);
+
+    Long addBandVideo(Long bandId, VideoEntity videoEntity);
+
+    void removeBandVideo(Long bandId, Long videoId);
 }

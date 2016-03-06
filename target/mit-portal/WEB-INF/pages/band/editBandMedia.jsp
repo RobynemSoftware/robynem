@@ -48,7 +48,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        <%--<div class="row">
 
                             <div class="col-md-12 saveBandLink">
                                 <span class="saveBandLink">
@@ -58,15 +58,15 @@
                                 </span>
                             </div>
 
-                        </div>
+                        </div>--%>
 
-                        <form:form id="videosForm" method="post" action="${contextPath}/private/editBand/saveVideos" modelAttribute="bandModel" >
+                        <%--<form:form id="videosForm" method="post" action="${contextPath}/private/editBand/saveVideos" modelAttribute="bandModel" >--%>
                             <input type="hidden" name="currentTabIndex" value="2">
 
                             <div id="videoContainerRow" class="row">
 
                             </div>
-                        </form:form>
+                        <%--</form:form>--%>
 
 
                     </div>
@@ -213,15 +213,54 @@
     $(function() {
 
         $("#addVideoButton").click(function(e) {
-            e.preventDefault();
+            //e.preventDefault();
+
             var url = $.trim($("#addVideoText").val());
 
             if (url != "") {
-                var success = addYoutubeVideo(url, $("#videoContainerRow"), {
-                    name : "youtubeUrl"
-                });
 
-                if (success) {
+                var videoAdded = addYoutubeVideo(url, $("#videoContainerRow"),
+                        {
+                            name : "youtubeUrl",
+
+                            saveCallback : function() {
+                                var newVideoId = null;
+
+                                if (execInSession(null)) {
+                                    $.ajax({
+                                        url : "${contextPath}/private/editBand/saveVideo",
+                                        data : {
+                                            youtubeUrl : url
+                                        },
+                                        type : "post",
+                                        dataType : "json",
+                                        async : false,
+                                        cache : false,
+                                        beforeSend : function (jqXHR, settings ) {
+                                            $.blockUI();
+                                        },
+                                        success : function(data) {
+                                            showApplicationMessages(data);
+
+                                            if (data.success == true) {
+                                                newVideoId = data.newVideoId;
+                                                //console.log("newVideoId: " + newVideoId);
+                                            }
+                                        },
+                                        complete : function() {
+                                            $.unblockUI();
+                                        }
+                                    });
+                                }
+
+                                // Returns new video id to addYoutubeVideo function.
+                                return newVideoId;
+                            },
+
+                            deleteCallback : deleteVideo
+                        });
+
+                if (videoAdded) {
                     $("#addVideoText").val("");
                 }
             }
@@ -230,20 +269,22 @@
         });
 
         <%-- Adds model videos dinamically --%>
-        <c:if test="${ not empty bandModel.mediaModel.youtubeUrl}">
-            <c:forEach var="url" items="${bandModel.mediaModel.youtubeUrl}">
-                addYoutubeVideo("${url}", $("#videoContainerRow"), {
-                    name : "youtubeUrl"
+        <c:if test="${ not empty bandModel.mediaModel.videos}">
+            <c:forEach var="video" items="${bandModel.mediaModel.videos}">
+                addYoutubeVideo("${video.youtubeUrl}", $("#videoContainerRow"), {
+                    name : "youtubeUrl",
+                    deleteCallback : deleteVideo,
+                    videoId : ${video.id}
                 });
             </c:forEach>
         </c:if>
 
-        $("#saveVideosLink").click(function() {
+        /*$("#saveVideosLink").click(function() {
             $("#videosForm").submit();
-        });
+        });*/
 
         // Sets video form async
-        initVideoForm();
+        //initVideoForm();
 
         // inits gallery form
         initGalleryForm();
@@ -532,6 +573,36 @@
         $(".audio").bind("onerror", function() {
             $(this).load();
         });
+    }
+
+    function deleteVideo(videoId) {
+        if (videoId != null && execInSession(null)) {
+            var success = false;
+
+            $.ajax({
+                url : "${contextPath}/private/editBand/removeVideo",
+                data : {
+                    videoId : videoId
+                },
+                type : "post",
+                dataType : "json",
+                async : false,
+                cache : false,
+                beforeSend : function (jqXHR, settings ) {
+                    $.blockUI();
+                },
+                success : function(data) {
+                    showApplicationMessages(data);
+
+                    success = data.success;
+                },
+                complete : function() {
+                    $.unblockUI();
+                }
+            });
+        }
+
+        return success;
     }
 
 </script>
