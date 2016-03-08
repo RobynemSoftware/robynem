@@ -96,3 +96,6 @@ Creates the localized date format
 </script>
 <script src="${contextPath}/resources/js/main.js"></script>
 <script src="${contextPath}/resources/js/TagViewer.js"></script>
+
+<!-- FAVICON -->
+<link rel="shortcut icon" href="${contextPath}/favicon.ico" />

@@ -5,9 +5,27 @@
 
     <div class="col-md-12">
 
-        <!-- OWNED BANDS -->
+
         <div class="accordion" id="dashboardAccordion">
 
+            <!-- NOTIFICATIONS -->
+            <div class="accordion-group">
+
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseNotifications">
+                        <span><spring:message code="dashbord.notifications.title"></spring:message></span>
+                    </a>
+                </div>
+
+                <div id="collapseNotifications" class="accordion-body collapse in">
+                    <div id="notificationsContainer" class="accordion-inner">
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- OWNED BANDS -->
             <div class="accordion-group">
 
                 <div class="accordion-heading">
@@ -36,6 +54,8 @@
 
     $(function() {
         loadOwnedBands();
+
+        loadNotifications();
     });
 
     function loadOwnedBands() {
@@ -47,6 +67,19 @@
             cache : false,
             success : function(data) {
                 $("#ownedBandsContainer").html(data);
+            }
+        });
+    }
+
+    function loadNotifications() {
+        $.ajax({
+            url : "${contextPath}/private/dashboard/viewNotifications",
+            type : "get",
+            dataType : "html",
+            async : true,
+            cache : false,
+            success : function(data) {
+                $("#notificationsContainer").html(data);
             }
         });
     }

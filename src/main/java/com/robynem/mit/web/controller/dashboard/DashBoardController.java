@@ -1,7 +1,9 @@
 package com.robynem.mit.web.controller.dashboard;
 
 import com.robynem.mit.web.controller.BaseController;
+import com.robynem.mit.web.model.notification.NotificationsModel;
 import com.robynem.mit.web.persistence.dao.BandDao;
+import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.entity.BandEntity;
 import com.robynem.mit.web.util.OwnerType;
 import org.slf4j.Logger;
@@ -25,6 +27,9 @@ public class DashBoardController extends BaseController {
 
     @Autowired
     private BandDao bandDao;
+
+    @Autowired
+    private NotificationDao notificationDao;
 
     @RequestMapping
     public ModelAndView view(ModelMap modelMap) {
@@ -53,7 +58,35 @@ public class DashBoardController extends BaseController {
         return modelAndView;
     }
 
+    @RequestMapping("/viewNotifications")
+    public ModelAndView viewNotifications(ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("dashboard/dashboardNotifications");
+
+        try {
+
+            // Retrieves notifications
+            modelMap.addAttribute("notifications", this.getNotificationsModel());
+
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        } finally {
+            // Force garbage collector to free memory.
+            System.gc();
+        }
+
+        return modelAndView;
+    }
+
     private List<BandEntity> getOwnedBans() {
         return this.bandDao.getOwnedBands(this.getAuthenticatedUser().getId(), OwnerType.OWNER);
+    }
+
+    private NotificationsModel getNotificationsModel() {
+        NotificationsModel notificationsModel = new NotificationsModel();
+
+        notificationsModel.setUnreadNotifications(this.notificationDao.getUnreadNotifications(this.getAuthenticatedUser().getId()));
+
+        return notificationsModel;
     }
 }

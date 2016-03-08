@@ -95,6 +95,10 @@
     width: 100%;
 }
 
+.musicianInfoText {
+    text-align: right;
+}
+
 .saveBandLink {
     margin-bottom: 50px;
 }

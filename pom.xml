@@ -285,6 +285,14 @@
             <version>1.0.1.Final</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.1.0.Final</version>
+            <scope>compile</scope>
+        </dependency>
+
+
 
 
 

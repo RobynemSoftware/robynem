@@ -7,7 +7,7 @@
         <label><spring:message code="band.component.search-component.musician-town"></spring:message> </label>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-6 musicianInfoText">
         <span class="musicianInfoTown">${town}</span>
     </div>
 </div>
@@ -18,7 +18,7 @@
         <label><spring:message code="band.component.search-component.instruments"></spring:message> </label>
     </div>
 
-    <div class="col-md-9">
+    <div class="col-md-9 musicianInfoText">
         <c:forEach var="instr" items="${playedInstruments}" varStatus="status">
             <span>${instr.name}</span>
 

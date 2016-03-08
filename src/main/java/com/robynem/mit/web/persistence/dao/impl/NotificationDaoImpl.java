@@ -2,16 +2,15 @@ package com.robynem.mit.web.persistence.dao.impl;
 
 import com.robynem.mit.web.persistence.dao.BaseDao;
 import com.robynem.mit.web.persistence.dao.NotificationDao;
-import com.robynem.mit.web.persistence.entity.BandEntity;
-import com.robynem.mit.web.persistence.entity.NotificationEntity;
-import com.robynem.mit.web.persistence.entity.NotificationTypeEntity;
-import com.robynem.mit.web.persistence.entity.UserEntity;
+import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.NotificationType;
+import org.hibernate.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -89,5 +88,26 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
     @Override
     public List<NotificationEntity> getUnreadNotifications(Long receiverUserId) {
         return this.hibernateTemplate.findByNamedQueryAndNamedParam("@HQL_GET_UNREAD_NOTIFICATIONS", "receiverUserId", receiverUserId);
+    }
+
+    @Override
+    public PagedEntity<NotificationEntity> getNotifications(Long receiverUserId, NotificationType notificationType, Integer pageSize, Integer currentPage) {
+        return this.hibernateTemplate.execute(session -> {
+            PagedEntity<NotificationEntity> resultEntity = this.getPagingInfo("@HQL_GET_COUNT_NOTIFICATIONS_BY_RECEIVER_AND_TYPE",
+                    new HashMap<String, Object>() {
+                        {
+                            put("typeCode", notificationType.toString());
+                            put("receiverUserId", receiverUserId);
+
+                        }
+                    }, pageSize, currentPage, session);
+
+
+
+            Query query = session.getNamedQuery("@HQL_GET_NOTIFICATIONS_BY_RECEIVER_AND_TYPE");
+
+            return resultEntity;
+
+        });
     }
 }

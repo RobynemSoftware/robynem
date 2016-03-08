@@ -328,11 +328,13 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             BandComponentEntity bandComponentEntity = bandEntity.getComponents().stream().filter(bc -> bc.getUser().getId().equals(userId)).findFirst().get();
 
             // Removes component
-            session.delete(bandComponentEntity);
-            /*bandEntity.getComponents().remove(bandComponentEntity);
+            //session.delete(bandComponentEntity);
+            bandComponentEntity.setBand(null);
+            bandComponentEntity.setUser(null);
+            bandEntity.getComponents().remove(bandComponentEntity);
 
-            session.update(bandComponentEntity);
-            session.update(bandEntity);*/
+            //session.update(bandComponentEntity);
+            session.update(bandEntity);
 
             session.flush();
 

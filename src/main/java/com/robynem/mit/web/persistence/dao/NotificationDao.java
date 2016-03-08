@@ -1,6 +1,8 @@
 package com.robynem.mit.web.persistence.dao;
 
 import com.robynem.mit.web.persistence.entity.NotificationEntity;
+import com.robynem.mit.web.persistence.entity.PagedEntity;
+import com.robynem.mit.web.util.NotificationType;
 
 import java.util.List;
 
@@ -14,5 +16,7 @@ public interface NotificationDao {
     void sendBandComponentRemoval(Long senderUserId, Long receiverUserId, Long bandId);
 
     List<NotificationEntity> getUnreadNotifications(Long receiverUserId);
+
+    PagedEntity<NotificationEntity> getNotifications(Long receiverUserId, NotificationType notificationType, Integer pageSize, Integer currentPage);
 
 }

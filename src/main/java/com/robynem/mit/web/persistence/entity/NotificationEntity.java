@@ -10,7 +10,13 @@ import java.util.Date;
 @Table(name = "mit_notification")
 @NamedQueries({
         @NamedQuery(name = "@HQL_GET_UNREAD_NOTIFICATIONS",
-                query = "from NotificationEntity n inner join fetch n.type t where n.readDate is null and n.receiverUser.id = :receiverUserId order by n.created desc ")
+                query = "from NotificationEntity n inner join fetch n.type t where n.readDate is null and n.receiverUser.id = :receiverUserId order by n.created desc "),
+        @NamedQuery(name = "@HQL_GET_NOTIFICATIONS_BY_RECEIVER_AND_TYPE", query = "from NotificationEntity n " +
+                "inner join fetch n.type t " +
+                "where t.code = :typeCode and n.receiverUser.id = :receiverUserId order by n.created desc"),
+        @NamedQuery(name = "@HQL_GET_COUNT_NOTIFICATIONS_BY_RECEIVER_AND_TYPE", query = " select count(n.id) from NotificationEntity n " +
+                "inner join n.type t " +
+                "where n.type.code = :typeCode and n.receiverUser.id = :receiverUserId")
 })
 public class NotificationEntity extends BaseEntity {
 
