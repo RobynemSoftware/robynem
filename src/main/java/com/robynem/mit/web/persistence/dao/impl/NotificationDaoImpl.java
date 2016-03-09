@@ -42,7 +42,7 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
         notificationEntity.setCreated(Calendar.getInstance().getTime());
         notificationEntity.setSenderUser(this.hibernateTemplate.get(UserEntity.class, senderUserId));
         notificationEntity.setReceiverUser(this.hibernateTemplate.get(UserEntity.class, receiverUserId));
-        notificationEntity.setData(String.valueOf(bandEntity.getId()));
+        notificationEntity.setBand(bandEntity);
         notificationEntity.setType(bandInvitationNotificationType);
 
         this.hibernateTemplate.save(notificationEntity);
@@ -74,7 +74,7 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
             notificationEntity.setCreated(Calendar.getInstance().getTime());
             notificationEntity.setSenderUser((UserEntity) session.get(UserEntity.class, senderUserId));
             notificationEntity.setReceiverUser((UserEntity) session.get(UserEntity.class, receiverUserId));
-            notificationEntity.setData(String.valueOf(bandEntity.getId()));
+            notificationEntity.setBand(bandEntity);
             notificationEntity.setType(bandComponentRemovalNotificationType);
 
             session.save(notificationEntity);

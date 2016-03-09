@@ -1,5 +1,8 @@
 package com.robynem.mit.web.persistence.entity;
 
+import com.robynem.mit.web.util.NotificationType;
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -12,11 +15,15 @@ import java.util.Date;
         @NamedQuery(name = "@HQL_GET_UNREAD_NOTIFICATIONS",
                 query = "from NotificationEntity n inner join fetch n.type t where n.readDate is null and n.receiverUser.id = :receiverUserId order by n.created desc "),
         @NamedQuery(name = "@HQL_GET_NOTIFICATIONS_BY_RECEIVER_AND_TYPE", query = "from NotificationEntity n " +
-                "inner join fetch n.type t " +
+                    "inner join fetch n.type t " +
                 "where t.code = :typeCode and n.receiverUser.id = :receiverUserId order by n.created desc"),
         @NamedQuery(name = "@HQL_GET_COUNT_NOTIFICATIONS_BY_RECEIVER_AND_TYPE", query = " select count(n.id) from NotificationEntity n " +
-                "inner join n.type t " +
-                "where n.type.code = :typeCode and n.receiverUser.id = :receiverUserId")
+                    "inner join n.type t " +
+                "where n.type.code = :typeCode and n.receiverUser.id = :receiverUserId"),
+        @NamedQuery(name = "@HQL_GET_NOTIFICATIONS_BAND_INVITATION", query = "from NotificationEntity n " +
+                    "inner join fetch n.type t " +
+                    "inner join fetch n.band nb " +
+                "where t.code = :typeCode and n.receiverUser.id = :receiverUserId order by n.created desc")
 })
 public class NotificationEntity extends BaseEntity {
 
@@ -42,14 +49,16 @@ public class NotificationEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "typeId")
-    protected NotificationTypeEntity type;
+    private NotificationTypeEntity type;
 
-    /**
-     * Stores details data. For example, in a notification of type BAND_INVITATION this column stores
-     * the id of the band (published version)
-     */
-    @Column
-    private String data;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable(name = "mit_bandNotification",
+            joinColumns = {@JoinColumn(name = "bandId", nullable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "notificationId", nullable = false)}
+    )
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    private BandEntity band;
+
 
     public UserEntity getReceiverUser() {
         return receiverUser;
@@ -99,11 +108,11 @@ public class NotificationEntity extends BaseEntity {
         this.receiverEmailAddress = receiverEmailAddress;
     }
 
-    public String getData() {
-        return data;
+    public BandEntity getBand() {
+        return band;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setBand(BandEntity band) {
+        this.band = band;
     }
 }

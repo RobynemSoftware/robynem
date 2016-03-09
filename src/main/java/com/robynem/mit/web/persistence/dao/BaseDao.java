@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by roberto on 12/12/2015.
@@ -27,11 +26,11 @@ public abstract class BaseDao {
     @Qualifier("hibernateTemplate")
     protected HibernateTemplate hibernateTemplate;
 
-    protected <T extends BaseEntity> PagedEntity<T> getPagingInfo(String hql, Map parameters, Integer pageSize, Integer currentPage, Session session) {
+    protected <T extends BaseEntity> PagedEntity<T> getPagingInfo(String namedQuery, Map parameters, Integer pageSize, Integer currentPage, Session session) {
         PagedEntity<T> pagedEntity = new PagedEntity<T>();
 
         if (pageSize != null && currentPage != null) {
-            Query countQuery = session.getNamedQuery(hql);
+            Query countQuery = session.getNamedQuery(namedQuery);
 
             this.setParameters(countQuery, parameters);
 
@@ -45,6 +44,21 @@ public abstract class BaseDao {
                 pagedEntity.setCurrentPage(1);
             } else {
                 pagedEntity.setCurrentPage(currentPage);
+            }
+
+            pagedEntity.setTotalPages((int)Math.ceil((double)pagedEntity.getTotalRows() / pageSize));
+
+            if (pagedEntity.getCurrentPage() > 1) {
+                pagedEntity.setPreviousPageRows(pageSize);
+            }
+
+            if (pagedEntity.getCurrentPage() < pagedEntity.getTotalPages()) {
+                if (pagedEntity.getCurrentPage() < pagedEntity.getTotalPages() - 1) {
+                    pagedEntity.setNextPageRows(pageSize);
+                }  else {
+                    pagedEntity.setNextPageRows(pagedEntity.getTotalRows() - (pageSize * pagedEntity.getCurrentPage()));
+                }
+
             }
         }
 

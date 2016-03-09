@@ -7,21 +7,24 @@ import java.util.List;
  */
 public class PagedEntity<T extends BaseEntity> {
 
-    private long totalRows;
+    protected long totalRows;
 
-    private List<T> results;
-
-    /**
-     * Gets or sets numer of rows before current page
-     */
-    private long rowsBefore;
+    protected List<T> results;
 
     /**
-     * Gets or sets numer of rows after current page
+     * Gets or sets numer of rows in the previous page
      */
-    private long rowsAfter;
+    protected long previousPageRows;
 
-    private int currentPage;
+    /**
+     * Gets or sets numer of rows in the next page
+     */
+    protected long nextPageRows;
+
+    protected int currentPage;
+
+    protected int totalPages;
+
 
     public long getTotalRows() {
         return totalRows;
@@ -39,20 +42,20 @@ public class PagedEntity<T extends BaseEntity> {
         this.results = results;
     }
 
-    public long getRowsBefore() {
-        return rowsBefore;
+    public long getPreviousPageRows() {
+        return previousPageRows;
     }
 
-    public void setRowsBefore(long rowsBefore) {
-        this.rowsBefore = rowsBefore;
+    public void setPreviousPageRows(long previousPageRows) {
+        this.previousPageRows = previousPageRows;
     }
 
-    public long getRowsAfter() {
-        return rowsAfter;
+    public long getNextPageRows() {
+        return nextPageRows;
     }
 
-    public void setRowsAfter(long rowsAfter) {
-        this.rowsAfter = rowsAfter;
+    public void setNextPageRows(long nextPageRows) {
+        this.nextPageRows = nextPageRows;
     }
 
     public int getCurrentPage() {
@@ -61,5 +64,13 @@ public class PagedEntity<T extends BaseEntity> {
 
     public void setCurrentPage(int currentPage) {
         this.currentPage = currentPage;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
     }
 }
