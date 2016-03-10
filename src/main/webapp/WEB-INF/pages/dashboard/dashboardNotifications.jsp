@@ -18,36 +18,59 @@
     <%=EntityStatus.PUBLISHED%>
 </c:set>
 
-<!-- Loops over notifications -->
+ <%--Loops over notifications --%>
 <c:forEach var="notification" items="${notificationModel.notifications}">
 
     <c:set var="isUnread" value="${empty notification.readDate ? true : false}"></c:set>
     <c:set var="rowClass" value="${isUnread eq true ? 'unreadNotification' : 'readNotification'}"></c:set>
 
-    <div class="row ${rowClass}">
+    <div class="row notificationRow ${rowClass}">
 
-        <!-- Type logo -->
-        <div class="col-md-3">
+        <%--<!-- Type logo -->--%>
+        <div class="col-md-2">
+
+            <c:choose>
+                <%--<!-- BAND INVITATION -->--%>
+                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
+                    <img src="${contextPath}/resources/images/notification_band_invitation.jpg" class="img-responsive" />
+                </c:when>
+            </c:choose>
 
         </div>
 
-        <!-- Description -->
-        <div class="col-md-4">
+        <%--<!-- Description -->--%>
+        <div class="col-md-8 notificationDescription">
             <c:choose>
-                <!-- BAND INVITATION -->
+                <%--<!-- BAND INVITATION -->--%>
                 <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
+
+                    <%-- Sender name --%>
+                    <c:set var="senderName" value="${notification.senderUser.firstName} ${notification.senderUser.lastName}"></c:set>
+
+                    <%-- Band name --%>
+                    <c:choose>
+                        <c:when test="${notification.band.status.code eq ENTITY_STATUS_NOT_PUBLISHED}">
+                            <%-- Takes stage at last position (actually we have just one) --%>
+                            <c:set var="bandName" value="${notification.band.stageVersions[fn:length(notification.band.stageVersions) - 1].name}"></c:set>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="bandName" value="${notification.band.name}"></c:set>
+                        </c:otherwise>
+                    </c:choose>
+
+
                     <spring:message code="dashbord.notifications.band-invitation.description"
-                                    arguments="${notification.senderUser.firstName + ' ' + notification.senderUser.lastName},${not empty notification.band ? notification.band.name : ''}"
-                                    argumentSeparator=","
+                                    arguments="${senderName};${bandName}"
+                                    argumentSeparator=";"
                             ></spring:message>
                 </c:when>
             </c:choose>
         </div>
 
-        <!-- Subject logo -->
-        <div class="col-md-3">
+        <%--<!-- Subject logo -->--%>
+        <div class="col-md-2">
             <c:choose>
-                <!-- BAND INVITATION -->
+                <%--<!-- BAND INVITATION -->--%>
                 <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
                     <%-- If it's not published, gets stage loge, otherwise gets published one --%>
                     <c:choose>
@@ -62,11 +85,14 @@
                 </c:when>
             </c:choose>
 
-            <!-- Evaluate imageId -->
+            <%--<!-- Evaluate imageId -->--%>
             <c:choose>
                 <c:when test="${not empty imageId}">
                     <img src="${contextPath}/media/getImage?imageId=${imageId}&size=<%=ImageSize.SMALL.toString()%>" class="img-responsive" />
                 </c:when>
+                <c:otherwise>
+                    <img src="${contextPath}/resources/images/profile_avatar_50x50.png" class="img-responsive" />
+                </c:otherwise>
             </c:choose>
         </div>
 

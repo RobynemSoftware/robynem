@@ -92,7 +92,7 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
     }
 
     @Override
-    public PagedEntity<NotificationEntity> getNotifications(final Long receiverUserId, Integer pageSize, Integer currentPage) {
+    public PagedEntity<NotificationEntity> getNotifications(Long receiverUserId, Integer pageSize, Integer currentPage) {
         return this.hibernateTemplate.execute(session -> {
 
             Map<String, Object> parameters = new HashMap<String, Object>() {
@@ -112,7 +112,7 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
 
             this.setPagination(query, resultEntity);
 
-            resultEntity.setResults(query.list());
+            resultEntity.setResults((List<NotificationEntity>)query.list());
 
             return resultEntity;
 

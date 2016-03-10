@@ -22,14 +22,15 @@ import java.util.Date;
         @NamedQuery(name = "@HQL_GET_NOTIFICATIONS", query = "from NotificationEntity n " +
                     "inner join fetch n.type t " +
                     "inner join fetch n.senderUser su " +
+                    "inner join fetch n.receiverUser ru " +
                 // published
                     "left join fetch n.band nb " +
                     "left join fetch nb.bandLogo bl " +
                     "left join fetch nb.status nbs " +
                 // stage
-                    "left join fetch nb.publishedVersion nb_stage " +
+                    "left join fetch nb.stageVersions nb_stage " +
                     "left join fetch nb_stage.bandLogo bl_stage " +
-                "where n.receiverUser.id = :receiverUserId " +
+                "where ru.id = :receiverUserId " +
                 "order by n.created desc")
 })
 public class NotificationEntity extends BaseEntity {

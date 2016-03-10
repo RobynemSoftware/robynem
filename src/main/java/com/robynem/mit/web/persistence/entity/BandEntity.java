@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -75,7 +76,7 @@ public class BandEntity extends BaseEntity {
     protected BandEntity publishedVersion;
 
     @OneToMany(mappedBy = "publishedVersion", fetch = FetchType.LAZY)
-    protected Set<BandEntity> stageVersions;
+    protected List<BandEntity> stageVersions;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "mit_bandMusicGenre",
@@ -195,11 +196,11 @@ public class BandEntity extends BaseEntity {
         this.publishedVersion = publishedVersion;
     }
 
-    public Set<BandEntity> getStageVersions() {
+    public List<BandEntity> getStageVersions() {
         return stageVersions;
     }
 
-    public void setStageVersions(Set<BandEntity> stageVersions) {
+    public void setStageVersions(List<BandEntity> stageVersions) {
         this.stageVersions = stageVersions;
     }
 

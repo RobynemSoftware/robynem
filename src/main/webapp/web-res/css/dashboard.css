@@ -38,12 +38,35 @@
 }
 
 /*NOTIFICATIONS*/
+.notificationRow {
+    margin-top: 30px;
+}
+
 .unreadNotification {
-    background-color: #bdbd95;
+    background-color: #dfdfd7;
 }
 
 .readNotification {
-    background-color: #d7d7bf;
+    background-color: #f1f1ed;
+}
+
+.notificationDescription {
+    font-size: 11px;
+    color: black;
+    font-weight: bold;
+}
+
+.senderName {
+    text-decoration: underline;
+}
+
+/*Following two classes are used into resource bundle [dashbord.notifications.band-invitation.description]*/
+.senderName {
+    text-decoration: underline;
+}
+
+.notificationSubject {
+    text-decoration: underline;
 }
 
 

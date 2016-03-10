@@ -89,6 +89,6 @@ public class PagedEntity<T extends BaseEntity> {
      * @return
      */
     public int getCurrentFirstResult() {
-        return this.pageSize * this.currentPage;
+        return this.pageSize * (this.currentPage - 1);
     }
 }

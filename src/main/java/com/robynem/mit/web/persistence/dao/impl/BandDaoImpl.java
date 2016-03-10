@@ -109,7 +109,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 session.saveOrUpdate(stageBandOwnershipEntity);
 
                 // Update stege version reference on parent one
-                Set<BandEntity> stageVersions = new HashSet<BandEntity>();
+                List<BandEntity> stageVersions = new ArrayList<BandEntity>();
                 stageVersions.add(stageVersion);
 
                 parentBandEntity.setStageVersions(stageVersions);

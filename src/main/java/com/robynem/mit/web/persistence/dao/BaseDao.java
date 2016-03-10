@@ -71,7 +71,7 @@ public abstract class BaseDao {
     protected Query setParameters(Query query, Map parameters) {
         if (parameters != null) {
             parameters.keySet().stream().forEach(k -> {
-                query.setParameter((String)k, parameters.get(k));
+                query.setParameter((String)k,  parameters.get(k));
             });
         }
 
