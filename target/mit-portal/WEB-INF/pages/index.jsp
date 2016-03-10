@@ -15,8 +15,8 @@
 <head>
     <jsp:include page="common/head-include.jsp"   ></jsp:include>
 
-    <link rel="stylesheet" href="${contextPath}/resources/css/index.css">
-    <script type="text/javascript" src="${contextPath}/resources/js/smartsearch.js"></script>
+    <link rel="stylesheet" href="${contextPath}/resources/css/index.css?v=${softwareVersion}">
+    <script type="text/javascript" src="${contextPath}/resources/js/smartsearch.js?v=${softwareVersion}"></script>
     <title>${siteTitle}</title>
 </head>
 <body>

@@ -93,7 +93,7 @@
 
         $("#musicianInfoDialog").dialog({
             modal: true,
-            height: 'auto',
+            height: '80vh',
             width: '50vw',
             autoOpen: false,
             position: {my: "center top", at: "center top"},

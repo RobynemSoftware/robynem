@@ -9,7 +9,7 @@
     <head>
         <jsp:include page="../common/head-include.jsp"></jsp:include>
 
-        <link rel="stylesheet" href="${contextPath}/resources/css/editProfile.css">
+        <link rel="stylesheet" href="${contextPath}/resources/css/editProfile.css?v=${softwareVersion}">
         <title>${siteTitle}</title>
     </head>
 

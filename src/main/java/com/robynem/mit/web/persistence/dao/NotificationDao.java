@@ -17,6 +17,6 @@ public interface NotificationDao {
 
     List<NotificationEntity> getUnreadNotifications(Long receiverUserId);
 
-    PagedEntity<NotificationEntity> getNotifications(Long receiverUserId, NotificationType notificationType, Integer pageSize, Integer currentPage);
+    PagedEntity<NotificationEntity> getNotifications(Long receiverUserId, Integer pageSize, Integer currentPage);
 
 }

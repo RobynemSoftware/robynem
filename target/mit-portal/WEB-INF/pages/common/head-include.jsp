@@ -8,6 +8,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<%-- Properties --%>
+<spring:eval var="googleApyKey" expression="@commonProperties['google.apy-key']" scope="request"/>
+<spring:eval var="facebookAppId" expression="@commonProperties['facebook.app-id']"/>
+<spring:eval var="softwareVersion" expression="@commonProperties['software.version']" scope="session"/>
+
 <!-- JSTL VARIABLES -->
 <c:set var="contextPath" value="<%=request.getContextPath()%>" scope="application"></c:set>
 
@@ -42,38 +47,37 @@ Creates the localized date format
 
 
 <!-- JQUERY -->
-<link rel="stylesheet" href="${contextPath}/resources/css/jquery/jquery-ui.css/" />
-<link rel="stylesheet" href="${contextPath}/resources/css/jquery/jquery-ui.structure.css" />
-<link rel="stylesheet" href="${contextPath}/resources/css/jquery/jquery-ui.theme.css" />
+<link rel="stylesheet" href="${contextPath}/resources/css/jquery/jquery-ui.css?v=${softwareVersion}" />
+<link rel="stylesheet" href="${contextPath}/resources/css/jquery/jquery-ui.structure.css?v=${softwareVersion}" />
+<link rel="stylesheet" href="${contextPath}/resources/css/jquery/jquery-ui.theme.css?v=${softwareVersion}" />
 
 <!-- BOOTSTRAP -->
-<link rel="stylesheet" href="${contextPath}/resources/bootstrap/css/bootstrap.min.css" />
-<link rel="stylesheet" href="${contextPath}/resources/bootstrap/css/bootstrap-theme.min.css" />
+<link rel="stylesheet" href="${contextPath}/resources/bootstrap/css/bootstrap.min.css?v=${softwareVersion}" />
+<link rel="stylesheet" href="${contextPath}/resources/bootstrap/css/bootstrap-theme.min.css?v=${softwareVersion}" />
 
 <!-- SITE -->
-<link rel="stylesheet" href="${contextPath}/resources/css/main.css" />
+<link rel="stylesheet" href="${contextPath}/resources/css/main.css?v=${softwareVersion}" />
 
 <!-- JQUERY -->
-<script src="${contextPath}/resources/js/jquery/jquery.js"></script>
-<script src="${contextPath}/resources/js/jquery/jquery.i18n.properties-min-1.0.9.js"></script>
-<script src="${contextPath}/resources/js/jquery/jquery.form.min.js"></script>
+<script src="${contextPath}/resources/js/jquery/jquery.js?v=${softwareVersion}"></script>
+<script src="${contextPath}/resources/js/jquery/jquery.i18n.properties-min-1.0.9.js?v=${softwareVersion}"></script>
+<script src="${contextPath}/resources/js/jquery/jquery.form.min.js?v=${softwareVersion}"></script>
 
 <!-- BOOTSTRAP -->
-<script src="${contextPath}/resources/bootstrap/js/bootstrap.min.js"></script>
+<script src="${contextPath}/resources/bootstrap/js/bootstrap.min.js?v=${softwareVersion}"></script>
 
 <!-- JQUERY UI -->
-<script src="${contextPath}/resources/js/jquery/jquery-ui.js"></script>
-<script src="${contextPath}/resources/js/jquery/datepicker-it.js"></script>
+<script src="${contextPath}/resources/js/jquery/jquery-ui.js?v=${softwareVersion}"></script>
+<script src="${contextPath}/resources/js/jquery/datepicker-it.js?v=${softwareVersion}"></script>
 
 <!-- BLOCK UI -->
-<script src="${contextPath}/resources/js/blockui.js"></script>
+<script src="${contextPath}/resources/js/blockui.js?v=${softwareVersion}"></script>
 
 
 
 
 
-<spring:eval var="googleApyKey" expression="@commonProperties['google.apy-key']" scope="request"/>
-<spring:eval var="facebookAppId" expression="@commonProperties['facebook.app-id']"/>
+
 
 
 
@@ -94,8 +98,8 @@ Creates the localized date format
     });
 
 </script>
-<script src="${contextPath}/resources/js/main.js"></script>
-<script src="${contextPath}/resources/js/TagViewer.js"></script>
+<script src="${contextPath}/resources/js/main.js?v=${softwareVersion}"></script>
+<script src="${contextPath}/resources/js/TagViewer.js?v=${softwareVersion}"></script>
 
 <!-- FAVICON -->
 <link rel="shortcut icon" href="${contextPath}/favicon.ico" />

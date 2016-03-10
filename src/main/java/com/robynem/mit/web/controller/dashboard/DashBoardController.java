@@ -5,13 +5,17 @@ import com.robynem.mit.web.model.notification.NotificationsModel;
 import com.robynem.mit.web.persistence.dao.BandDao;
 import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.entity.BandEntity;
+import com.robynem.mit.web.persistence.entity.NotificationEntity;
+import com.robynem.mit.web.persistence.entity.PagedEntity;
 import com.robynem.mit.web.util.OwnerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -24,6 +28,9 @@ import java.util.List;
 public class DashBoardController extends BaseController {
 
     static final Logger LOG = LoggerFactory.getLogger(DashBoardController.class);
+
+    @Value("${notifications.page-size}")
+    private int notificationsPageSize;
 
     @Autowired
     private BandDao bandDao;
@@ -59,13 +66,13 @@ public class DashBoardController extends BaseController {
     }
 
     @RequestMapping("/viewNotifications")
-    public ModelAndView viewNotifications(ModelMap modelMap) {
+    public ModelAndView viewNotifications(@RequestParam(required = false, defaultValue = "1") int currentPage, ModelMap modelMap) {
         ModelAndView modelAndView = new ModelAndView("dashboard/dashboardNotifications");
 
         try {
 
             // Retrieves notifications
-            modelMap.addAttribute("notifications", this.getNotificationsModel());
+            modelMap.addAttribute("notificationModel", this.getNotificationsModel(currentPage));
 
         } catch (Throwable e) {
             modelMap.addAttribute("success", false);
@@ -82,10 +89,16 @@ public class DashBoardController extends BaseController {
         return this.bandDao.getOwnedBands(this.getAuthenticatedUser().getId(), OwnerType.OWNER);
     }
 
-    private NotificationsModel getNotificationsModel() {
+    private NotificationsModel getNotificationsModel(Integer currentPage) {
         NotificationsModel notificationsModel = new NotificationsModel();
 
-        notificationsModel.setUnreadNotifications(this.notificationDao.getUnreadNotifications(this.getAuthenticatedUser().getId()));
+        PagedEntity<NotificationEntity> resultEntity = this.notificationDao.getNotifications(this.getAuthenticatedUser().getId(), this.notificationsPageSize, currentPage);
+
+        notificationsModel.setNotifications(resultEntity.getResults());
+        notificationsModel.setPreviousRows(resultEntity.getPreviousPageRows());
+        notificationsModel.setNextRows(resultEntity.getNextPageRows());
+        notificationsModel.setCurrentPage(resultEntity.getCurrentPage());
+        notificationsModel.setUnreadNotificationsCount(resultEntity.getResults().stream().filter(n -> n.getReadDate() == null).count());
 
         return notificationsModel;
     }

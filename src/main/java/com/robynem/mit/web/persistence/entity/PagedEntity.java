@@ -14,16 +14,18 @@ public class PagedEntity<T extends BaseEntity> {
     /**
      * Gets or sets numer of rows in the previous page
      */
-    protected long previousPageRows;
+    protected int previousPageRows;
 
     /**
      * Gets or sets numer of rows in the next page
      */
-    protected long nextPageRows;
+    protected int nextPageRows;
 
     protected int currentPage;
 
     protected int totalPages;
+
+    protected int pageSize;
 
 
     public long getTotalRows() {
@@ -42,19 +44,19 @@ public class PagedEntity<T extends BaseEntity> {
         this.results = results;
     }
 
-    public long getPreviousPageRows() {
+    public int getPreviousPageRows() {
         return previousPageRows;
     }
 
-    public void setPreviousPageRows(long previousPageRows) {
+    public void setPreviousPageRows(int previousPageRows) {
         this.previousPageRows = previousPageRows;
     }
 
-    public long getNextPageRows() {
+    public int getNextPageRows() {
         return nextPageRows;
     }
 
-    public void setNextPageRows(long nextPageRows) {
+    public void setNextPageRows(int nextPageRows) {
         this.nextPageRows = nextPageRows;
     }
 
@@ -72,5 +74,21 @@ public class PagedEntity<T extends BaseEntity> {
 
     public void setTotalPages(int totalPages) {
         this.totalPages = totalPages;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    /**
+     * Returns first result for a paged query.
+     * @return
+     */
+    public int getCurrentFirstResult() {
+        return this.pageSize * this.currentPage;
     }
 }

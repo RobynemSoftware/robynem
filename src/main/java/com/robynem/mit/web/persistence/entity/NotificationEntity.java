@@ -17,13 +17,20 @@ import java.util.Date;
         @NamedQuery(name = "@HQL_GET_NOTIFICATIONS_BY_RECEIVER_AND_TYPE", query = "from NotificationEntity n " +
                     "inner join fetch n.type t " +
                 "where t.code = :typeCode and n.receiverUser.id = :receiverUserId order by n.created desc"),
-        @NamedQuery(name = "@HQL_GET_COUNT_NOTIFICATIONS_BY_RECEIVER_AND_TYPE", query = " select count(n.id) from NotificationEntity n " +
-                    "inner join n.type t " +
-                "where n.type.code = :typeCode and n.receiverUser.id = :receiverUserId"),
-        @NamedQuery(name = "@HQL_GET_NOTIFICATIONS_BAND_INVITATION", query = "from NotificationEntity n " +
+        @NamedQuery(name = "@HQL_GET_COUNT_NOTIFICATIONS", query = " select count(n.id) from NotificationEntity n " +
+                "where n.receiverUser.id = :receiverUserId"),
+        @NamedQuery(name = "@HQL_GET_NOTIFICATIONS", query = "from NotificationEntity n " +
                     "inner join fetch n.type t " +
-                    "inner join fetch n.band nb " +
-                "where t.code = :typeCode and n.receiverUser.id = :receiverUserId order by n.created desc")
+                    "inner join fetch n.senderUser su " +
+                // published
+                    "left join fetch n.band nb " +
+                    "left join fetch nb.bandLogo bl " +
+                    "left join fetch nb.status nbs " +
+                // stage
+                    "left join fetch nb.publishedVersion nb_stage " +
+                    "left join fetch nb_stage.bandLogo bl_stage " +
+                "where n.receiverUser.id = :receiverUserId " +
+                "order by n.created desc")
 })
 public class NotificationEntity extends BaseEntity {
 
@@ -53,8 +60,8 @@ public class NotificationEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(name = "mit_bandNotification",
-            joinColumns = {@JoinColumn(name = "bandId", nullable = false) },
-            inverseJoinColumns = { @JoinColumn(name = "notificationId", nullable = false)}
+            joinColumns = {@JoinColumn(name = "notificationId", nullable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "bandId", nullable = false)}
     )
     @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     private BandEntity band;

@@ -30,6 +30,9 @@ public abstract class BaseDao {
         PagedEntity<T> pagedEntity = new PagedEntity<T>();
 
         if (pageSize != null && currentPage != null) {
+
+            pagedEntity.setPageSize(pageSize);
+
             Query countQuery = session.getNamedQuery(namedQuery);
 
             this.setParameters(countQuery, parameters);
@@ -46,7 +49,7 @@ public abstract class BaseDao {
                 pagedEntity.setCurrentPage(currentPage);
             }
 
-            pagedEntity.setTotalPages((int)Math.ceil((double)pagedEntity.getTotalRows() / pageSize));
+            pagedEntity.setTotalPages((int) Math.ceil((double) pagedEntity.getTotalRows() / pageSize));
 
             if (pagedEntity.getCurrentPage() > 1) {
                 pagedEntity.setPreviousPageRows(pageSize);
@@ -56,7 +59,7 @@ public abstract class BaseDao {
                 if (pagedEntity.getCurrentPage() < pagedEntity.getTotalPages() - 1) {
                     pagedEntity.setNextPageRows(pageSize);
                 }  else {
-                    pagedEntity.setNextPageRows(pagedEntity.getTotalRows() - (pageSize * pagedEntity.getCurrentPage()));
+                    pagedEntity.setNextPageRows((int)pagedEntity.getTotalRows() - (pageSize * pagedEntity.getCurrentPage()));
                 }
 
             }
@@ -70,6 +73,18 @@ public abstract class BaseDao {
             parameters.keySet().stream().forEach(k -> {
                 query.setParameter((String)k, parameters.get(k));
             });
+        }
+
+        return query;
+    }
+
+    protected Query setPagination(Query query, PagedEntity pagedEntity) {
+
+        if (pagedEntity != null) {
+            if (pagedEntity.getPageSize() > 0) {
+                query.setMaxResults(pagedEntity.getPageSize());
+                query.setFirstResult(pagedEntity.getCurrentFirstResult());
+            }
         }
 
         return query;

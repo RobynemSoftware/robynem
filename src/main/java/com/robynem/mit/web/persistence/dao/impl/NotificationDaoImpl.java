@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by robyn_000 on 06/03/2016.
@@ -91,20 +92,27 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
     }
 
     @Override
-    public PagedEntity<NotificationEntity> getNotifications(Long receiverUserId, NotificationType notificationType, Integer pageSize, Integer currentPage) {
+    public PagedEntity<NotificationEntity> getNotifications(final Long receiverUserId, Integer pageSize, Integer currentPage) {
         return this.hibernateTemplate.execute(session -> {
-            PagedEntity<NotificationEntity> resultEntity = this.getPagingInfo("@HQL_GET_COUNT_NOTIFICATIONS_BY_RECEIVER_AND_TYPE",
-                    new HashMap<String, Object>() {
-                        {
-                            put("typeCode", notificationType.toString());
-                            put("receiverUserId", receiverUserId);
 
-                        }
-                    }, pageSize, currentPage, session);
+            Map<String, Object> parameters = new HashMap<String, Object>() {
+                {
+                    put("receiverUserId", receiverUserId);
+                }
+            };
+
+            PagedEntity<NotificationEntity> resultEntity = this.getPagingInfo("@HQL_GET_COUNT_NOTIFICATIONS",
+                    parameters, pageSize, currentPage, session);
 
 
 
-            Query query = session.getNamedQuery("@HQL_GET_NOTIFICATIONS_BY_RECEIVER_AND_TYPE");
+            Query query = session.getNamedQuery("@HQL_GET_NOTIFICATIONS");
+            this.setParameters(query, parameters);
+            //query.setParameter("receiverUserId", new Long(receiverUserId.longValue()));
+
+            this.setPagination(query, resultEntity);
+
+            resultEntity.setResults(query.list());
 
             return resultEntity;
 

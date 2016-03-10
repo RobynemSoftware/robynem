@@ -1,71 +1,75 @@
 <%@ page import="com.robynem.mit.web.util.Constants" %>
 <%@ page import="com.robynem.mit.web.util.NotificationType" %>
+<%@ page import="com.robynem.mit.web.util.EntityStatus" %>
+<%@ page import="com.robynem.mit.web.util.ImageSize" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <jsp:include page="../common/messagesDisplayerAsync.jsp"></jsp:include>
 
-<div class="row">
+<c:set var="BAND_INVITATION_TYPE">
+    <%=NotificationType.BAND_INVITATION%>
+</c:set>
+<c:set var="ENTITY_STATUS_NOT_PUBLISHED">
+    <%=EntityStatus.NOT_PUBLISHED%>
+</c:set>
+<c:set var="ENTITY_STATUS_PUBLISHED">
+    <%=EntityStatus.PUBLISHED%>
+</c:set>
 
-    <div class="col-md-12">
+<!-- Loops over notifications -->
+<c:forEach var="notification" items="${notificationModel.notifications}">
 
-        <div class="accordion" id="dashboardNotificationAccordion">
+    <c:set var="isUnread" value="${empty notification.readDate ? true : false}"></c:set>
+    <c:set var="rowClass" value="${isUnread eq true ? 'unreadNotification' : 'readNotification'}"></c:set>
 
-            <!-- UNREAD -->
-            <div class="accordion-group">
+    <div class="row ${rowClass}">
 
-                <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#dashboardNotificationAccordion" href="#collapseUnreadNotifications">
-                        <span><spring:message code="dashbord.notifications.unread.title" arguments="${fn:length(notifications.unreadNotifications)}"></spring:message></span>
-                    </a>
-                </div>
+        <!-- Type logo -->
+        <div class="col-md-3">
 
-                <div id="collapseUnreadNotifications" class="accordion-body collapse in">
-                    <div id="notificationsContainer" class="accordion-inner">
-                        <c:set var="BAND_INVITATION_TYPE">
-                            <%=NotificationType.BAND_INVITATION.toString()%>
-                        </c:set>
+        </div>
 
-                        <!-- Loops over unread notifications -->
-                        <c:forEach var="notification" items="${notifications.unreadNotifications}">
+        <!-- Description -->
+        <div class="col-md-4">
+            <c:choose>
+                <!-- BAND INVITATION -->
+                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
+                    <spring:message code="dashbord.notifications.band-invitation.description"
+                                    arguments="${notification.senderUser.firstName + ' ' + notification.senderUser.lastName},${not empty notification.band ? notification.band.name : ''}"
+                                    argumentSeparator=","
+                            ></spring:message>
+                </c:when>
+            </c:choose>
+        </div>
 
-                            <div class="row">
+        <!-- Subject logo -->
+        <div class="col-md-3">
+            <c:choose>
+                <!-- BAND INVITATION -->
+                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
+                    <%-- If it's not published, gets stage loge, otherwise gets published one --%>
+                    <c:choose>
+                        <c:when test="${notification.band.status.code eq ENTITY_STATUS_NOT_PUBLISHED}">
+                            <%-- Takes stage at last position (actually we have just one) --%>
+                            <c:set var="imageId" value="${notification.band.stageVersions[fn:length(notification.band.stageVersions) - 1].bandLogo.id}"></c:set>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="imageId" value="${notification.band.bandLogo.id}"></c:set>
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
+            </c:choose>
 
-                                <c:choose>
-
-                                    <!-- BAND INVITATION -->
-                                    <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
-
-                                        <!-- Type logo -->
-                                        <div class="col-md-3">
-
-                                        </div>
-
-                                    </c:when>
-
-                                </c:choose>
-
-                            </div>
-
-
-
-
-
-
-
-
-                        </c:forEach>
-
-
-                    </div>
-
-                </div>
-            </div>
-
-
-
+            <!-- Evaluate imageId -->
+            <c:choose>
+                <c:when test="${not empty imageId}">
+                    <img src="${contextPath}/media/getImage?imageId=${imageId}&size=<%=ImageSize.SMALL.toString()%>" class="img-responsive" />
+                </c:when>
+            </c:choose>
         </div>
 
     </div>
 
-</div>
+</c:forEach>

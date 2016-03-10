@@ -37,5 +37,14 @@
     margin-left: 50px;
 }
 
+/*NOTIFICATIONS*/
+.unreadNotification {
+    background-color: #bdbd95;
+}
+
+.readNotification {
+    background-color: #d7d7bf;
+}
+
 
 
