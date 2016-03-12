@@ -92,17 +92,67 @@
         </c:when>
         <c:otherwise>
             <div class="col-md-12">
-                <span style="background-color: white;">
-                    <spring:message code="login.welcome"></spring:message>
-                    &nbsp;
-                    <span id="portalUserFirstName">
-                        ${portalUser.firstName}
-                    </span>
+                <div class="row">
+                    <span style="background-color: white;">
+                        <spring:message code="login.welcome"></spring:message>
+                        &nbsp;
+                        <span id="portalUserFirstName">
+                            ${portalUser.firstName}
+                        </span>
 
-                </span>
-                &nbsp;
-                (<a title="Sign Out" href="${logoutURL}"><spring:message code="login.logout"></spring:message></a>)
+                    </span>
+                    &nbsp;
+                    (<a title="Sign Out" href="${logoutURL}"><spring:message code="login.logout"></spring:message></a>)
+                </div>
+
+
+                <div class="row">
+
+                    <%-- Notification icon --%>
+                    <div class="col-md-12">
+                        <div id="noti_Container" title="<spring:message code="login.go-to-notifications"></spring:message>">
+                            <img src="${contextPath}/resources/images/notification_icon.png" alt="notifications" class="img-responsive" />
+                            <div class="noti_bubble"></div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
+
+            <script type="text/javascript">
+                var NOTIFICATION_ICON_INTERVAL = 60000;
+
+                $(function () {
+                    // Call notifications icon update on page load
+                    updateNotificationsIcon();
+
+                    // sets notification icon update timeout
+                    setInterval(function() {updateNotificationsIcon();}, NOTIFICATION_ICON_INTERVAL);
+
+                    // sets notification icon link
+                    $("#noti_Container").click(function () {
+                        window.location.href = "${contextPath}/private/dashboard/";
+                    })
+                })
+
+                function updateNotificationsIcon() {
+                    $.ajax({
+                        url : "${contextPath}/private/dashboard/getUnreadNotificationsCount",
+                        dataType : "json",
+                        async : true,
+                        cache : false,
+                        global: false,     // this makes sure ajaxStart is not triggered
+                        success : function (data) {
+                            //console.log("data.count: " + data.count);
+                            if (data.count != null) {
+                                $(".noti_bubble").html(data.count);
+                            } else {
+                                $(".noti_bubble").html("");
+                            }
+                        }
+                    });
+                }
+            </script>
 
         </c:otherwise>
     </c:choose>

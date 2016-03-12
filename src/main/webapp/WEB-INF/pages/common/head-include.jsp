@@ -31,12 +31,17 @@ Creates the localized date format
 --%>
 
 <%
-    String dp = PortalHelper.getDateFormat(request.getLocale(), DateFormat.SHORT);
+    String shortDateFormat = PortalHelper.getDateFormat(request.getLocale(), DateFormat.SHORT);
+    //String defaultDateFormat = PortalHelper.getDateFormat(request.getLocale(), DateFormat.FULL);
 %>
 
 <c:set var="dateFormat" scope="request">
-    <%=dp.toLowerCase()%>
+    <%=shortDateFormat.toLowerCase()%>
 </c:set>
+
+<%--<c:set var="defaultDateFormat" scope="session">
+    <%=defaultDateFormat%>
+</c:set>--%>
 
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">

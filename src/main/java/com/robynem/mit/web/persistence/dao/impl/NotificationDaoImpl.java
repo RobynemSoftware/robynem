@@ -6,6 +6,7 @@ import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.NotificationType;
 import org.hibernate.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,10 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
     public void sendBandInvitation(Long senderUserId, Long receiverUserId, Long bandId) {
+
+        if (senderUserId.equals(receiverUserId)) {
+            return;
+        }
 
         NotificationEntity notificationEntity = null;
 
@@ -92,6 +97,19 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
     }
 
     @Override
+    public long getUnreadNotificationsCount(Long receiverUserId) {
+        long count = 0;
+
+        List<Object[]> result = this.hibernateTemplate.findByNamedQueryAndNamedParam("@HQL_GET_COUNT_UNREAD_NOTIFICATIONS", "receiverUserId", receiverUserId);
+
+        if (result != null && result.size() > 0) {
+            count = Long.valueOf(String.valueOf(result.get(0)));
+        }
+
+        return count;
+    }
+
+    @Override
     public PagedEntity<NotificationEntity> getNotifications(Long receiverUserId, Integer pageSize, Integer currentPage) {
         return this.hibernateTemplate.execute(session -> {
 
@@ -116,6 +134,22 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
 
             return resultEntity;
 
+        });
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
+    public void setNotificationRead(Long notificationId, Long receiverUserId) {
+        this.hibernateTemplate.execute(session -> {
+
+            Query query = session.getNamedQuery("@HQL_SET_NOTIFICATION_READ");
+            query.setParameter("readNate", Calendar.getInstance().getTime());
+            query.setParameter("id", notificationId);
+            query.setParameter("receiverUserId", receiverUserId);
+
+            query.executeUpdate();
+
+            return null;
         });
     }
 }

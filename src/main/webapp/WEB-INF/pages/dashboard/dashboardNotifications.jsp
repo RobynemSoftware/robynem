@@ -5,6 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <jsp:include page="../common/messagesDisplayerAsync.jsp"></jsp:include>
 
@@ -24,7 +25,7 @@
     <c:set var="isUnread" value="${empty notification.readDate ? true : false}"></c:set>
     <c:set var="rowClass" value="${isUnread eq true ? 'unreadNotification' : 'readNotification'}"></c:set>
 
-    <div class="row notificationRow ${rowClass}">
+    <div class="row notificationRow ${rowClass} row_id_${notification.id}">
 
         <%--<!-- Type logo -->--%>
         <div class="col-md-2">
@@ -40,31 +41,44 @@
 
         <%--<!-- Description -->--%>
         <div class="col-md-8 notificationDescription">
-            <c:choose>
-                <%--<!-- BAND INVITATION -->--%>
-                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
 
-                    <%-- Sender name --%>
-                    <c:set var="senderName" value="${notification.senderUser.firstName} ${notification.senderUser.lastName}"></c:set>
+            <div class="row notificationContent" id="${notification.id}">
+                <c:choose>
+                    <%--<!-- BAND INVITATION -->--%>
+                    <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
 
-                    <%-- Band name --%>
-                    <c:choose>
-                        <c:when test="${notification.band.status.code eq ENTITY_STATUS_NOT_PUBLISHED}">
-                            <%-- Takes stage at last position (actually we have just one) --%>
-                            <c:set var="bandName" value="${notification.band.stageVersions[fn:length(notification.band.stageVersions) - 1].name}"></c:set>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="bandName" value="${notification.band.name}"></c:set>
-                        </c:otherwise>
-                    </c:choose>
+                        <%-- Sender name --%>
+                        <c:set var="senderName" value="${notification.senderUser.firstName} ${notification.senderUser.lastName}"></c:set>
+
+                        <%-- Band name --%>
+                        <c:choose>
+                            <c:when test="${notification.band.status.code eq ENTITY_STATUS_NOT_PUBLISHED}">
+                                <%-- Takes stage at last position (actually we have just one) --%>
+                                <c:set var="bandName" value="${notification.band.stageVersions[fn:length(notification.band.stageVersions) - 1].name}"></c:set>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="bandName" value="${notification.band.name}"></c:set>
+                            </c:otherwise>
+                        </c:choose>
 
 
-                    <spring:message code="dashbord.notifications.band-invitation.description"
-                                    arguments="${senderName};${bandName}"
-                                    argumentSeparator=";"
-                            ></spring:message>
-                </c:when>
-            </c:choose>
+                        <spring:message code="dashbord.notifications.band-invitation.description"
+                                        arguments="${senderName};${bandName}"
+                                        argumentSeparator=";"
+                                ></spring:message>
+                    </c:when>
+                </c:choose>
+            </div>
+
+            <%-- Notification Options --%>
+            <div class="row notificationDescription">
+
+                <div class="col-md-6">
+                    <fmt:formatDate value="${notification.created}" type="both"  ></fmt:formatDate>
+                </div>
+
+            </div>
+
         </div>
 
         <%--<!-- Subject logo -->--%>
@@ -97,5 +111,17 @@
         </div>
 
     </div>
-
 </c:forEach>
+
+<%-- PAGINATION --%>
+<c:if test="${notificationModel.nextRows gt 0}">
+
+    <a id="showNextNotifications" href="javascript:loadNotifications(${notificationModel.currentPage + 1})"><span><spring:message code="dashbord.notifications.pagination-show-next"></spring:message></span></a>
+
+</c:if>
+
+<script type="text/javascript">
+    $(function () {
+        initNotificationReadTimeout();
+    });
+</script>

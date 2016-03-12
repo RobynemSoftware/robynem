@@ -17,6 +17,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.AbstractView;
 
 import java.util.List;
 
@@ -83,6 +84,39 @@ public class DashBoardController extends BaseController {
         }
 
         return modelAndView;
+    }
+
+    @RequestMapping("/setNotificationRead")
+    public AbstractView setNotificationRead(@RequestParam Long notificationId, ModelMap modelMap) {
+        try {
+            this.notificationDao.setNotificationRead(notificationId, this.getAuthenticatedUser().getId());
+            modelMap.addAttribute("success", true);
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
+    @RequestMapping("/getUnreadNotificationsCount")
+    public AbstractView getUnreadNotificationsCount(ModelMap modelMap) {
+        try {
+            if (this.getAuthenticatedUser() != null) {
+                long count = this.notificationDao.getUnreadNotificationsCount(this.getAuthenticatedUser().getId());
+
+                LOG.debug("Unread notification coint: {}", count);
+
+                if (count > 0) {
+                    modelMap.addAttribute("count", count);
+                }
+            }
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
     }
 
     private List<BandEntity> getOwnedBans() {

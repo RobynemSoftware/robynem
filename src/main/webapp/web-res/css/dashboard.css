@@ -43,7 +43,7 @@
 }
 
 .unreadNotification {
-    background-color: #dfdfd7;
+    background-color: #8b878d;
 }
 
 .readNotification {
@@ -67,6 +67,10 @@
 
 .notificationSubject {
     text-decoration: underline;
+}
+
+.notificationContent {
+    cursor: pointer;
 }
 
 

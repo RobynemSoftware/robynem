@@ -12,6 +12,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -87,6 +88,8 @@ public class PortalHelper {
 
         return format;
     }
+
+
 
     public synchronized static Long getUniqueId() {
         return Calendar.getInstance().getTimeInMillis();

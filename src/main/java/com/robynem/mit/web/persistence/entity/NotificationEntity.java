@@ -14,6 +14,8 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name = "@HQL_GET_UNREAD_NOTIFICATIONS",
                 query = "from NotificationEntity n inner join fetch n.type t where n.readDate is null and n.receiverUser.id = :receiverUserId order by n.created desc "),
+        @NamedQuery(name = "@HQL_GET_COUNT_UNREAD_NOTIFICATIONS",
+                query = "select count(n.id) from NotificationEntity n where n.receiverUser.id = :receiverUserId and n.readDate is null "),
         @NamedQuery(name = "@HQL_GET_NOTIFICATIONS_BY_RECEIVER_AND_TYPE", query = "from NotificationEntity n " +
                     "inner join fetch n.type t " +
                 "where t.code = :typeCode and n.receiverUser.id = :receiverUserId order by n.created desc"),
@@ -31,7 +33,8 @@ import java.util.Date;
                     "left join fetch nb.stageVersions nb_stage " +
                     "left join fetch nb_stage.bandLogo bl_stage " +
                 "where ru.id = :receiverUserId " +
-                "order by n.created desc")
+                "order by n.created desc"),
+        @NamedQuery(name = "@HQL_SET_NOTIFICATION_READ", query = "update NotificationEntity set readDate = :readNate where id = :id and receiverUser.id = :receiverUserId")
 })
 public class NotificationEntity extends BaseEntity {
 
