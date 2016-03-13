@@ -3,6 +3,7 @@ package com.robynem.mit.web.controller;
 import com.robynem.mit.web.model.authentication.PortalUserModel;
 import com.robynem.mit.web.model.common.MessageModel;
 import com.robynem.mit.web.persistence.dao.AccountDao;
+import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.entity.UserEntity;
 import com.robynem.mit.web.util.Constants;
 import com.robynem.mit.web.util.MessageSeverity;
@@ -42,6 +43,9 @@ public class BaseController {
 
     @Autowired
     private AccountDao accountDao;
+
+    @Autowired
+    protected NotificationDao notificationDao;
 
     public String getMessage(String code) {
         return this.messageSource.getMessage(code, null, this.request.getLocale());
@@ -96,6 +100,9 @@ public class BaseController {
             userEntity.setLastLogin(Calendar.getInstance().getTime());
 
             this.accountDao.updateUser(userEntity);
+
+            // Reverse notifications sent by email to its account
+            this.notificationDao.reverseNotifications(userEntity.getId());
         }
     }
 

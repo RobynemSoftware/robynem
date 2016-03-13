@@ -52,6 +52,9 @@ public class EditBandController extends BaseController {
     private AccountDao acconDao;
 
     @Autowired
+    private NotificationDao notificationDao;
+
+    @Autowired
     private UtilsDao<BandEntity> bandUtilsDao;
 
     @Autowired
@@ -409,9 +412,15 @@ public class EditBandController extends BaseController {
             List<ComponentAutocompleteModel> items = new ArrayList<ComponentAutocompleteModel>();
 
             if (users != null) {
-                users.stream().forEach(u -> items.add(new ComponentAutocompleteModel(u.getId().toString(),
-                        u.getProfileImage() != null ? String.format(imageUrlPlaceholder, u.getProfileImage().getId().toString()) : null,
-                        StringUtils.trimToEmpty(u.getFirstName()) + " " + StringUtils.trimToEmpty(u.getLastName()))));
+                users.stream().forEach(u -> {
+                    ComponentAutocompleteModel autocompleteModel = new ComponentAutocompleteModel(u.getId().toString(),
+                            u.getProfileImage() != null ? String.format(imageUrlPlaceholder, u.getProfileImage().getId().toString()) : null,
+                            StringUtils.trimToEmpty(u.getFirstName()) + " " + StringUtils.trimToEmpty(u.getLastName()));
+
+                    autocompleteModel.setEmailAddress(u.getEmailAddress());
+
+                    items.add(autocompleteModel);
+                });
             }
 
             modelMap.addAttribute("items", items);
@@ -447,6 +456,31 @@ public class EditBandController extends BaseController {
         modelAndView.addObject(modelMap);
 
         return modelAndView;
+    }
+
+    @RequestMapping(value = "/inviteNonRegisteredUser", method = RequestMethod.POST)
+    public AbstractView inviteNonRegisteredUser(@RequestParam String emailAddress, ModelMap modelMap) {
+
+        try {
+            UserEntity userEntity = this.acconDao.getUserByEmailAddress(StringUtils.trimToEmpty(emailAddress));
+
+            if (userEntity != null) {
+                modelMap.addAttribute("emailExists", true);
+            } else {
+                modelMap.addAttribute("emailExists", false);
+
+                this.notificationDao.sendExternalBandInvitation(this.getAuthenticatedUser().getId(), emailAddress, this.getSessionAttribute(Constants.EDIT_BAND_ID));
+
+                modelMap.addAttribute("success", true);
+
+            }
+
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+            modelMap.addAttribute("success", false);
+        }
+
+        return this.getJsonView(modelMap);
     }
 
     @RequestMapping(value = "/removeComponent", method = RequestMethod.POST)

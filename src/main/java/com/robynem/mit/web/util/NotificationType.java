@@ -5,6 +5,16 @@ package com.robynem.mit.web.util;
  */
 public enum NotificationType {
 
+    /**
+     * Invitation to be  BAND COMPONENT
+     */
     BAND_INVITATION,
-    BAND_COMPONENT_REMOVAL
+    /**
+     * Component removed from a band
+     */
+    BAND_COMPONENT_REMOVAL,
+    /**
+     * Invitation to register to M.i.T. to be a band component
+     */
+    BAND_EXTERNAL_INVITATION
 }

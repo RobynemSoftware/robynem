@@ -4,7 +4,10 @@ import com.robynem.mit.web.persistence.dao.BaseDao;
 import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.NotificationType;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -20,6 +23,8 @@ import java.util.Map;
  */
 @Service
 public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
+
+    private static Logger LOG = LoggerFactory.getLogger(NotificationDaoImpl.class);
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
@@ -52,6 +57,59 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
         notificationEntity.setType(bandInvitationNotificationType);
 
         this.hibernateTemplate.save(notificationEntity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public void sendExternalBandInvitation(Long senderUserId, String receiverEmailAddress, Long bandId) {
+
+        this.hibernateTemplate.execute(session -> {
+
+            boolean invitationSent = false;
+
+            UserEntity checkUser = null;
+
+            Query checkUserQuery = session.getNamedQuery("@HQL_GET_USER_BY_EMAIL_ADDRESS");
+            checkUserQuery.setParameter("emailAddress", StringUtils.trimToEmpty(receiverEmailAddress));
+
+            checkUser = (UserEntity) checkUserQuery.uniqueResult();
+
+            if (checkUser != null) {
+                LOG.debug("Email address {} already belongs to an existing user!", StringUtils.trimToEmpty(receiverEmailAddress));
+                return false;
+            }
+
+            // Retrieves the External Band Notification Type
+            Query invitationTypeQuery = session.getNamedQuery("@HQL_GET_NOTIFICATION_TYPE_BY_CODE");
+            invitationTypeQuery.setParameter("code", NotificationType.BAND_EXTERNAL_INVITATION.toString());
+
+            NotificationTypeEntity notificationType = (NotificationTypeEntity) invitationTypeQuery.uniqueResult();
+
+            // Retrieves band entity
+            BandEntity bandEntity = (BandEntity) session.get(BandEntity.class, bandId);
+
+            // If it's a stage version, retrieves the published one
+            if (bandEntity.getPublishedVersion() != null) {
+                bandEntity = bandEntity.getPublishedVersion();
+            }
+
+
+            // Creates and stores new notification
+            NotificationEntity notificationEntity = new NotificationEntity();
+            notificationEntity.setCreated(Calendar.getInstance().getTime());
+            notificationEntity.setSenderUser((UserEntity) session.get(UserEntity.class, senderUserId));
+            notificationEntity.setReceiverEmailAddress(StringUtils.trimToEmpty(receiverEmailAddress));
+            notificationEntity.setBand(bandEntity);
+            notificationEntity.setType(notificationType);
+
+            session.save(notificationEntity);
+
+            session.flush();;
+
+            invitationSent = true;
+
+           return invitationSent;
+        });
     }
 
     @Override
@@ -150,6 +208,29 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
             query.executeUpdate();
 
             return null;
+        });
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public void reverseNotifications(Long receiverUserId) {
+
+        this.hibernateTemplate.execute(session -> {
+            boolean reverseComplete = false;
+
+            UserEntity userEntity = (UserEntity) session.get(UserEntity.class, receiverUserId);
+
+            if (userEntity != null) {
+                Query reverseQuery = session.getNamedQuery("@HQL_REVERSE_NOTIFICATIONS");
+                reverseQuery.setParameter("emailAddress", userEntity.getEmailAddress());
+                reverseQuery.setParameter("receiverUser", userEntity);
+
+                reverseQuery.executeUpdate();
+
+                reverseComplete = true;
+            }
+
+            return reverseComplete;
         });
     }
 }

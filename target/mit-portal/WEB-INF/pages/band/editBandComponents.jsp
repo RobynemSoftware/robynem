@@ -42,6 +42,7 @@
                 <div id="collapseFilterRegisteredComponents" class="accordion-body collapse in">
                     <div class="accordion-inner">
 
+                        <!-- Add component -->
                         <div class="row">
                             <div class="col-md-6 col-xs-12">
                                 <label><spring:message code="band.component.find-by-name"></spring:message> </label>
@@ -49,6 +50,23 @@
 
                             <div class="col-md-6 col-xs-12">
                                 <input type="text" id="editBandComponentsNameAutocomplete" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- Invite external -->
+                        <div class="row">
+                            <div class="col-md-6 col-xs-12">
+                                <label><spring:message code="band.component.invite-external-by-email"></spring:message> </label>
+                            </div>
+
+                            <div class="col-md-4 col-xs-12">
+                                <input type="email" id="inviteExternalEmail" class="form-control" placeholder="<spring:message code="global.insert-email-address"></spring:message>">
+                            </div>
+
+                            <div class="col-md-2 col-xs-12">
+                                <button id="sendEmailInvitation" class="btn btn-default">
+                                    <spring:message code="band.component.send-invitation"></spring:message>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -188,6 +206,8 @@
         initSearchComponentForm();
 
         initSearchLocationAutocomplete();
+
+        initInviteFields();
     });
 
     function initNameAutocomplete() {
@@ -210,7 +230,8 @@
                                         label: item.label,
                                         value: item.value,
                                         imageUrl: item.imageUrl,
-                                        name: item.name
+                                        name: item.name,
+                                        emailAddress: item.emailAddress
                                     }
                                 }));
                             }
@@ -239,10 +260,17 @@
 
             var imageUrl = item.imageUrl != null ? item.imageUrl : "${contextPath}/resources/images/profile_avatar_50x50.png";
 
+            var mainRow = $("<div class='row'></div>");
+            var image = $("<div class='col-md-3'><img src=\"" + imageUrl + "\"  /></div>").appendTo(mainRow);
+
+            var contentCol = $("<div class='col-md-9'></div>");
+            var nameContent = $("<div class='row'><span>" + item.name + "</span></div>").appendTo(contentCol);
+            var emailContent = $("<div class='row'><span>(" + item.emailAddress + ")</span></div>").appendTo(contentCol);
+
+            mainRow.append(contentCol);
+
             return $("<li></li>").data("item.autocomplete", item)
-                    .append("<img src=\"" + imageUrl + "\"  />")
-                    .append("&nbsp;")
-                    .append("<span>" + item.name + "</span>")
+                    .append(mainRow)
                     .appendTo(ul);
         };
     }
@@ -387,6 +415,74 @@
             }
 
 
+        });
+    }
+
+    function initInviteFields() {
+
+
+        $("#sendEmailInvitation").click(function () {
+
+            var emailAddress = $.trim($("#inviteExternalEmail").val());
+
+            if (emailAddress != "") {
+                if (!isEmail(emailAddress)) {
+                    showApplicationMessages({
+                        "<%=Constants.APPLICATION_MESSAGES_KEY%>" : [
+                            {
+                                message : "<spring:message code="global.invalid-email"></spring:message>",
+                                severity : "<%=MessageSeverity.FATAL%>",
+                                link : null
+                            }
+                        ]
+                    });
+                } else {
+                    execInSession(function () {
+
+                        $.ajax({
+                            url : "${contextPath}/private/editBand/inviteNonRegisteredUser",
+                            data : {
+                                emailAddress : emailAddress
+                            },
+                            type : "post",
+                            dataType : "json",
+                            cache : false,
+                            async : true,
+                            success : function (data) {
+                                showApplicationMessages(data);
+
+                                if (data.success == true) {
+                                    $("#inviteExternalEmail").val("");
+
+                                    showApplicationMessages({
+                                        "<%=Constants.APPLICATION_MESSAGES_KEY%>" : [
+                                            {
+                                                message : "<spring:message code="band.component.invitation.sent"></spring:message>",
+                                                severity : "<%=MessageSeverity.INFO%>",
+                                                link : null
+                                            }
+                                        ]
+                                    });
+                                }
+
+                                if (data.emailExists == true) {
+                                    showApplicationMessages({
+                                        "<%=Constants.APPLICATION_MESSAGES_KEY%>" : [
+                                            {
+                                                message : "<spring:message code="band.component.email-already-exists"></spring:message>",
+                                                severity : "<%=MessageSeverity.FATAL%>",
+                                                link : null
+                                            }
+                                        ]
+                                    });
+                                }
+                            }
+                        });
+
+                    });
+                }
+            }
+            return false;
         });
     }
 

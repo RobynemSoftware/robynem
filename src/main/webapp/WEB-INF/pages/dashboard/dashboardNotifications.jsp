@@ -42,7 +42,7 @@
         <%--<!-- Description -->--%>
         <div class="col-md-8 notificationDescription">
 
-            <div class="row notificationContent" id="${notification.id}">
+            <div class="row notificationContent" id="${notification.id}" isUnread="${isUnread}">
                 <c:choose>
                     <%--<!-- BAND INVITATION -->--%>
                     <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">

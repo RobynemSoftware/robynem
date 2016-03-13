@@ -34,7 +34,11 @@ import java.util.Date;
                     "left join fetch nb_stage.bandLogo bl_stage " +
                 "where ru.id = :receiverUserId " +
                 "order by n.created desc"),
-        @NamedQuery(name = "@HQL_SET_NOTIFICATION_READ", query = "update NotificationEntity set readDate = :readNate where id = :id and receiverUser.id = :receiverUserId")
+        @NamedQuery(name = "@HQL_SET_NOTIFICATION_READ", query = "update NotificationEntity set readDate = :readNate where id = :id and receiverUser.id = :receiverUserId"),
+        @NamedQuery(name = "@HQL_REVERSE_NOTIFICATIONS", query = "update NotificationEntity " +
+                "set receiverEmailAddress = null, " +
+                "    receiverUser = :receiverUser " +
+                "where receiverEmailAddress = :emailAddress ")
 })
 public class NotificationEntity extends BaseEntity {
 

@@ -75,7 +75,7 @@
 
 </script>
 
-<div class="loginContainer row">
+<div class="loginContainer">
     <c:choose>
         <c:when test="${empty portalUser}">
             <div class="col-md-6">
@@ -120,7 +120,7 @@
             </div>
 
             <script type="text/javascript">
-                var NOTIFICATION_ICON_INTERVAL = 60000;
+                var NOTIFICATION_ICON_INTERVAL = ${notificationIconInterval};
 
                 $(function () {
                     // Call notifications icon update on page load

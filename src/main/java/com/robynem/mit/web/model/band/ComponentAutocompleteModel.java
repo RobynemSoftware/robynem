@@ -17,6 +17,8 @@ public class ComponentAutocompleteModel implements Serializable {
 
     private String value;
 
+    private String emailAddress;
+
     public ComponentAutocompleteModel() {
     }
 
@@ -67,5 +69,13 @@ public class ComponentAutocompleteModel implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 }

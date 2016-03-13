@@ -12,6 +12,8 @@
 <spring:eval var="googleApyKey" expression="@commonProperties['google.apy-key']" scope="request"/>
 <spring:eval var="facebookAppId" expression="@commonProperties['facebook.app-id']"/>
 <spring:eval var="softwareVersion" expression="@commonProperties['software.version']" scope="session"/>
+<spring:eval var="notificationIconInterval" expression="@commonProperties['notification.icon-interval']" scope="session"/>
+<spring:eval var="notificationReadInterval" expression="@commonProperties['notification.read-interval']" scope="session"/>
 
 <!-- JSTL VARIABLES -->
 <c:set var="contextPath" value="<%=request.getContextPath()%>" scope="application"></c:set>

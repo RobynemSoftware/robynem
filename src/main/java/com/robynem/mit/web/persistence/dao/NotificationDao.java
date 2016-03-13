@@ -13,6 +13,8 @@ public interface NotificationDao {
 
     void sendBandInvitation(Long senderUserId, Long receiverUserId, Long bandId);
 
+    void sendExternalBandInvitation(Long senderUserId, String receiverEmailAddress, Long bandId);
+
     void sendBandComponentRemoval(Long senderUserId, Long receiverUserId, Long bandId);
 
     List<NotificationEntity> getUnreadNotifications(Long receiverUserId);
@@ -22,5 +24,7 @@ public interface NotificationDao {
     PagedEntity<NotificationEntity> getNotifications(Long receiverUserId, Integer pageSize, Integer currentPage);
 
     void setNotificationRead(Long notificationId, Long receiverUserId);
+
+    void reverseNotifications(Long receiverUserId);
 
 }

@@ -9,7 +9,9 @@
                     <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span
                         class="icon-bar"></span><span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="${contextPath}">Brand</a>
+                <a class="navbar-brand" href="${contextPath}">
+                    <img src="${contextPath}/resources/images/mit-logo.png" class="img-responsive" style="max-height: 50px;">
+                </a>
             </div>
 
             <div class="collapse navbar-collapse" id="mainMenu">
@@ -50,7 +52,6 @@
 
 
                 </ul>
-
                 <div class="nav navbar-nav navbar-right">
                     <jsp:include page="../authentication/login.jsp"></jsp:include>
                 </div>

@@ -7,6 +7,7 @@ import com.robynem.mit.web.model.authentication.PortalUserModel;
 import com.robynem.mit.web.model.authentication.SignUpModel;
 import com.robynem.mit.web.model.common.MessageModel;
 import com.robynem.mit.web.persistence.dao.AccountDao;
+import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.entity.UserEntity;
 import com.robynem.mit.web.util.*;
 import facebook4j.User;

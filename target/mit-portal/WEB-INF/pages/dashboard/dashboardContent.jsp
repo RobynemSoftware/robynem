@@ -53,7 +53,7 @@
 <script type="text/javascript">
 
     var READ_NOTIFICATION_TIMOUT = null;
-    var READ_NOTIFICATION_TIMEOUT_INTERVAL = 500;
+    var READ_NOTIFICATION_TIMEOUT_INTERVAL = ${notificationReadInterval};
 
     $(function() {
         loadOwnedBands();
@@ -94,11 +94,17 @@
 
     function initNotificationReadTimeout() {
         $(".notificationContent").mouseover(function() {
-            var notificationId = $(this).prop("id");
-            //console.log("notificationId: " + notificationId);
-            if (notificationId != null) {
-                var $this = this;
-                READ_NOTIFICATION_TIMOUT = setTimeout(function() {setNotificationRead(notificationId, $this)}, READ_NOTIFICATION_TIMEOUT_INTERVAL);
+            var isUnread = $(this).attr("isUnread");
+
+            console.log("isUnread: " + isUnread);
+
+            if (isUnread == "true") {
+                var notificationId = $(this).prop("id");
+                //console.log("notificationId: " + notificationId);
+                if (notificationId != null) {
+                    var $this = this;
+                    READ_NOTIFICATION_TIMOUT = setTimeout(function() {setNotificationRead(notificationId, $this)}, READ_NOTIFICATION_TIMEOUT_INTERVAL);
+                }
             }
         });
 

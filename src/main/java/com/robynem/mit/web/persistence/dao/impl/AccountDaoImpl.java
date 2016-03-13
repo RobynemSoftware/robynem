@@ -131,7 +131,11 @@ public class AccountDaoImpl extends BaseDao implements AccountDao {
             criteria = criteria.add(
                     Restrictions.and(
                         Restrictions.eq("user.musician", true),
-                        Restrictions.or(Restrictions.like("user.firstName", name + "%"), Restrictions.like("user.lastName", name + "%"))
+                            // Filters by firstName or lastName or emailAddress
+                        Restrictions.or(
+                                Restrictions.or(Restrictions.like("user.firstName", name + "%"), Restrictions.like("user.lastName", name + "%")),
+                                Restrictions.like("user.emailAddress", name + "%")
+                                )
             ));
             criteria.add(Restrictions.eq("user.engagementAvailable", true));
 
