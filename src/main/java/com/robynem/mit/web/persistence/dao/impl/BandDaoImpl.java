@@ -311,7 +311,9 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             session.update(bandEntity);
 
             // Sends notification
-            this.notificationDao.sendBandInvitation(operationUserId, userId, bandEntity.getId());
+            // Attaches alway published band version.
+            Long bandNotificationId = bandEntity.getPublishedVersion() != null ? bandEntity.getPublishedVersion().getId() : bandEntity.getId();
+            this.notificationDao.sendBandInvitation(operationUserId, userId, bandNotificationId);
 
             return bandEntity;
         });

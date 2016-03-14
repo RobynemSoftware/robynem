@@ -462,14 +462,22 @@ public class EditBandController extends BaseController {
     public AbstractView inviteNonRegisteredUser(@RequestParam String emailAddress, ModelMap modelMap) {
 
         try {
+            BandEntity bandEntity = this.bandUtilsDao.getByIdWithFetchedObjects(BandEntity.class, this.getSessionAttribute(Constants.EDIT_BAND_ID), "publishedVersion");
+
+            if (bandEntity.getPublishedVersion() != null) {
+                bandEntity = bandEntity.getPublishedVersion();
+            }
             UserEntity userEntity = this.acconDao.getUserByEmailAddress(StringUtils.trimToEmpty(emailAddress));
+            boolean invitationExists = this.notificationDao.externalBandInvitationExists(this.getAuthenticatedUser().getId(), emailAddress, bandEntity.getId());
 
             if (userEntity != null) {
                 modelMap.addAttribute("emailExists", true);
+            } else if (invitationExists) {
+                modelMap.addAttribute("invitationExists", invitationExists);
             } else {
                 modelMap.addAttribute("emailExists", false);
 
-                this.notificationDao.sendExternalBandInvitation(this.getAuthenticatedUser().getId(), emailAddress, this.getSessionAttribute(Constants.EDIT_BAND_ID));
+                this.notificationDao.sendExternalBandInvitation(this.getAuthenticatedUser().getId(), emailAddress, bandEntity.getId());
 
                 modelMap.addAttribute("success", true);
 

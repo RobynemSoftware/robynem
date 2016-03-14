@@ -146,8 +146,10 @@
                             //console.log("data.count: " + data.count);
                             if (data.count != null) {
                                 $(".noti_bubble").html(data.count);
+                                $(".noti_bubble").show();
                             } else {
                                 $(".noti_bubble").html("");
+                                $(".noti_bubble").hide();
                             }
                         }
                     });

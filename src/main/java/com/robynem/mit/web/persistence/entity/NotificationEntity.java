@@ -1,5 +1,6 @@
 package com.robynem.mit.web.persistence.entity;
 
+import com.robynem.mit.web.util.Constants;
 import com.robynem.mit.web.util.NotificationType;
 import org.hibernate.annotations.Cascade;
 
@@ -38,7 +39,11 @@ import java.util.Date;
         @NamedQuery(name = "@HQL_REVERSE_NOTIFICATIONS", query = "update NotificationEntity " +
                 "set receiverEmailAddress = null, " +
                 "    receiverUser = :receiverUser " +
-                "where receiverEmailAddress = :emailAddress ")
+                "where receiverEmailAddress = :emailAddress "),
+        @NamedQuery(name = "@HQL_GET_COUNT_EXTERNAL_BAND_INVITATION", query = "select count(n) from NotificationEntity n " +
+                "   inner join n.type t " +
+                "where n.receiverEmailAddress = :emailAddress and n.senderUser.id = :senderUserId and t.code = 'BAND_EXTERNAL_INVITATION'" +
+                "   and n.band.id = :bandId")
 })
 public class NotificationEntity extends BaseEntity {
 

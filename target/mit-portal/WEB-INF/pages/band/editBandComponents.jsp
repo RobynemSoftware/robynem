@@ -476,6 +476,18 @@
                                         ]
                                     });
                                 }
+
+                                if (data.invitationExists == true) {
+                                    showApplicationMessages({
+                                        "<%=Constants.APPLICATION_MESSAGES_KEY%>" : [
+                                            {
+                                                message : "<spring:message code="band.component.invitation.exists"></spring:message>",
+                                                severity : "<%=MessageSeverity.WARNING%>",
+                                                link : null
+                                            }
+                                        ]
+                                    });
+                                }
                             }
                         });
 

@@ -113,6 +113,13 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
     }
 
     @Override
+    public boolean externalBandInvitationExists(Long senderUserId, String receiverEmailAddress, Long bandId) {
+        return ((Long) this.hibernateTemplate.findByNamedQueryAndNamedParam("@HQL_GET_COUNT_EXTERNAL_BAND_INVITATION",
+                new String[] {"emailAddress", "senderUserId", "bandId"},
+                new Object[] {StringUtils.trimToEmpty(receiverEmailAddress), senderUserId, bandId}).get(0)) > 0;
+    }
+
+    @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
     public void sendBandComponentRemoval(Long senderUserId, Long receiverUserId, Long bandId) {
 
