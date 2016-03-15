@@ -76,7 +76,7 @@ public class EditBandController extends BaseController {
 
         try {
 
-            // try to retrieve bandId from request params frist and then from request attribute. (It for sure comes from saveName action).
+            // try to retrieve bandId from request params first and then from request attribute. (It for sure comes from saveName action).
             if (bandId == null) {
                 bandId = this.getRequestAttribute("bandId");
             }
@@ -86,12 +86,19 @@ public class EditBandController extends BaseController {
                 this.removeSessionAddtribute(Constants.EDIT_BAND_ID);
                 modelMap.addAttribute("setName", true);
             } else {
+                // Checks if band exists
+                if (this.bandDao.getBandById(bandId) == null) {
+                    this.addApplicationMessage(this.getMessage("band.does-not-exists"), MessageSeverity.WARNING, null, null);
+                    return new ModelAndView("forward:/private/dashboard");
+                }
+
                 // Checks if current user is allowed to edit this band
                 if (!this.canEdit(bandId)) {
                     this.addApplicationMessage(this.getMessage("band.user-not-allowed-to-edit"), MessageSeverity.WARNING, null, null);
 
                     return new ModelAndView("forward:/private/dashboard");
                 }
+
                 modelMap.addAttribute("bandId", bandId);
             }
 
@@ -722,6 +729,19 @@ public class EditBandController extends BaseController {
         return this.getJsonView(modelMap);
     }
 
+    @RequestMapping("/getBandStatus")
+    public AbstractView getBandStatus(@RequestParam(required = false) Long bandId, ModelMap modelMap) {
+
+        try {
+            modelMap.addAttribute("bandStatus", this.getBandStatus(bandId));
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
     private void saveGeneralTab(BandModel bandModel) {
         BandEntity bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.GENERAL);
 
@@ -1077,6 +1097,27 @@ public class EditBandController extends BaseController {
                 .collect(Collectors.toList()).size() > 0);
 
         return canEdit;
+    }
+
+    private String getBandStatus(Long bandId) {
+        String bandStatus = null;
+
+        if (bandId != null) {
+            // Retrives band status
+            BandEntity bandEntity = this.bandUtilsDao.getByIdWithFetchedObjects(BandEntity.class, bandId, "status", "publishedVersion", "stageVersions");
+
+            if (EntityStatus.NOT_PUBLISHED.toString().equals(bandEntity.getStatus().getCode()) ||  EntityStatus.STAGE.toString().equals(bandEntity.getStatus().getCode())) {
+                bandStatus = bandEntity.getStatus().getCode();
+            } else if (EntityStatus.PUBLISHED.toString().equals(bandEntity.getStatus().getCode())
+                    && (bandEntity.getStageVersions() != null && bandEntity.getStageVersions().size() > 0)) {
+                bandStatus = EntityStatus.STAGE.toString();
+            } else {
+                bandStatus = bandEntity.getStatus().getCode();
+            }
+        }
+
+
+        return bandStatus;
     }
 
 }

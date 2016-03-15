@@ -1,4 +1,5 @@
 <%@ page import="com.robynem.mit.web.util.Constants" %>
+<%@ page import="com.robynem.mit.web.util.EntityStatus" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -7,10 +8,12 @@
 
         <!-- SAVE AND PUBLISH BUTTONS -->
         <div class="row">
-            <div class="col-md-12 saveButtons">
-                <%--<button id="editBandSave" class="btn-default"><spring:message
-                        code="global.save"></spring:message></button>
-                &nbsp;--%>
+
+            <div class="col-md-9">
+                <span class="bandStatus"></span>
+            </div>
+
+            <div class="col-md-3 saveButtons">
                 <button id="editBandPublish" class="btn-default"><spring:message
                         code="global.publish"></spring:message></button>
             </div>
@@ -95,6 +98,8 @@
         //setCurrentSaveForm();
 
         initSetNameDialog();
+
+        showBandStatus();
     }
 
     function initTabs() {
@@ -102,7 +107,18 @@
 
             beforeActivate: function (event, ui) {
                 var id = ui.newPanel.attr('id');
-                console.log("new tab id: " + id);
+                var oldId = ui.oldPanel.attr('id');
+                //console.log("new tab id: " + id);
+
+                /*If we're leaveng general form, we save it before.*/
+                if (oldId == "tabs-general") {
+                    if (validateGeneralForm()) {
+                        $("#editBandGeneralForm").submit();
+                    } else {
+                        return false;
+                    }
+
+                }
 
                 switch(id) {
                     case "tabs-general":
@@ -215,6 +231,32 @@
                     $("#tabs-media").html(data);
                 }
             });
+        });
+    }
+
+    function showBandStatus() {
+        $.ajax({
+            url : "${contextPath}/private/editBand/getBandStatus",
+            data : {
+                bandId : ${bandId != null ? bandId : 0}
+            },
+            dataType : "json",
+            cache : false,
+            global : false,
+            success : function (data) {
+                $(".bandStatus").val("");
+
+                if (data.bandStatus != null) {
+                    var alertMessage = "";
+                    if (data.bandStatus == '<%=EntityStatus.NOT_PUBLISHED.toString()%>') {
+                        alertMessage = "<spring:message code="band.status.not-published.alert"></spring:message>";
+                    } else if (data.bandStatus == '<%=EntityStatus.STAGE.toString()%>') {
+                        alertMessage = "<spring:message code="band.status.stage.alert"></spring:message>";
+                    }
+
+                    $(".bandStatus").html(alertMessage);
+                }
+            }
         });
     }
 

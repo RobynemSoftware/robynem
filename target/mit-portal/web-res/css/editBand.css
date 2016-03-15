@@ -122,3 +122,8 @@
     color: red;
     text-decoration: underline;
 }
+
+.bandStatus {
+    font-size: 11px;
+    color: red;
+}
