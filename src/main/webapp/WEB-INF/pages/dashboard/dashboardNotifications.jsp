@@ -9,9 +9,16 @@
 
 <jsp:include page="../common/messagesDisplayerAsync.jsp"></jsp:include>
 
+<%--  NOTIFICATION TYPE--%>
 <c:set var="BAND_INVITATION_TYPE">
     <%=NotificationType.BAND_INVITATION%>
 </c:set>
+<c:set var="BAND_EXTERNAL_INVITATION">
+    <%=NotificationType.BAND_EXTERNAL_INVITATION%>
+</c:set>
+
+
+<%-- ENTITY STATUS --%>
 <c:set var="ENTITY_STATUS_NOT_PUBLISHED">
     <%=EntityStatus.NOT_PUBLISHED%>
 </c:set>
@@ -32,7 +39,7 @@
 
             <c:choose>
                 <%--<!-- BAND INVITATION -->--%>
-                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
+                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION}">
                     <img src="${contextPath}/resources/images/notification_band_invitation.jpg" class="img-responsive" />
                 </c:when>
             </c:choose>
@@ -45,7 +52,7 @@
             <div class="row notificationContent" id="${notification.id}" isUnread="${isUnread}">
                 <c:choose>
                     <%--<!-- BAND INVITATION -->--%>
-                    <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
+                    <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION}">
 
                         <%-- Sender name --%>
                         <c:set var="senderName" value="${notification.senderUser.firstName} ${notification.senderUser.lastName}"></c:set>
@@ -85,7 +92,7 @@
         <div class="col-md-2">
             <c:choose>
                 <%--<!-- BAND INVITATION -->--%>
-                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE}">
+                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION}">
                     <%-- If it's not published, gets stage loge, otherwise gets published one --%>
                     <c:choose>
                         <c:when test="${notification.band.status.code eq ENTITY_STATUS_NOT_PUBLISHED}">
