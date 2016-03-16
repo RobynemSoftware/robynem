@@ -927,74 +927,6 @@ public class EditBandController extends BaseController {
     /**
      * @param forSave           If true and BandEntity is stored in session, checks if it's a stage version.
      *                          If not, creates a stage version, store its id in session and returns it.
-     * @param attributesToFetch
-     * @return
-     */
-    private BandEntity getBandToEdit_(boolean forSave, String... attributesToFetch) {
-        BandEntity bandEntity = null;
-
-        Long bandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
-
-        if (bandId != null) {
-
-            /*If its for save, and attributesToFetch does not contain stageVersions, it adds it, eventually creating a new
-            String array if needed.*/
-            if (forSave && (
-                    attributesToFetch == null
-                            || !Arrays.stream(attributesToFetch).
-                            filter(attr -> attr.equalsIgnoreCase("stageVersions"))
-                            .findFirst().isPresent()
-            )) {
-                if (attributesToFetch == null) {
-                    attributesToFetch = new String[1];
-                }
-
-                List temp = Arrays.asList(attributesToFetch);
-                temp = new ArrayList<String>(temp);
-                temp.add("stageVersions");
-                temp.add("status");
-                attributesToFetch = (String[]) temp.toArray(new String[temp.size()]);
-            }
-
-            //bandEntity = this.bandUtilsDao.getByIdWithFetchedObjects(BandEntity.class, bandId, attributesToFetch);
-            bandEntity = this.bandDao.getBandToEdit(bandId);
-
-            // If we need entity for save and it's not a stage version and
-            if (forSave &&
-                    (bandEntity.getStatus().getCode().equals(EntityStatus.PUBLISHED) || bandEntity.getStatus().getCode().equals(EntityStatus.NOT_PUBLISHED))) {
-
-                BandEntity stageVersion = null;
-
-                // if it hasn't a stage version, we create one else we use it.
-                if ((bandEntity.getStageVersions() == null || bandEntity.getStageVersions().size() == 0)) {
-                    stageVersion = new BandEntity();
-                    this.bandDao.copyBandData(bandEntity.getId(), stageVersion);
-                } else {
-                    stageVersion = bandEntity.getStageVersions().iterator().next();
-                }
-
-                this.addSessionAttribute(Constants.EDIT_BAND_ID, stageVersion.getId());
-
-                bandEntity = stageVersion;
-            }
-        } else {
-            // Invoke dao to create an empty band and its stage version
-            PortalUserModel portalUserModel = this.getAuthenticatedUser();
-            BandEntity parentBandEntity = this.bandDao.createEmtpyBand(portalUserModel.getId());
-
-            // Assign to controller the stave version to edit
-            bandEntity = parentBandEntity.getStageVersions().iterator().next();
-
-            // Save in session stage version band id
-            this.addSessionAttribute(Constants.EDIT_BAND_ID, bandEntity.getId());
-        }
-
-        return bandEntity;
-    }
-
-    /**
-     * @param forSave           If true and BandEntity is stored in session, checks if it's a stage version.
-     *                          If not, creates a stage version, store its id in session and returns it.
      * @param tabIndex
      * @return
      */
@@ -1010,38 +942,28 @@ public class EditBandController extends BaseController {
 
         if (bandId != null) {
 
-            switch (tabIndex) {
-                case GENERAL:
-                    bandEntity = this.bandDao.getBandGeneralInfo(bandId);
-                    break;
+            bandEntity = this.getBandTabData(bandId, tabIndex);
 
-                case COMPONENTS:
-                    bandEntity = this.bandDao.getBandComponents(bandId);
-                    break;
+            BandEntity stageVersion = null;
 
-                case MEDIA:
-                    bandEntity = this.bandDao.getBandMedia(bandId);
-                    break;
-            }
+            if (bandEntity.getStageVersions() != null && bandEntity.getStageVersions().size() > 0) {
 
-            // If we need entity for save and it's not a stage version and
-            if (forSave &&
-                    (bandEntity.getStatus().getCode().equals(EntityStatus.PUBLISHED) || bandEntity.getStatus().getCode().equals(EntityStatus.NOT_PUBLISHED))) {
+                bandEntity = this.getBandTabData(bandEntity.getStageVersions().get(0).getId(), tabIndex);
 
-                BandEntity stageVersion = null;
+                this.addSessionAttribute(Constants.EDIT_BAND_ID, bandEntity.getId());
 
+            } else if (forSave && bandEntity.getPublishedVersion() == null) {
                 // if it hasn't a stage version, we create one else we use it.
-                if ((bandEntity.getStageVersions() == null || bandEntity.getStageVersions().size() == 0)) {
-                    stageVersion = new BandEntity();
-                    this.bandDao.copyBandData(bandEntity.getId(), stageVersion);
-                } else {
-                    stageVersion = bandEntity.getStageVersions().iterator().next();
-                }
+                stageVersion = new BandEntity();
+                this.bandDao.copyBandData(bandEntity.getId(), stageVersion);
 
                 this.addSessionAttribute(Constants.EDIT_BAND_ID, stageVersion.getId());
 
-                bandEntity = stageVersion;
+                // We need to retrieve TAB band data from the stage version
+                bandEntity = this.getBandTabData(stageVersion.getId(), tabIndex);
+
             }
+
         } else {
             // Invoke dao to create an empty band and its stage version
             PortalUserModel portalUserModel = this.getAuthenticatedUser();
@@ -1052,6 +974,26 @@ public class EditBandController extends BaseController {
 
             // Save in session stage version band id
             this.addSessionAttribute(Constants.EDIT_BAND_ID, bandEntity.getId());
+        }
+
+        return bandEntity;
+    }
+
+    private BandEntity getBandTabData(Long bandId, EditBandTabIndex tabIndex) {
+        BandEntity bandEntity = null;
+
+        switch (tabIndex) {
+            case GENERAL:
+                bandEntity = this.bandDao.getBandGeneralInfo(bandId);
+                break;
+
+            case COMPONENTS:
+                bandEntity = this.bandDao.getBandComponents(bandId);
+                break;
+
+            case MEDIA:
+                bandEntity = this.bandDao.getBandMedia(bandId);
+                break;
         }
 
         return bandEntity;

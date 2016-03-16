@@ -195,6 +195,7 @@ public class BaseController {
     }
 
     public void addSessionAttribute(String attributeName, Object attributeValue) {
+        this.session.removeAttribute(attributeName);
         this.session.setAttribute(attributeName, attributeValue);
     }
 
