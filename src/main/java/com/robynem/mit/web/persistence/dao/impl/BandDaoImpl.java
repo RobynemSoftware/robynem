@@ -8,6 +8,8 @@ import com.robynem.mit.web.persistence.dao.UtilsDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.EntityStatus;
 import com.robynem.mit.web.util.OwnerType;
+import com.robynem.mit.web.util.PublishBandErrorCode;
+import com.robynem.mit.web.util.PublishBandResult;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.*;
 import org.hibernate.criterion.*;
@@ -145,12 +147,10 @@ public class BandDaoImpl extends BaseDao implements BandDao {
         destination.setCreatedBy(source.getCreatedBy());
         destination.setBandLogo(source.getBandLogo());
         destination.setBiography(source.getBiography());
-        destination.setImages(source.getImages());
         destination.setModifiedBy(source.getModifiedBy());
         destination.setName(source.getName());
         destination.setPlaceId(source.getPlaceId());
         destination.setTown(source.getTown());
-        destination.setVideos(source.getVideos());
         destination.setWebSite(source.getWebSite());
         destination.setUpdated(source.getUpdated());
 
@@ -686,6 +686,65 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             session.update(bandEntity);
 
             return null;
+        });
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public PublishBandResult publishBand(Long bandId, Long userId) {
+        return this.hibernateTemplate.execute(session -> {
+            PublishBandResult publishBandResult = new PublishBandResult();
+
+            BandEntity bandEntity = (BandEntity) session.get(BandEntity.class, bandId);
+
+            BandEntity publishedVersion = null;
+
+            if (bandEntity.getPublishedVersion() == null) {
+                publishBandResult = new PublishBandResult(false, null, PublishBandErrorCode.NOT_A_STAGE_VERSION);
+            } else {
+
+                publishedVersion = bandEntity.getPublishedVersion();
+
+                // Does validations
+                if (StringUtils.isBlank(bandEntity.getName())) {
+                    publishBandResult = new PublishBandResult(false, null, PublishBandErrorCode.NAME_MISSING);
+                } else if (StringUtils.isBlank(bandEntity.getPlaceId())) {
+                    publishBandResult = new PublishBandResult(false, null, PublishBandErrorCode.TOWN_MISSING);
+                } else if (bandEntity.getComponents() == null || bandEntity.getComponents().size() == 0) {
+                    publishBandResult = new PublishBandResult(false, null, PublishBandErrorCode.COMPONENTS_MISSING);
+                } else if (!bandEntity.getComponents().stream().filter(c -> c.isConfirmed() == true).findAny().isPresent()) {
+                    publishBandResult = new PublishBandResult(false, null, PublishBandErrorCode.NO_ONE_COMPONENT_CONFIRMED);
+                } else if (bandEntity.getMusicGenres() == null || bandEntity.getMusicGenres().size() == 0) {
+                    publishBandResult = new PublishBandResult(false, null, PublishBandErrorCode.GENRE_MISSING);
+                } else {
+                    Query statusQuery = session.getNamedQuery("@HQL_GET_ENTITY_STATUS_BY_CODE");
+                    statusQuery.setParameter("code", EntityStatus.PUBLISHED.toString());
+                    EntityStatusEntity publishedStatus = (EntityStatusEntity) statusQuery.uniqueResult();
+
+                    this.copyBandData(bandEntity, publishedVersion);
+
+                    publishedVersion.setUpdated(Calendar.getInstance().getTime());
+                    if (publishedVersion.getFirstPublishDate() == null) {
+                        publishedVersion.setFirstPublishDate(Calendar.getInstance().getTime());
+                    }
+
+                    publishedVersion.setStatus(publishedStatus);
+
+                    publishedVersion.setModifiedBy((UserEntity) session.get(UserEntity.class, userId));
+
+                    session.update(publishedVersion);
+
+                    session.flush();
+
+                    session.delete(bandEntity);
+
+                    session.flush();
+
+                    publishBandResult = new PublishBandResult(true, publishedVersion.getId(), null);
+                }
+            }
+
+            return publishBandResult;
         });
     }
 

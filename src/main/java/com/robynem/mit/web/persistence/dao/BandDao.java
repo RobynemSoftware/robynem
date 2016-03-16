@@ -5,6 +5,7 @@ import com.robynem.mit.web.persistence.entity.BandEntity;
 import com.robynem.mit.web.persistence.entity.UserEntity;
 import com.robynem.mit.web.persistence.entity.VideoEntity;
 import com.robynem.mit.web.util.OwnerType;
+import com.robynem.mit.web.util.PublishBandResult;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -60,4 +61,6 @@ public interface BandDao {
     Long addBandVideo(Long bandId, VideoEntity videoEntity);
 
     void removeBandVideo(Long bandId, Long videoId);
+
+    PublishBandResult publishBand(Long bandId, Long userId);
 }

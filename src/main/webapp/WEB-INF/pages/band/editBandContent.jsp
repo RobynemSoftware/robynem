@@ -17,6 +17,8 @@
                 <button id="editBandPublish" class="btn-default"><spring:message
                         code="global.publish"></spring:message></button>
             </div>
+
+            <form:form id="publishBandForm" action="${contextPath}/private/editBand/publishBand" onsubmit="javascript:$.blockUI()"></form:form>
         </div>
         <!-- TABS -->
         <div class="row">
@@ -100,6 +102,8 @@
         initSetNameDialog();
 
         showBandStatus();
+
+        initPublishButton();
     }
 
     function initTabs() {
@@ -112,11 +116,14 @@
 
                 /*If we're leaveng general form, we save it before.*/
                 if (oldId == "tabs-general") {
-                    if (validateGeneralForm()) {
-                        $("#editBandGeneralForm").submit();
-                    } else {
-                        return false;
-                    }
+
+                        if (validateGeneralForm()) {
+                            $("#editBandGeneralForm").submit();
+                        } else {
+                            return false;
+                        }
+
+
 
                 }
 
@@ -258,6 +265,68 @@
                 }
             }
         });
+    }
+
+    function initPublishButton() {
+        $("#editBandPublish").click(function () {
+            $("#publishBandForm").submit();
+        });
+    }
+
+    function validateGeneralForm() {
+        var validated = validateEmailContacts() && validatePhoneNumberContacts();
+
+        return validated;
+    }
+
+    function validateEmailContacts() {
+        var valid = true;
+        var message = "<spring:message code="band.validation.invalid-email-contact"></spring:message>"
+        $(".emailText").each(function() {
+            var value = $.trim($(this).val());
+
+            if (value != "" && !isEmail(value)) {
+                showApplicationMessages({
+                    "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
+                        {
+                            severity: "FATAL",
+                            link: null,
+                            message: message.replace("{0}", value)
+                        }
+                    ]
+                });
+
+                valid = false;
+                return;
+            }
+        });
+
+        return valid;
+    }
+
+    function validatePhoneNumberContacts() {
+        var valid = true;
+        var message = "<spring:message code="band.validation.invalid-phone-contact"></spring:message>"
+        $(".phoneText").each(function() {
+            var value = $.trim($(this).val());
+
+            if (value != "" && !isPhoneNumber(value)) {
+                showApplicationMessages({
+                    "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
+                        {
+                            severity: "FATAL",
+                            link: null,
+                            message: message.replace("{0}", value)
+                        }
+                    ]
+                });
+
+                valid = false;
+                return;
+            }
+        });
+
+        return valid;
     }
 
 

@@ -632,59 +632,5 @@
         $("#" + id).remove();
     }
 
-    function validateGeneralForm() {
-        var validated = validateEmailContacts() && validatePhoneNumberContacts();
 
-        return validated;
-    }
-
-    function validateEmailContacts() {
-        var valid = true;
-        var message = "<spring:message code="band.validation.invalid-email-contact"></spring:message>"
-        $(".emailText").each(function() {
-            var value = $.trim($(this).val());
-
-            if (value != "" && !isEmail(value)) {
-                showApplicationMessages({
-                    "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
-                        {
-                            severity: "FATAL",
-                            link: null,
-                            message: message.replace("{0}", value)
-                        }
-                    ]
-                });
-
-                valid = false;
-                return;
-            }
-        });
-
-        return valid;
-    }
-
-    function validatePhoneNumberContacts() {
-        var valid = true;
-        var message = "<spring:message code="band.validation.invalid-phone-contact"></spring:message>"
-        $(".phoneText").each(function() {
-            var value = $.trim($(this).val());
-
-            if (value != "" && !isPhoneNumber(value)) {
-                showApplicationMessages({
-                    "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
-                        {
-                            severity: "FATAL",
-                            link: null,
-                            message: message.replace("{0}", value)
-                        }
-                    ]
-                });
-
-                valid = false;
-                return;
-            }
-        });
-
-        return valid;
-    }
 </script>

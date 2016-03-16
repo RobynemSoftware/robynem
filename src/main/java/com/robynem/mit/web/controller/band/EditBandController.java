@@ -742,6 +742,48 @@ public class EditBandController extends BaseController {
         return this.getJsonView(modelMap);
     }
 
+    @RequestMapping("/publishBand")
+    public ModelAndView publishBand(ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("forward:/private/editBand/edit");
+
+        this.addRequestAttribute("fromPublish", true);
+
+        Map<String, Integer> errorTabMap = new HashMap<String,Integer>(){
+            {
+                put(PublishBandErrorCode.COMPONENTS_MISSING.toString(), 1);
+                put(PublishBandErrorCode.GENRE_MISSING.toString(), 0);
+                put(PublishBandErrorCode.NAME_MISSING.toString(), 0);
+                put(PublishBandErrorCode.NO_ONE_COMPONENT_CONFIRMED.toString(), 1);
+                put(PublishBandErrorCode.TOWN_MISSING.toString(), 0);
+            }
+        };
+
+        try {
+            PublishBandResult publishBandResult = this.bandDao.publishBand(this.getSessionAttribute(Constants.EDIT_BAND_ID), this.getAuthenticatedUser().getId());
+            this.addRequestAttribute("bandId", this.getSessionAttribute(Constants.EDIT_BAND_ID));
+
+            if (!publishBandResult.isSuccess()) {
+                Integer currentTabIndex = errorTabMap.get(publishBandResult.getErrorCode().toString());
+
+                this.addRequestAttribute("currentTabIndex", currentTabIndex);
+
+                if (!PublishBandErrorCode.NOT_A_STAGE_VERSION.equals(publishBandResult.getErrorCode())) {
+                    this.addApplicationMessage(this.getMessage(String.format("band.publish.validation.%s", publishBandResult.getErrorCode().toString())),
+                            MessageSeverity.FATAL, null, null);
+                }
+            } else {
+                this.addApplicationMessage(this.getMessage("band.publish.success"), MessageSeverity.FATAL, null, null);
+                this.addRequestAttribute("bandId", publishBandResult.getPublishedBandId());
+            }
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return modelAndView;
+    }
+
     private void saveGeneralTab(BandModel bandModel) {
         BandEntity bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.GENERAL);
 

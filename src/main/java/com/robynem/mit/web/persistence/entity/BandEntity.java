@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -97,6 +98,9 @@ public class BandEntity extends BaseEntity {
             inverseJoinColumns = { @JoinColumn(name = "audioId", nullable = false) }
     )
     protected Set<AudioEntity> audios;
+
+    @Column
+    protected Date firstPublishDate;
 
     /*METHODS*/
 
@@ -242,5 +246,13 @@ public class BandEntity extends BaseEntity {
 
     public void setAudios(Set<AudioEntity> audios) {
         this.audios = audios;
+    }
+
+    public Date getFirstPublishDate() {
+        return firstPublishDate;
+    }
+
+    public void setFirstPublishDate(Date firstPublishDate) {
+        this.firstPublishDate = firstPublishDate;
     }
 }
