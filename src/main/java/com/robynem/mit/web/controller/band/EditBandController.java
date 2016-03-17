@@ -773,7 +773,7 @@ public class EditBandController extends BaseController {
                             MessageSeverity.FATAL, null, null);
                 }
             } else {
-                this.addApplicationMessage(this.getMessage("band.publish.success"), MessageSeverity.FATAL, null, null);
+                this.addApplicationMessage(this.getMessage("band.publish.success"), MessageSeverity.INFO, null, null);
                 this.addRequestAttribute("bandId", publishBandResult.getPublishedBandId());
             }
         } catch (Throwable e) {

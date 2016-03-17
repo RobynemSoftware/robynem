@@ -141,11 +141,12 @@ public class BandDaoImpl extends BaseDao implements BandDao {
     }
 
     @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
     public void copyBandData(BandEntity source, BandEntity destination) {
         destination.setStatus(source.getStatus());
         destination.setCreated(source.getCreated());
         destination.setCreatedBy(source.getCreatedBy());
-        destination.setBandLogo(source.getBandLogo());
+
         destination.setBiography(source.getBiography());
         destination.setModifiedBy(source.getModifiedBy());
         destination.setName(source.getName());
@@ -154,19 +155,47 @@ public class BandDaoImpl extends BaseDao implements BandDao {
         destination.setWebSite(source.getWebSite());
         destination.setUpdated(source.getUpdated());
 
-        Set<BandOwnershipEntity> owners = new HashSet<BandOwnershipEntity>();
+        destination.setBandLogo(null);
+        if (source.getBandLogo() != null) {
+            destination.setBandLogo(new ImageEntity());
+            destination.getBandLogo().setSmallFile(source.getBandLogo().getSmallFile());
+            destination.getBandLogo().setMediumFile(source.getBandLogo().getMediumFile());
+            destination.getBandLogo().setLargeFile(source.getBandLogo().getLargeFile());
+            destination.getBandLogo().setOriginalFile(source.getBandLogo().getOriginalFile());
+            destination.getBandLogo().setFilePath(source.getBandLogo().getFilePath());
+        }
+
+
+        if (destination.getOwners() == null) {
+            destination.setOwners(new HashSet<BandOwnershipEntity>());
+        }
+        destination.getOwners().clear();
 
         // Create the owners set by setting null to band attribute so hibernate can associate destintion band id on save
         if (source.getOwners() != null) {
             for (BandOwnershipEntity bandOwnershipEntity : source.getOwners()) {
-                owners.add(new BandOwnershipEntity(bandOwnershipEntity.getUser(), null, bandOwnershipEntity.getOwnerType()));
+                destination.getOwners().add(new BandOwnershipEntity(bandOwnershipEntity.getUser(), destination, bandOwnershipEntity.getOwnerType()));
             }
         }
 
-        destination.setMusicGenres(source.getMusicGenres());
+        if (destination.getMusicGenres() == null) {
+            destination.setMusicGenres(new HashSet<MusicGenreEntity>());
+        }
+        destination.getMusicGenres().clear();
+
+        if (source.getMusicGenres() != null) {
+            source.getMusicGenres().stream().forEach(mg -> {
+                destination.getMusicGenres().add(mg);
+            });
+        }
+
+
+        if (destination.getComponents() == null) {
+            destination.setComponents(new HashSet<BandComponentEntity>());
+        }
+        destination.getComponents().clear();
 
         if (source.getComponents() != null) {
-            destination.setComponents(new HashSet<BandComponentEntity>());
 
             source.getComponents().stream().forEach(c -> {
                 BandComponentEntity bandComponentEntity = new BandComponentEntity();
@@ -180,8 +209,12 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             });
         }
 
-        if (source.getContacts() != null) {
+        if (destination.getContacts() == null) {
             destination.setContacts(new HashSet<BandContactEntity>());
+        }
+        destination.getContacts().clear();
+
+        if (source.getContacts() != null) {
 
             source.getContacts().stream().forEach(c -> {
                 BandContactEntity bandContactEntity = new BandContactEntity(c.getEmailAddress(), c.getPhoneNumber());
@@ -192,8 +225,12 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             });
         }
 
-        if (source.getVideos() != null) {
+        if (destination.getVideos() == null) {
             destination.setVideos(new HashSet<VideoEntity>());
+        }
+        destination.getVideos().clear();
+
+        if (source.getVideos() != null) {
 
             source.getVideos().stream().forEach(v -> {
                 VideoEntity videoEntity = new VideoEntity();
@@ -204,8 +241,12 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             });
         }
 
-        if (source.getImages() != null) {
+        if (destination.getImages() == null) {
             destination.setImages(new HashSet<ImageEntity>());
+        }
+        destination.getImages().clear();
+
+        if (source.getImages() != null) {
 
             source.getImages().stream().forEach(i -> {
                 ImageEntity imageEntity = new ImageEntity();
@@ -220,8 +261,12 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             });
         }
 
-        if (source.getAudios() != null) {
+        if (destination.getAudios() == null) {
             destination.setAudios(new HashSet<AudioEntity>());
+        }
+        destination.getAudios().clear();
+
+        if (source.getAudios() != null) {
 
             source.getAudios().stream().forEach(a -> {
                 AudioEntity audioEntity = new AudioEntity();
@@ -723,6 +768,20 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
                     this.copyBandData(bandEntity, publishedVersion);
 
+                    session.delete(bandEntity);
+
+                    session.flush();
+
+
+                    publishedVersion.setId(bandEntity.getPublishedVersion().getId());
+
+                    //bandEntity = publishedVersion;
+
+                    publishedVersion.setPublishedVersion(null);
+                    publishedVersion.setStageVersions(null);
+
+
+
                     publishedVersion.setUpdated(Calendar.getInstance().getTime());
                     if (publishedVersion.getFirstPublishDate() == null) {
                         publishedVersion.setFirstPublishDate(Calendar.getInstance().getTime());
@@ -734,11 +793,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
                     session.update(publishedVersion);
 
-                    session.flush();
-
-                    session.delete(bandEntity);
-
-                    session.flush();
+                    //session.flush();
 
                     publishBandResult = new PublishBandResult(true, publishedVersion.getId(), null);
                 }
@@ -747,6 +802,8 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             return publishBandResult;
         });
     }
+
+
 
     private void addComponentInstrument(Long bandId, Long userId, Long instrumentId, Session session) {
         Criteria criteria = session.createCriteria(BandComponentEntity.class, "component");

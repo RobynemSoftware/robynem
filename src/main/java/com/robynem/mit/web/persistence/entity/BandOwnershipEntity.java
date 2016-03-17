@@ -9,15 +9,15 @@ import javax.persistence.*;
 @Table(name = "mit_bandOwnership")
 public class BandOwnershipEntity extends BaseEntity {
 
-    @ManyToOne( cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
     protected UserEntity user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "bandId", nullable = false)
     protected BandEntity band;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ownerTypeId")
     protected OwnerTypeEntity ownerType;
 
