@@ -65,4 +65,8 @@ public interface BandDao {
     void removeBandVideo(Long bandId, Long videoId);
 
     PublishBandResult publishBand(Long bandId, Long userId);
+
+    Long getStageVideoId(Long publishedBandId, Long publishedVideoId);
+
+    String getBandStatusCode(Long bandId);
 }

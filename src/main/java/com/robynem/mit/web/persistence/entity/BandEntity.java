@@ -5,6 +5,8 @@ import org.hibernate.annotations.*;
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +17,17 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "mit_band")
+@NamedQueries({
+        @NamedQuery(name = "@HQL_GET_STAGE_BAND_VIDEO_ID", query = "select sv.id\n" +
+                "    from BandEntity pb\n" +
+                "        inner join pb.videos pv\n" +
+                "        inner join pb.stageVersions sb\n" +
+                "        inner join sb.videos sv\n" +
+                "    where pb.id = :bandId and pv.id = :videoId and pv.youtubeUrl = sv.youtubeUrl"),
+        @NamedQuery(name = "@HQL_GET_BAND_STATUS_CODE", query = "select s.code from BandEntity b " +
+                "inner join b.status s " +
+                "where b.id = :bandId")
+})
 public class BandEntity extends BaseEntity {
 
     @Column

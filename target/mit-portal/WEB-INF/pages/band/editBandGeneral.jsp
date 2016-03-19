@@ -390,6 +390,8 @@
                     setTimeout(function() {$("#editBandUploadLogoImageDialog").dialog("close", 600);}, 600);
 
                     GENERAL_TAB_MODIFIED = true;
+
+                    showBandStatus();
                 }
             },
             complete: function(response)
@@ -481,6 +483,8 @@
             success: function(data)
             {
                 $("#tabs-general").html(data);
+
+                showBandStatus();
             },
             complete: function(response)
             {

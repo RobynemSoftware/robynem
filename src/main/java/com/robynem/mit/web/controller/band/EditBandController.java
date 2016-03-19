@@ -397,9 +397,29 @@ public class EditBandController extends BaseController {
         try {
 
             if (videoId != null) {
-                // We need it to create a stage version if needed
-                BandEntity bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.MEDIA);
-                this.bandDao.removeBandVideo(bandEntity.getId(), videoId);
+
+                Long bandId = null;
+
+                // Checks actual band status
+                String code = this.bandDao.getBandStatusCode(this.getSessionAttribute(Constants.EDIT_BAND_ID));
+
+                if (EntityStatus.PUBLISHED.toString().equals(code)) {
+
+                    /*We store the published id before createìing a stage version. After session id will be replaced.*/
+                    Long publishedBandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+
+                    // We need it to create a stage version for modification
+                    BandEntity bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.MEDIA);
+
+                    // Rtrieves the viedo id belonging to the stage versione
+                    videoId = this.bandDao.getStageVideoId(publishedBandId, videoId);
+
+                    bandId = bandEntity.getId();
+                } else {
+                    bandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+                }
+
+                this.bandDao.removeBandVideo(bandId, videoId);
             }
 
             modelMap.addAttribute("success", true);

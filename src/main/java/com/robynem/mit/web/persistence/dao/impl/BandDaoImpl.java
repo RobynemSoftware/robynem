@@ -13,20 +13,15 @@ import com.robynem.mit.web.util.PublishBandResult;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.*;
 import org.hibernate.criterion.*;
-import org.hibernate.transform.ResultTransformer;
-import org.hibernate.transform.Transformers;
-import org.hibernate.type.StringType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.print.attribute.standard.RequestingUserName;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by robyn_000 on 13/01/2016.
@@ -820,6 +815,37 @@ public class BandDaoImpl extends BaseDao implements BandDao {
         });
     }
 
+    @Override
+    /**
+     * From a published band id and a published video id, it returns the stage version video id matching the same youube url.
+     */
+    public Long getStageVideoId(Long publishedBandId, Long publishedVideoId) {
+        Long videoId = null;
+
+        List<Long> result = this.hibernateTemplate.findByNamedQueryAndNamedParam(
+                "@HQL_GET_STAGE_BAND_VIDEO_ID", new String[] {"bandId", "videoId"},
+                new Object[] {publishedBandId, publishedVideoId});
+
+        if (result != null && result.size() > 0) {
+            videoId = result.get(0);
+        }
+
+        return videoId;
+    }
+
+    @Override
+    public String getBandStatusCode(Long bandId) {
+        String code = null;
+
+        List<String> result = this.hibernateTemplate.findByNamedQueryAndNamedParam(
+                "@HQL_GET_BAND_STATUS_CODE", "bandId", bandId);
+
+        if (result != null && result.size() > 0) {
+            code = result.get(0);
+        }
+
+        return code;
+    }
 
 
     private void addComponentInstrument(Long bandId, Long userId, Long instrumentId, Session session) {
