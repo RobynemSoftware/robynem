@@ -82,11 +82,7 @@
 </div>
 
 <script type="text/javascript">
-    /*var FORM_TAB_MAPPING = ["editBandGeneralForm"];
-
-    var FORM_TAB_VALIDATION_MAPPING = [function () {
-        return validateGeneralForm();
-    }];*/
+    var GENERAL_TAB_MODIFIED = false;
 
 
     $(function () {
@@ -101,7 +97,7 @@
 
         initSetNameDialog();
 
-        showBandStatus();
+        //showBandStatus();
 
         initPublishButton();
     }
@@ -115,16 +111,14 @@
                 //console.log("new tab id: " + id);
 
                 /*If we're leaveng general form, we save it before.*/
-                if (oldId == "tabs-general") {
+                console.log("formField modified: " + GENERAL_TAB_MODIFIED);
+                if (oldId == "tabs-general" && GENERAL_TAB_MODIFIED == true) {
 
                         if (validateGeneralForm()) {
                             $("#editBandGeneralForm").submit();
                         } else {
                             return false;
                         }
-
-
-
                 }
 
                 switch(id) {
@@ -206,6 +200,10 @@
                 dataType : "html",
                 success : function(data) {
                     $("#tabs-general").html(data);
+
+                    GENERAL_TAB_MODIFIED = false;
+
+                    showBandStatus();
                 }
             });
         });
@@ -221,6 +219,8 @@
                 dataType : "html",
                 success : function(data) {
                     $("#tabs-components").html(data);
+
+                    showBandStatus();
                 }
             });
         });
@@ -236,35 +236,42 @@
                 dataType : "html",
                 success : function(data) {
                     $("#tabs-media").html(data);
+
+                    showBandStatus();
                 }
             });
         });
     }
 
     function showBandStatus() {
-        $.ajax({
-            url : "${contextPath}/private/editBand/getBandStatus",
-            data : {
-                bandId : ${bandId != null ? bandId : 0}
-            },
-            dataType : "json",
-            cache : false,
-            global : false,
-            success : function (data) {
-                $(".bandStatus").val("");
 
-                if (data.bandStatus != null) {
-                    var alertMessage = "";
-                    if (data.bandStatus == '<%=EntityStatus.NOT_PUBLISHED.toString()%>') {
-                        alertMessage = "<spring:message code="band.status.not-published.alert"></spring:message>";
-                    } else if (data.bandStatus == '<%=EntityStatus.STAGE.toString()%>') {
-                        alertMessage = "<spring:message code="band.status.stage.alert"></spring:message>";
+        setTimeout(function () {
+            $.ajax({
+                url : "${contextPath}/private/editBand/getBandStatus",
+                data : {
+                    bandId : ${bandId != null ? bandId : 0}
+                },
+                dataType : "json",
+                cache : false,
+                global : false,
+                success : function (data) {
+                    $(".bandStatus").val("");
+
+                    if (data.bandStatus != null) {
+                        var alertMessage = "";
+                        if (data.bandStatus == '<%=EntityStatus.NOT_PUBLISHED.toString()%>') {
+                            alertMessage = "<spring:message code="band.status.not-published.alert"></spring:message>";
+                        } else if (data.bandStatus == '<%=EntityStatus.STAGE.toString()%>') {
+                            alertMessage = "<spring:message code="band.status.stage.alert"></spring:message>";
+                        }
+
+                        $(".bandStatus").html(alertMessage);
                     }
-
-                    $(".bandStatus").html(alertMessage);
                 }
-            }
-        });
+            });
+        }, 1000);
+
+
     }
 
     function initPublishButton() {

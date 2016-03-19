@@ -40,7 +40,7 @@ public class BandEntity extends BaseEntity {
     @JoinColumn(name = "modifiedByUserId")
     protected UserEntity modifiedBy;
 
-    @OneToMany(mappedBy = "band", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "band", cascade = CascadeType.ALL, orphanRemoval = true)
     protected Set<BandOwnershipEntity> owners;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

@@ -109,7 +109,7 @@
                 </div>
 
                 <div class="col-md-9">
-                    <input type="text" class="form-control" id="editBandTown" name="town"
+                    <input type="text" class="form-control formField" id="editBandTown" name="town"
                            placeholder="<spring:message code="smart-search.insert.location"></spring:message>"/>
                     <input type="hidden" id="editBandPlaceId" name="placeId">
                 </div>
@@ -207,7 +207,7 @@
                                     <c:forEach var="contact" items="${bandModel.emailContacts}" varStatus="status">
                                         <div id="email_${status.index}" class="row">
                                             <div class="col-md-10">
-                                                <input type="email" name="emailContact" class="form-control emailText" value="${contact.value}" />
+                                                <input type="email" name="emailContact" class="form-control emailText formField" value="${contact.value}" />
                                             </div>
                                             <div class="col-md-2">
                                                 <img src="${contextPath}/resources/images/delete_32x32.png" class="img-responsive clickable" onclick="javascript:removeContactField('email_${status.index}')">
@@ -239,7 +239,7 @@
                                     <c:forEach var="contact" items="${bandModel.phoneNumberContacts}" varStatus="status">
                                         <div id="phone_${status.index}" class="row">
                                             <div class="col-md-10">
-                                                <input type="tel" name="phoneContact" class="form-control phoneText" value="${contact.value}"/>
+                                                <input type="tel" name="phoneContact" class="form-control phoneText formField" value="${contact.value}"/>
                                             </div>
                                             <div class="col-md-2">
                                                 <img src="${contextPath}/resources/images/delete_32x32.png" class="img-responsive clickable" onclick="javascript:removeContactField('phone_${status.index}')">
@@ -383,11 +383,13 @@
                 $("#progress").attr("aria-valuenow", "100");
                 $("#progress").children("span").html("100");
 
-                console.log("uploadedImageId: " + data.uploadedImageId);
+                //console.log("uploadedImageId: " + data.uploadedImageId);
                 if (data.uploadedImageId != null) {
                     $(".logoImage").attr("src", "${contextPath}/media/getBandImage?imageId=" + data.uploadedImageId + "&size=MEDIUM&" + new Date().getTime());
                     console.log("Img src attr: " + $(".logoImage").attr("src"));
                     setTimeout(function() {$("#editBandUploadLogoImageDialog").dialog("close", 600);}, 600);
+
+                    GENERAL_TAB_MODIFIED = true;
                 }
             },
             complete: function(response)
@@ -452,6 +454,13 @@
                 e.preventDefault();
             }
 
+        });
+
+        // Set general form modified on formField change
+        $("#editBandGeneralForm .formField").change(function () {
+            GENERAL_TAB_MODIFIED = true;
+
+            //console.log("formField modified!");
         });
     }
 
@@ -588,7 +597,7 @@
         var col1 = $("<div class=\"col-md-10\"></div>");
         var col2 = $("<div class=\"col-md-2\"></div>");
 
-        var input = $("<input type=\"email\" name=\"emailContact\" class=\"form-control emailText\" />");
+        var input = $("<input type=\"email\" name=\"emailContact\" class=\"form-control emailText formField\" />");
         var img = $("<img  class='img-responsive clickable' />")
                 .attr("src", "${contextPath}" + "/resources/images/delete_32x32.png")
                 .bind("click", null, function() {
@@ -602,6 +611,8 @@
 
         row.appendTo($("#emailList"));
 
+        GENERAL_TAB_MODIFIED = true;
+
     }
 
     function addPhoneContactField() {
@@ -612,7 +623,7 @@
         var col1 = $("<div class=\"col-md-10\"></div>");
         var col2 = $("<div class=\"col-md-2\"></div>");
 
-        var input = $("<input type=\"tel\" name=\"phoneContact\" class=\"form-control phoneText\" />");
+        var input = $("<input type=\"tel\" name=\"phoneContact\" class=\"form-control phoneText formField\" />");
         var img = $("<img  class='img-responsive clickable' />")
                 .attr("src", "${contextPath}" + "/resources/images/delete_32x32.png")
                 .bind("click", null, function() {
@@ -626,10 +637,12 @@
 
         row.appendTo($("#phoneList"));
 
+        GENERAL_TAB_MODIFIED = true;
     }
 
     function removeContactField(id) {
         $("#" + id).remove();
+        GENERAL_TAB_MODIFIED = true;
     }
 
 

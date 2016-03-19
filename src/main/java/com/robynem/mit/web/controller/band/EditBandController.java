@@ -142,7 +142,7 @@ public class EditBandController extends BaseController {
             bandModel = this.getBandModel(bandEntity, EditBandTabIndex.GENERAL);
 
             modelMap.addAttribute("bandModel", bandModel);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             this.manageException(e, LOG, modelMap);
         } finally {
             System.gc();
@@ -374,7 +374,9 @@ public class EditBandController extends BaseController {
 
             Long videoId = null;
             if (StringUtils.isNotBlank(youtubeUrl)) {
-                videoId = this.bandDao.addBandVideo(this.getSessionAttribute(Constants.EDIT_BAND_ID), new VideoEntity(StringUtils.trimToEmpty(youtubeUrl)));
+                // We need it to create a stage version if needed
+                BandEntity bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.MEDIA);
+                videoId = this.bandDao.addBandVideo(bandEntity.getId(), new VideoEntity(StringUtils.trimToEmpty(youtubeUrl)));
             }
 
             modelMap.addAttribute("success", true);
@@ -395,7 +397,9 @@ public class EditBandController extends BaseController {
         try {
 
             if (videoId != null) {
-                this.bandDao.removeBandVideo(this.getSessionAttribute(Constants.EDIT_BAND_ID), videoId);
+                // We need it to create a stage version if needed
+                BandEntity bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.MEDIA);
+                this.bandDao.removeBandVideo(bandEntity.getId(), videoId);
             }
 
             modelMap.addAttribute("success", true);
@@ -779,6 +783,8 @@ public class EditBandController extends BaseController {
         } catch (Throwable e) {
             modelMap.addAttribute("success", false);
             this.manageException(e, LOG, modelMap);
+        } finally {
+            System.gc();
         }
 
         return modelAndView;

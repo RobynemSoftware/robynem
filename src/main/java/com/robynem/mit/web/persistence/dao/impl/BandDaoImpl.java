@@ -220,6 +220,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 bandComponentEntity.setUser(c.getUser());
                 bandComponentEntity.setSinger(c.isSinger());
                 bandComponentEntity.setDiscJockey(c.isDiscJockey());
+                bandComponentEntity.setConfirmed(c.isConfirmed());
 
                 destination.getComponents().add(bandComponentEntity);
             });

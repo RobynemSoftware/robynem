@@ -96,7 +96,7 @@
         $(".notificationContent").mouseover(function() {
             var isUnread = $(this).attr("isUnread");
 
-            console.log("isUnread: " + isUnread);
+            //console.log("isUnread: " + isUnread);
 
             if (isUnread == "true") {
                 var notificationId = $(this).prop("id");

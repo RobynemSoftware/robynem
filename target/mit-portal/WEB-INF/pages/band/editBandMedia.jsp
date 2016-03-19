@@ -245,6 +245,7 @@
                                             if (data.success == true) {
                                                 newVideoId = data.newVideoId;
                                                 //console.log("newVideoId: " + newVideoId);
+                                                showBandStatus();
                                             }
                                         },
                                         complete : function() {
@@ -445,6 +446,8 @@
                 //console.log("uploadedImageId: " + data.uploadedImageId);
                 if (data.success == true && data.uploadedAudioId != null && data.uploadedAudioName != null) {
                     addAudio(data.uploadedAudioId, data.uploadedAudioName);
+
+                    showBandStatus();
                 }
             },
             complete: function(response)
@@ -595,6 +598,8 @@
                     showApplicationMessages(data);
 
                     success = data.success;
+
+                    showBandStatus();
                 },
                 complete : function() {
                     $.unblockUI();

@@ -34,7 +34,7 @@ function TagViewer(settings) {
             tagRow = containerChildren.first();
         }
 
-        console.log("tagRow: " + tagRow.html());
+        //console.log("tagRow: " + tagRow.html());
 
         var tag = $("<div class=\"\"></div>").addClass($tagClass);
         var span = $("<span></span>").append(name);
@@ -59,12 +59,12 @@ function TagViewer(settings) {
 
         tagRow = tagRow.append(tag);
 
-        console.log("addTagRow: " + addTagRow);
+        //console.log("addTagRow: " + addTagRow);
         if (addTagRow) {
             $tagContainerObj = $tagContainerObj.append(tagRow);
         }
 
-        console.log("tagContainerObj: " + $tagContainerObj.html());
+        //console.log("tagContainerObj: " + $tagContainerObj.html());
 
     }
 
