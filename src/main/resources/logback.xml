@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds">
 
-    <property name="logFile" value="${catalina.home}/logs/mit-logs.log" />
-    <property name="backupLogFile" value="${catalina.home}/logs/backup/mit-logs" />
+    <property name="logFile" value="${catalina.home}/logs/mit-logs/mit-logs.log" />
+    <property name="backupLogFile" value="${catalina.home}/logs/mit-logs/backup/mit-logs" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">

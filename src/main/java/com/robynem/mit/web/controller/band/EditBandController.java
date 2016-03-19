@@ -995,9 +995,8 @@ public class EditBandController extends BaseController {
                 this.addSessionAttribute(Constants.EDIT_BAND_ID, bandEntity.getId());
 
             } else if (forSave && bandEntity.getPublishedVersion() == null) {
-                // if it hasn't a stage version, we create one else we use it.
-                stageVersion = new BandEntity();
-                this.bandDao.copyBandData(bandEntity.getId(), stageVersion);
+                // if it hasn't a stage version, we create one and we use it.
+                stageVersion = this.bandDao.createStageVersion(bandEntity.getId());
 
                 this.addSessionAttribute(Constants.EDIT_BAND_ID, stageVersion.getId());
 

@@ -104,7 +104,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
                 // Creates and save stage version
                 BandEntity stageVersion = thisInstance.createStageVersion(parentBandEntity);
-                session.saveOrUpdate(stageVersion);
+                //session.saveOrUpdate(stageVersion); we save it into createStageVersioneMethod
 
                 // Save the band ownership
                 BandOwnershipEntity stageBandOwnershipEntity = new BandOwnershipEntity(ownerUser, stageVersion, ownerOwnerTypeEntity);
@@ -126,18 +126,34 @@ public class BandDaoImpl extends BaseDao implements BandDao {
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
     public BandEntity createStageVersion(BandEntity parentBand) {
-        BandEntity stage = new BandEntity();
+        return this.hibernateTemplate.execute(session -> {
+            BandEntity stage = new BandEntity();
+            // Gets the  STAGE status
+            Query statusQuery = session.getNamedQuery("@HQL_GET_ENTITY_STATUS_BY_CODE");
+            statusQuery.setParameter("code", EntityStatus.STAGE.toString());
 
-        // Gets the  STAGE status
-        List<EntityStatusEntity> entityStatusEntityList = this.hibernateTemplate.findByNamedQueryAndNamedParam("@HQL_GET_ENTITY_STATUS_BY_CODE", "code", EntityStatus.STAGE.toString());
-        EntityStatusEntity stageStatus = (EntityStatusEntity) entityStatusEntityList.get(0);
+            EntityStatusEntity stageStatus = (EntityStatusEntity) statusQuery.uniqueResult();
 
-        this.copyBandData(parentBand, stage);
+            this.copyBandData(parentBand, stage);
 
-        stage.setPublishedVersion(parentBand);
-        stage.setStatus(stageStatus);
+            stage.setPublishedVersion(parentBand);
+            stage.setStatus(stageStatus);
 
-        return stage;
+            session.saveOrUpdate(stage);
+
+            return stage;
+        });
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public BandEntity createStageVersion(Long parentBandId) {
+        return this.hibernateTemplate.execute(session -> {
+            BandEntity parentBandEntity = (BandEntity) session.get(BandEntity.class, parentBandId);
+
+            return this.createStageVersion(parentBandEntity);
+        });
     }
 
     @Override

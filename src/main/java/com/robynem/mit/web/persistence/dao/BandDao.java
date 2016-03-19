@@ -21,6 +21,8 @@ public interface BandDao {
 
     BandEntity createStageVersion(BandEntity parentBand);
 
+    BandEntity createStageVersion(Long parentBandId);
+
     /**
      * Overrides destination attributs with source's ones, setting destination id on copied relations.
      * @param source

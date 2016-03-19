@@ -76,7 +76,7 @@ public class BandEntity extends BaseEntity {
      */
     protected BandEntity publishedVersion;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "publishedVersion", fetch = FetchType.LAZY)
     protected List<BandEntity> stageVersions;
 
     @ManyToMany(fetch = FetchType.LAZY)
