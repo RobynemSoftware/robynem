@@ -376,7 +376,11 @@ public class EditBandController extends BaseController {
             if (StringUtils.isNotBlank(youtubeUrl)) {
                 // We need it to create a stage version if needed
                 BandEntity bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.MEDIA);
-                videoId = this.bandDao.addBandVideo(bandEntity.getId(), new VideoEntity(StringUtils.trimToEmpty(youtubeUrl)));
+
+                VideoEntity videoEntity = new VideoEntity(StringUtils.trimToEmpty(youtubeUrl));
+                videoEntity.setLinkId(PortalHelper.getUniqueId());
+
+                videoId = this.bandDao.addBandVideo(bandEntity.getId(), videoEntity);
             }
 
             modelMap.addAttribute("success", true);
@@ -468,10 +472,12 @@ public class EditBandController extends BaseController {
         ModelAndView modelAndView = new ModelAndView("band/editBandComponentsList");
 
         try {
+            // We create a stage version if needed.
+            BandEntity bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.COMPONENTS);
             // Add component
-            this.bandDao.addSelectedComponent(this.getSessionAttribute(Constants.EDIT_BAND_ID), userId, this.getAuthenticatedUser().getId());
+            this.bandDao.addSelectedComponent(bandEntity.getId(), userId, this.getAuthenticatedUser().getId());
 
-            BandEntity bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.COMPONENTS);
+            bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.COMPONENTS);
 
             //Creates the model
             BandModel bandModel = new BandModel();
@@ -527,10 +533,12 @@ public class EditBandController extends BaseController {
         ModelAndView modelAndView = new ModelAndView("band/editBandComponentsList");
 
         try {
+            // We create stage version if needed
+            BandEntity bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.COMPONENTS);
             // Add component
-            this.bandDao.removeComponent(this.getSessionAttribute(Constants.EDIT_BAND_ID), userId, this.getAuthenticatedUser().getId());
+            this.bandDao.removeComponent(bandEntity.getId(), userId, this.getAuthenticatedUser().getId());
 
-            BandEntity bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.COMPONENTS);
+            bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.COMPONENTS);
 
             //Creates the model
             BandModel bandModel = new BandModel();
@@ -549,10 +557,22 @@ public class EditBandController extends BaseController {
     }
 
     @RequestMapping(value = "/saveComponentInstrument", method = RequestMethod.POST)
-    public AbstractView saveComponentInstrument(@RequestParam Long userId, @RequestParam Long instrumentId, @RequestParam boolean selected, ModelMap modelMap) {
+    public ModelAndView saveComponentInstrument(@RequestParam Long userId, @RequestParam Long instrumentId, @RequestParam boolean selected, ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("band/editBandComponentsList");
 
         try {
-            this.bandDao.saveComponentInstrument(this.getSessionAttribute(Constants.EDIT_BAND_ID), userId, instrumentId, selected);
+            // We create stage version if needed
+            BandEntity bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.COMPONENTS);
+
+            this.bandDao.saveComponentInstrument(bandEntity.getId(), userId, instrumentId, selected);
+
+            bandEntity = this.getBandToEdit(false, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.COMPONENTS);
+
+            //Creates the model
+            BandModel bandModel = new BandModel();
+            this.setComponentsModel(bandModel, bandEntity);
+
+            modelMap.addAttribute("bandModel", bandModel);
 
             modelMap.addAttribute("success", true);
         } catch (Throwable e) {
@@ -560,14 +580,46 @@ public class EditBandController extends BaseController {
             this.manageException(e, LOG, modelMap);
         }
 
-        return this.getJsonView(modelMap);
+        return modelAndView;
     }
 
     @RequestMapping(value = "/saveComponentSinger", method = RequestMethod.POST)
-     public AbstractView saveComponentSinger(@RequestParam Long bandComponentId, @RequestParam boolean selected, ModelMap modelMap) {
+     public ModelAndView saveComponentSinger(@RequestParam Long bandComponentId, @RequestParam boolean selected, ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("band/editBandComponentsList");
 
         try {
-            this.bandDao.saveBandComponentSinger(this.getSessionAttribute(Constants.EDIT_BAND_ID), bandComponentId, selected);
+            Long bandId = null;
+
+            BandEntity bandEntity = null;
+
+                    // Checks actual band status
+            String code = this.bandDao.getBandStatusCode(this.getSessionAttribute(Constants.EDIT_BAND_ID));
+
+            if (EntityStatus.PUBLISHED.toString().equals(code)) {
+
+		        /*We store the published id before creatìng a stage version. After session id will be replaced.*/
+                Long publishedBandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+
+                // We need it to create a stage version for modification
+                bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.COMPONENTS);
+
+                // Rtrieves the component id belonging to the stage version
+                bandComponentId = this.bandDao.getStageBandComponentId(publishedBandId, bandComponentId);
+
+                bandId = bandEntity.getId();
+            } else {
+                bandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+            }
+
+            this.bandDao.saveBandComponentSinger(bandId, bandComponentId, selected);
+
+            bandEntity = this.getBandToEdit(false, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.COMPONENTS);
+
+            //Creates the model
+            BandModel bandModel = new BandModel();
+            this.setComponentsModel(bandModel, bandEntity);
+
+            modelMap.addAttribute("bandModel", bandModel);
 
             modelMap.addAttribute("success", true);
         } catch (Throwable e) {
@@ -575,22 +627,55 @@ public class EditBandController extends BaseController {
             this.manageException(e, LOG, modelMap);
         }
 
-        return this.getJsonView(modelMap);
+        return modelAndView;
     }
 
     @RequestMapping(value = "/saveComponentDiscJockey", method = RequestMethod.POST)
-    public AbstractView saveComponentDiscJockey(@RequestParam Long bandComponentId, @RequestParam boolean selected, ModelMap modelMap) {
+    public ModelAndView saveComponentDiscJockey(@RequestParam Long bandComponentId, @RequestParam boolean selected, ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("band/editBandComponentsList");
 
         try {
-            this.bandDao.saveBandComponentDiscJockey(this.getSessionAttribute(Constants.EDIT_BAND_ID), bandComponentId, selected);
+            Long bandId = null;
+
+            BandEntity bandEntity = null;
+
+            // Checks actual band status
+            String code = this.bandDao.getBandStatusCode(this.getSessionAttribute(Constants.EDIT_BAND_ID));
+
+            if (EntityStatus.PUBLISHED.toString().equals(code)) {
+
+		        /*We store the published id before creatìng a stage version. After session id will be replaced.*/
+                Long publishedBandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+
+                // We need it to create a stage version for modification
+                bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.COMPONENTS);
+
+                // Rtrieves the component id belonging to the stage version
+                bandComponentId = this.bandDao.getStageBandComponentId(publishedBandId, bandComponentId);
+
+                bandId = bandEntity.getId();
+            } else {
+                bandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+            }
+
+            this.bandDao.saveBandComponentDiscJockey(bandId, bandComponentId, selected);
+
+            bandEntity = this.getBandToEdit(false, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.COMPONENTS);
+
+            //Creates the model
+            BandModel bandModel = new BandModel();
+            this.setComponentsModel(bandModel, bandEntity);
+
+            modelMap.addAttribute("bandModel", bandModel);
 
             modelMap.addAttribute("success", true);
+
         } catch (Throwable e) {
             modelMap.addAttribute("success", false);
             this.manageException(e, LOG, modelMap);
         }
 
-        return this.getJsonView(modelMap);
+        return modelAndView;
     }
 
     @RequestMapping("/searchComponents")
@@ -674,9 +759,12 @@ public class EditBandController extends BaseController {
                             MessageSeverity.FATAL, null, modelMap);
                 } else {
 
+                    // We need it to create a stage version if needed
+                    BandEntity bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.MEDIA);
+
                     ByteArrayInputStream bais = new ByteArrayInputStream(image.getBytes());
 
-                    Long imageId = this.mediaDao.addBandGalleryImage(this.getSessionAttribute(Constants.EDIT_BAND_ID), bais);
+                    Long imageId = this.mediaDao.addBandGalleryImage(bandEntity.getId(), bais);
 
                     modelMap.put("success", true);
                     modelMap.put("uploadedImageId", imageId);
@@ -725,8 +813,27 @@ public class EditBandController extends BaseController {
     public AbstractView removeGalleryImage(@RequestParam Long imageId, ModelMap modelMap) {
 
         try {
+            Long bandId = null;
 
-            this.mediaDao.removeBandGalleryImage(this.getSessionAttribute(Constants.EDIT_BAND_ID), imageId);
+            // Checks actual band status
+            String code = this.bandDao.getBandStatusCode(this.getSessionAttribute(Constants.EDIT_BAND_ID));
+
+            if (EntityStatus.PUBLISHED.toString().equals(code)) {
+                /*We store the published id before createìing a stage version. After session id will be replaced.*/
+                Long publishedBandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+
+                // We need it to create a stage version for modification
+                BandEntity bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.MEDIA);
+
+                // Rtrieves the viedo id belonging to the stage versione
+                imageId = this.bandDao.getStageGalleryImageId(publishedBandId, imageId);
+
+                bandId = bandEntity.getId();
+            } else {
+                bandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+            }
+
+            this.mediaDao.removeBandGalleryImage(bandId, imageId);
 
             modelMap.put("success", true);
         } catch (Throwable e) {

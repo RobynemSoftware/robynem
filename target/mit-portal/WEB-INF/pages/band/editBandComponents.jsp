@@ -252,6 +252,8 @@
                         success: function(data) {
                             $("#editBandComponentsNameAutocomplete").val("");
                             $("#editBandComponentsList").html(data);
+
+                            showBandStatus();
                         }
                     });
                 });

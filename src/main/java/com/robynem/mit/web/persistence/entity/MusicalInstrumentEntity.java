@@ -16,8 +16,6 @@ public class MusicalInstrumentEntity extends BaseEntity {
     @Column(nullable = false, unique = true)
     protected String name;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "playedMusicInstruments")
-    protected Set<UserEntity> users;
 
     public MusicalInstrumentEntity() {
 

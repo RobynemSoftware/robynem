@@ -217,6 +217,21 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 bandComponentEntity.setDiscJockey(c.isDiscJockey());
                 bandComponentEntity.setConfirmed(c.isConfirmed());
 
+                if (c.getPlayedInstruments() != null) {
+                    if (bandComponentEntity.getPlayedInstruments() == null) {
+                        bandComponentEntity.setPlayedInstruments(new HashSet<MusicalInstrumentEntity>());
+                    }
+                    bandComponentEntity.getPlayedInstruments().clear();
+
+                    c.getPlayedInstruments().stream().forEach(pi -> {
+                        MusicalInstrumentEntity musicalInstrumentEntity = new MusicalInstrumentEntity();
+                        musicalInstrumentEntity.setId(pi.getId());
+                        musicalInstrumentEntity.setName(pi.getName());
+
+                        bandComponentEntity.getPlayedInstruments().add(musicalInstrumentEntity);
+                    });
+                }
+
                 destination.getComponents().add(bandComponentEntity);
             });
         }
@@ -249,6 +264,8 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
                 videoEntity.setYoutubeUrl(v.getYoutubeUrl());
 
+                videoEntity.setLinkId(v.getLinkId());
+
                 destination.getVideos().add(videoEntity);
             });
         }
@@ -268,6 +285,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 imageEntity.setMediumFile(i.getMediumFile());
                 imageEntity.setOriginalFile(i.getOriginalFile());
                 imageEntity.setSmallFile(i.getSmallFile());
+                imageEntity.setLinkId(i.getLinkId());
 
                 destination.getImages().add(imageEntity);
             });
@@ -831,6 +849,36 @@ public class BandDaoImpl extends BaseDao implements BandDao {
         }
 
         return videoId;
+    }
+
+    @Override
+    public Long getStageGalleryImageId(Long publishedBandId, Long publishedImageId) {
+        Long imageId = null;
+
+        List<Long> result = this.hibernateTemplate.findByNamedQueryAndNamedParam(
+                "@HQL_GET_STAGE_BAND_IMAGE_ID", new String[] {"bandId", "imageId"},
+                new Object[] {publishedBandId, publishedImageId});
+
+        if (result != null && result.size() > 0) {
+            imageId = result.get(0);
+        }
+
+        return imageId;
+    }
+
+    @Override
+    public Long getStageBandComponentId(Long publishedBandId, Long publishedBandComponentId) {
+        Long componentId = null;
+
+        List<Long> result = this.hibernateTemplate.findByNamedQueryAndNamedParam(
+                "@HQL_GET_STAGE_BAND_COMPONENT_ID", new String[] {"bandId", "componentId"},
+                new Object[] {publishedBandId, publishedBandComponentId});
+
+        if (result != null && result.size() > 0) {
+            componentId = result.get(0);
+        }
+
+        return componentId;
     }
 
     @Override

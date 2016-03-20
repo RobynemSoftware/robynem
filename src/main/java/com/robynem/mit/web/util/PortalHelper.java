@@ -92,6 +92,12 @@ public class PortalHelper {
 
 
     public synchronized static Long getUniqueId() {
+        try {
+            Thread.sleep(2);
+        } catch (InterruptedException e) {
+            LOG.error(e.getMessage(), e);
+        }
+
         return Calendar.getInstance().getTimeInMillis();
     }
 

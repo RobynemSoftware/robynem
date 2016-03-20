@@ -374,6 +374,8 @@
                 //console.log("uploadedImageId: " + data.uploadedImageId);
                 if (data.uploadedImageId != null) {
                     addGalleryImage(data.uploadedImageId);
+
+                    showBandStatus();
                 }
             },
             complete: function(response)
@@ -509,6 +511,8 @@
 
                         if (data.success == true) {
                             col.remove();
+
+                            showBandStatus();
                         }
                     }
                 });
@@ -563,6 +567,8 @@
 
                             if (data.success == true) {
                                 row.remove();
+
+                                showBandStatus();
                             }
                         }
                     });

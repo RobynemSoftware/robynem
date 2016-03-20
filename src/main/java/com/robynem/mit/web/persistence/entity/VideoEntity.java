@@ -15,6 +15,12 @@ public class VideoEntity extends BaseEntity {
     @Column
     protected String youtubeUrl;
 
+    /**
+     * Used to link published version to stage one
+     */
+    @Column
+    protected Long linkId;
+
     public VideoEntity() {
 
     }
@@ -30,5 +36,13 @@ public class VideoEntity extends BaseEntity {
 
     public void setYoutubeUrl(String youtubeUrl) {
         this.youtubeUrl = youtubeUrl;
+    }
+
+    public Long getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(Long linkId) {
+        this.linkId = linkId;
     }
 }

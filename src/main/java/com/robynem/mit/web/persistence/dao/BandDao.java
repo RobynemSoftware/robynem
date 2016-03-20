@@ -68,5 +68,9 @@ public interface BandDao {
 
     Long getStageVideoId(Long publishedBandId, Long publishedVideoId);
 
+    Long getStageGalleryImageId(Long publishedBandId, Long publishedImageId);
+
+    Long getStageBandComponentId(Long publishedBandId, Long publishedBandComponentId);
+
     String getBandStatusCode(Long bandId);
 }

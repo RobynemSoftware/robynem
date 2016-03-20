@@ -45,7 +45,7 @@
                                                           disabled="disabled"
                     </c:if>
 
-                                                          onclick="javascript:saveComponentSinger(${component.id}, this);"
+                                        data="${component.id}"   onclick="javascript:saveComponentSinger(this);"
                             ><spring:message code="profile.musician-form.singer"></spring:message></label>
 
                     <br/>
@@ -62,7 +62,7 @@
                                                           disabled="disabled"
                     </c:if>
 
-                                                          onclick="javascript:saveComponentDiscJockey(${component.id}, this);"
+                                           data="${component.id}"  onclick="javascript:saveComponentDiscJockey(this);"
                             ><spring:message code="profile.musician-form.dj"></spring:message></label>
 
                     <br/>
@@ -118,7 +118,7 @@
             $.ajax({
                 url: "${contextPath}/private/editBand/saveComponentInstrument",
                 type: "post",
-                dataType: "json",
+                dataType: "html",
                 data: {
                     userId : userId,
                     instrumentId: instrumentId,
@@ -127,9 +127,9 @@
                 success: function(data) {
                     showApplicationMessages(data);
 
-                    if (!data.success) {
-                        chk.attr("checked", !checked);
-                    }
+                    $("#editBandComponentsList").html(data);
+
+                    showBandStatus();
                 },
                 error: function() {
                     chk.attr("checked", !checked);
@@ -138,8 +138,9 @@
         });
     }
 
-    function saveComponentSinger(bandComponentId, checkboxObject) {
+    function saveComponentSinger(checkboxObject) {
         var chk = $(checkboxObject);
+        var bandComponentId = chk.attr("data");
 
         var checked = chk.is(":checked");
 
@@ -147,7 +148,7 @@
             $.ajax({
                 url: "${contextPath}/private/editBand/saveComponentSinger",
                 type: "post",
-                dataType: "json",
+                dataType: "html",
                 data: {
                     bandComponentId : bandComponentId,
                     selected: checked
@@ -155,9 +156,9 @@
                 success: function(data) {
                     showApplicationMessages(data);
 
-                    if (!data.success) {
-                        chk.attr("checked", !checked);
-                    }
+                    $("#editBandComponentsList").html(data);
+
+                    showBandStatus();
                 },
                 error: function() {
                     chk.attr("checked", !checked);
@@ -166,8 +167,9 @@
         });
     }
 
-    function saveComponentDiscJockey(bandComponentId, checkboxObject) {
+    function saveComponentDiscJockey(checkboxObject) {
         var chk = $(checkboxObject);
+        var bandComponentId = chk.attr("data");
 
         var checked = chk.is(":checked");
 
@@ -175,7 +177,7 @@
             $.ajax({
                 url: "${contextPath}/private/editBand/saveComponentDiscJockey",
                 type: "post",
-                dataType: "json",
+                dataType: "html",
                 data: {
                     bandComponentId : bandComponentId,
                     selected: checked
@@ -183,9 +185,9 @@
                 success: function(data) {
                     showApplicationMessages(data);
 
-                    if (!data.success) {
-                        chk.attr("checked", !checked);
-                    }
+                    $("#editBandComponentsList").html(data);
+
+                    showBandStatus();
                 },
                 error: function() {
                     chk.attr("checked", !checked);
@@ -206,6 +208,8 @@
                     },
                     success: function(data) {
                         $("#editBandComponentsList").html(data);
+
+                        showBandStatus();
                     }
                 });
             });

@@ -23,7 +23,19 @@ import java.util.Set;
                 "        inner join pb.videos pv\n" +
                 "        inner join pb.stageVersions sb\n" +
                 "        inner join sb.videos sv\n" +
-                "    where pb.id = :bandId and pv.id = :videoId and pv.youtubeUrl = sv.youtubeUrl"),
+                "    where pb.id = :bandId and pv.id = :videoId and pv.linkId = sv.linkId"),
+        @NamedQuery(name = "@HQL_GET_STAGE_BAND_IMAGE_ID", query = "select si.id\n" +
+                "    from BandEntity pb\n" +
+                "        inner join pb.images pi\n" +
+                "        inner join pb.stageVersions sb\n" +
+                "        inner join sb.images si\n" +
+                "    where pb.id = :bandId and pi.id = :imageId and pi.linkId = si.linkId"),
+        @NamedQuery(name = "@HQL_GET_STAGE_BAND_COMPONENT_ID", query = "select sc.id\n" +
+                "    from BandEntity pb\n" +
+                "        inner join pb.components pc\n" +
+                "        inner join pb.stageVersions sb\n" +
+                "        inner join sb.components sc\n" +
+                "    where pb.id = :bandId and pc.id = :componentId and pc.user.id = sc.user.id"),
         @NamedQuery(name = "@HQL_GET_BAND_STATUS_CODE", query = "select s.code from BandEntity b " +
                 "inner join b.status s " +
                 "where b.id = :bandId")

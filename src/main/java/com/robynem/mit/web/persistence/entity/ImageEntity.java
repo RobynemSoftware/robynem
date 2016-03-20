@@ -32,6 +32,12 @@ public class ImageEntity extends BaseEntity {
     @Lob
     protected Blob originalFile;
 
+    /**
+     * Used to link published version to stage one
+     */
+    @Column
+    protected Long linkId;
+
 
     public String getFilePath() {
         return filePath;
@@ -71,5 +77,13 @@ public class ImageEntity extends BaseEntity {
 
     public void setOriginalFile(Blob originalFile) {
         this.originalFile = originalFile;
+    }
+
+    public Long getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(Long linkId) {
+        this.linkId = linkId;
     }
 }

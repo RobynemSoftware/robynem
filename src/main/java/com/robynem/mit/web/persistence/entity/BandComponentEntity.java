@@ -1,6 +1,11 @@
 package com.robynem.mit.web.persistence.entity;
 
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
+
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Set;
 
 /**
@@ -33,11 +38,12 @@ public class BandComponentEntity extends BaseEntity {
     @Column(columnDefinition = "TINYINT DEFAULT 0")
     protected boolean confirmed;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {javax.persistence.CascadeType.ALL})
     @JoinTable(name = "mit_bandComponentInstrument",
             joinColumns = {@JoinColumn(name = "bandComponentId", nullable = false) },
             inverseJoinColumns = { @JoinColumn(name = "musicalInstrumentId", nullable = false)}
     )
+    @Cascade(CascadeType.DELETE_ORPHAN)
     protected Set<MusicalInstrumentEntity> playedInstruments;
 
     public UserEntity getUser() {

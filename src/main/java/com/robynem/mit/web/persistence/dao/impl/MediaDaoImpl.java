@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sound.sampled.Port;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -351,6 +352,7 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
             // Creates a new ImageEntity
             ImageEntity image =new ImageEntity();
             image.setCreated(Calendar.getInstance().getTime());
+            image.setLinkId(PortalHelper.getUniqueId());
 
 
 
