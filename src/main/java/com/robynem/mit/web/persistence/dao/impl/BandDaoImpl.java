@@ -129,7 +129,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
             EntityStatusEntity stageStatus = (EntityStatusEntity) statusQuery.uniqueResult();
 
-            this.copyBandData(parentBand, stage);
+            this.copyBandData(parentBand, stage, session);
 
             stage.setPublishedVersion(parentBand);
             stage.setStatus(stageStatus);
@@ -153,7 +153,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public void copyBandData(BandEntity source, BandEntity destination) {
+    public void copyBandData(BandEntity source, BandEntity destination, Session session) {
         destination.setStatus(source.getStatus());
         destination.setCreated(source.getCreated());
         destination.setCreatedBy(source.getCreatedBy());
@@ -165,6 +165,8 @@ public class BandDaoImpl extends BaseDao implements BandDao {
         destination.setTown(source.getTown());
         destination.setWebSite(source.getWebSite());
         destination.setUpdated(source.getUpdated());
+
+
 
         destination.setBandLogo(null);
         if (source.getBandLogo() != null) {
@@ -182,6 +184,8 @@ public class BandDaoImpl extends BaseDao implements BandDao {
         }
         destination.getOwners().clear();
 
+
+
         // Create the owners set by setting null to band attribute so hibernate can associate destintion band id on save
         if (source.getOwners() != null) {
             for (BandOwnershipEntity bandOwnershipEntity : source.getOwners()) {
@@ -189,10 +193,14 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             }
         }
 
+
+
         if (destination.getMusicGenres() == null) {
             destination.setMusicGenres(new HashSet<MusicGenreEntity>());
         }
         destination.getMusicGenres().clear();
+
+
 
         if (source.getMusicGenres() != null) {
             source.getMusicGenres().stream().forEach(mg -> {
@@ -201,10 +209,14 @@ public class BandDaoImpl extends BaseDao implements BandDao {
         }
 
 
+
+
         if (destination.getComponents() == null) {
             destination.setComponents(new HashSet<BandComponentEntity>());
         }
         destination.getComponents().clear();
+
+
 
         if (source.getComponents() != null) {
 
@@ -217,6 +229,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 bandComponentEntity.setDiscJockey(c.isDiscJockey());
                 bandComponentEntity.setConfirmed(c.isConfirmed());
 
+
                 if (c.getPlayedInstruments() != null) {
                     if (bandComponentEntity.getPlayedInstruments() == null) {
                         bandComponentEntity.setPlayedInstruments(new HashSet<MusicalInstrumentEntity>());
@@ -224,11 +237,11 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                     bandComponentEntity.getPlayedInstruments().clear();
 
                     c.getPlayedInstruments().stream().forEach(pi -> {
-                        MusicalInstrumentEntity musicalInstrumentEntity = new MusicalInstrumentEntity();
+                        /*MusicalInstrumentEntity musicalInstrumentEntity = new MusicalInstrumentEntity();
                         musicalInstrumentEntity.setId(pi.getId());
-                        musicalInstrumentEntity.setName(pi.getName());
+                        musicalInstrumentEntity.setName(pi.getName());*/
 
-                        bandComponentEntity.getPlayedInstruments().add(musicalInstrumentEntity);
+                        bandComponentEntity.getPlayedInstruments().add((MusicalInstrumentEntity) session.get(MusicalInstrumentEntity.class, pi.getId()));
                     });
                 }
 
@@ -236,10 +249,14 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             });
         }
 
+
+
         if (destination.getContacts() == null) {
             destination.setContacts(new HashSet<BandContactEntity>());
         }
         destination.getContacts().clear();
+
+
 
         if (source.getContacts() != null) {
 
@@ -252,10 +269,14 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             });
         }
 
+
+
         if (destination.getVideos() == null) {
             destination.setVideos(new HashSet<VideoEntity>());
         }
         destination.getVideos().clear();
+
+
 
         if (source.getVideos() != null) {
 
@@ -270,10 +291,14 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             });
         }
 
+
+
         if (destination.getImages() == null) {
             destination.setImages(new HashSet<ImageEntity>());
         }
         destination.getImages().clear();
+
+
 
         if (source.getImages() != null) {
 
@@ -291,10 +316,14 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             });
         }
 
+
+
         if (destination.getAudios() == null) {
             destination.setAudios(new HashSet<AudioEntity>());
         }
         destination.getAudios().clear();
+
+
 
         if (source.getAudios() != null) {
 
@@ -307,17 +336,19 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 destination.getAudios().add(audioEntity);
             });
         }
+
+
     }
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public void copyBandData(Serializable sourceId, final BandEntity destination) {
+    public void copyBandData(Long sourceId, final BandEntity destination) {
 
         this.hibernateTemplate.execute(session -> {
 
             BandEntity source = (BandEntity) session.get(BandEntity.class, sourceId);
 
-            this.copyBandData(source, destination);
+            this.copyBandData(source, destination, session);
 
             return destination;
         });
@@ -792,11 +823,13 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 } else if (bandEntity.getMusicGenres() == null || bandEntity.getMusicGenres().size() == 0) {
                     publishBandResult = new PublishBandResult(false, null, PublishBandErrorCode.GENRE_MISSING);
                 } else {
-                    Query statusQuery = session.getNamedQuery("@HQL_GET_ENTITY_STATUS_BY_CODE");
+                    /*Query statusQuery = session.getNamedQuery("@HQL_GET_ENTITY_STATUS_BY_CODE");
                     statusQuery.setParameter("code", EntityStatus.PUBLISHED.toString());
                     EntityStatusEntity publishedStatus = (EntityStatusEntity) statusQuery.uniqueResult();
 
-                    this.copyBandData(bandEntity, publishedVersion);
+                    this.copyBandData(bandEntity, publishedVersion, session);
+
+                    bandEntity = (BandEntity) session.get(BandEntity.class, bandEntity.getId());
 
                     session.delete(bandEntity);
 
@@ -821,9 +854,16 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
                     publishedVersion.setModifiedBy((UserEntity) session.get(UserEntity.class, userId));
 
-                    session.update(publishedVersion);
+                    session.update(publishedVersion);*/
 
                     //session.flush();
+
+                    Query callableQuery = session.createSQLQuery("call mit_spPublishBand(:stageBandId, :publishedBandId, :publishUserId)");
+                    callableQuery.setParameter("stageBandId", bandEntity.getId());
+                    callableQuery.setParameter("publishedBandId", publishedVersion.getId());
+                    callableQuery.setParameter("publishUserId", userId);
+
+                    callableQuery.executeUpdate();
 
                     publishBandResult = new PublishBandResult(true, publishedVersion.getId(), null);
                 }

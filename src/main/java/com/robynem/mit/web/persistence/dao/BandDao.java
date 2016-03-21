@@ -6,6 +6,7 @@ import com.robynem.mit.web.persistence.entity.UserEntity;
 import com.robynem.mit.web.persistence.entity.VideoEntity;
 import com.robynem.mit.web.util.OwnerType;
 import com.robynem.mit.web.util.PublishBandResult;
+import org.hibernate.Session;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -28,9 +29,9 @@ public interface BandDao {
      * @param source
      * @param destination
      */
-    void copyBandData(BandEntity source, BandEntity destination);
+    void copyBandData(BandEntity source, BandEntity destination, Session session);
 
-    void copyBandData(Serializable sourceId, BandEntity destination);
+    void copyBandData(Long sourceId, BandEntity destination);
 
     void update(BandEntity bandEntity);
 
