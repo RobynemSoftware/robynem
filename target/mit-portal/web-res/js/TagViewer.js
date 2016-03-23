@@ -12,6 +12,7 @@ function TagViewer(settings) {
     var $deleteTooltip = settings.deleteTooltip;
     var $tagClass = settings.tagClass != null ? settings.tagClass : TAG_DEFAULT_CLASS;
     var $tagMobileClass = settings.tagMobileClass != null ? settings.tagMobileClass : $tagClass;
+    var $deleteHandler = settings.deleteHandler;
 
     var $selectObj = $("#" + $selectId);
     var $tagContainerObj = $("#" + $tagContainerId);
@@ -69,9 +70,21 @@ function TagViewer(settings) {
     }
 
     this._deleteTag = function(source) {
+
+        var doDelete = true;
+
         var img = $(source);
         var tag = img.parent("div");
-        tag.remove();
+
+        /*If delete handler is configured in the settings, we call it and compute the result for processing delete.*/
+        if ($deleteHandler != null) {
+            doDelete = $deleteHandler(tag);
+        }
+
+        if (doDelete == true) {
+            tag.remove();
+        }
+
     }
 
     this._tagExists = function(id) {

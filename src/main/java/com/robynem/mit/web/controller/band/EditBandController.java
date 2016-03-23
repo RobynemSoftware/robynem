@@ -159,6 +159,10 @@ public class EditBandController extends BaseController {
 
         ModelAndView mv = new ModelAndView("band/editBandComponents");
 
+        if (this.getSessionAttribute(Constants.EDIT_BAND_ID) != null) {
+            bandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+        }
+
         try {
 
             BandEntity bandEntity = null;
@@ -166,16 +170,8 @@ public class EditBandController extends BaseController {
             BandModel bandModel = null;
 
             if (bandId != null) {
-                // ENTERING IN EDIT MODE
+
                 bandEntity = this.getBandToEdit(false, bandId, EditBandTabIndex.COMPONENTS);
-
-                // Checks if current user is allowed to edit this band
-                /*if (!this.canEdit(bandEntity)) {
-                    this.addApplicationMessage(this.getMessage("band.user-not-allowed-to-edit"), MessageSeverity.WARNING, null, null);
-
-                    return new ModelAndView("forward:/private/dashboard");
-                }*/
-
             } else if (this.getSessionAttribute(Constants.EDIT_BAND_ID) != null) {
                 // If we have band id in session, populate model.
                 bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.COMPONENTS);

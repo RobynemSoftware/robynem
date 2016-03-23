@@ -423,7 +423,14 @@
             selectId: "bandGenresSelect",
             tagContainerId: "bandGenresList",
             paramName: "genres",
-            deleteTooltip: "<spring:message code="band.genres.delete-tooltip"></spring:message>"
+            deleteTooltip: "<spring:message code="band.genres.delete-tooltip"></spring:message>",
+            deleteHandler : function (tag) {
+                GENERAL_TAB_MODIFIED = true;
+
+                console.log("formField modified!");
+
+                return true;
+            }
         });
 
         $("#editBandName").val("${bandModel.name}");
@@ -462,14 +469,24 @@
         $("#editBandGeneralForm .formField").change(function () {
             GENERAL_TAB_MODIFIED = true;
 
-            //console.log("formField modified!");
+            console.log("formField modified!");
+        }).keydown(function () {
+            GENERAL_TAB_MODIFIED = true;
+
+            console.log("formField modified!");
         });
     }
 
     function initGeneralForm() {
         var options = {
             beforeSubmit: function() {
-                return execInSession(null);
+                var doSubmit = execInSession(null);
+
+                if (doSubmit) {
+                    doSubmit = validateGeneralForm();
+                }
+
+                return doSubmit
             },
             beforeSend: function()
             {
@@ -483,6 +500,12 @@
             success: function(data)
             {
                 $("#tabs-general").html(data);
+
+                // If publish command is requested.
+                //console.log("General form aved: DO_PUBLISH: " + DO_PUBLISH);
+                if (DO_PUBLISH == true) {
+                    $("#publishBandForm").submit();
+                }
 
                 showBandStatus();
             },

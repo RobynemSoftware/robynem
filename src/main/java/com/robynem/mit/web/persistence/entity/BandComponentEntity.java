@@ -38,12 +38,11 @@ public class BandComponentEntity extends BaseEntity {
     @Column(columnDefinition = "TINYINT DEFAULT 0")
     protected boolean confirmed;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {javax.persistence.CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "mit_bandComponentInstrument",
             joinColumns = {@JoinColumn(name = "bandComponentId", nullable = false) },
             inverseJoinColumns = { @JoinColumn(name = "musicalInstrumentId", nullable = false)}
     )
-    @Cascade(CascadeType.DELETE_ORPHAN)
     protected Set<MusicalInstrumentEntity> playedInstruments;
 
     public UserEntity getUser() {

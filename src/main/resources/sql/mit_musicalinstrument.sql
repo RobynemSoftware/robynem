@@ -1,0 +1,17 @@
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (1, null, null, 'Guitar');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (2, null, null, 'Bass Guitar');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (3, null, null, 'Drums');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (4, null, null, 'Percussions');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (5, null, null, 'Piano');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (6, null, null, 'Sax');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (7, null, null, 'Trumpet');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (8, null, null, 'Clarinet');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (9, null, null, 'Violin');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (10, null, null, 'Harmonica');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (11, null, null, 'Accordion');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (12, null, null, 'Keyboards');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (13, null, null, 'Effects');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (14, null, null, 'Cello');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (15, null, null, 'Contrabass');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (16, null, null, 'Flute');
+INSERT INTO mit_musicalinstrument (id, created, updated, name) VALUES (17, null, null, 'Theremin');

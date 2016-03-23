@@ -83,7 +83,7 @@
 
 <script type="text/javascript">
     var GENERAL_TAB_MODIFIED = false;
-
+    var DO_PUBLISH = false;
 
     $(function () {
 
@@ -276,12 +276,25 @@
 
     function initPublishButton() {
         $("#editBandPublish").click(function () {
-            $("#publishBandForm").submit();
+
+            /*
+            * If general form has been modified and not saved, we indicate that we request to publish and we submit general form.
+            * This form, after saving, reads DO_PUBLISH equals true and raises publish event.
+            * */
+            //console.log("Publish: GENERAL_TAB_MODIFIED: " + GENERAL_TAB_MODIFIED);
+            if (GENERAL_TAB_MODIFIED == true) {
+                DO_PUBLISH = true;
+                $("#editBandGeneralForm").submit();
+            } else {
+                $("#publishBandForm").submit();
+            }
+
+
         });
     }
 
     function validateGeneralForm() {
-        var validated = validateEmailContacts() && validatePhoneNumberContacts();
+        var validated = validateGeneralFormMandatoryFields() && validateEmailContacts() && validatePhoneNumberContacts();
 
         return validated;
     }
@@ -334,6 +347,34 @@
         });
 
         return valid;
+    }
+
+    //
+    function validateGeneralFormMandatoryFields() {
+        //editBandPlaceId
+        var valid = true;
+
+        var messages = new Array();
+
+        if ($.trim($("#editBandName").val()) == "") {
+            messages.push({
+                severity: "FATAL",
+                link: null,
+                message: "<spring:message code="band.validation.band-name-mandatory"></spring:message>"
+            });
+            valid = false;
+        }
+
+
+
+        if (messages.length > 0) {
+            showApplicationMessages({
+                "<%=Constants.APPLICATION_MESSAGES_KEY%>": messages
+            });
+        }
+
+        return valid;
+
     }
 
 
