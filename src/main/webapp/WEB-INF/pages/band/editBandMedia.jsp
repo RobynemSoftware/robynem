@@ -144,51 +144,26 @@
 
                         <form:form id="audioForm" method="post"
                                    action="${contextPath}/private/editBand/addAudio"
-                                   modelAttribute="bandModel" enctype="multipart/form-data">
+                                   modelAttribute="bandModel">
                             <div class="row">
 
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <label for="addAudioFile"><spring:message
                                             code="band.media.audio.add-audio"></spring:message> </label>
                                 </div>
 
                                 <div class="col-md-6">
 
-                                    <input id="addAudioFile" type="file" name="audio" class="form-control"/>
-                                </div>
-
-                            </div>
-
-                            <div class="row">
-
-                                <div class="col-md-3">
-
-                                    <label for="addAudioName"><spring:message code="band.media.audio.name"></spring:message> </label>
-                                </div>
-
-                                <div class="col-md-6">
-
-                                    <input id="addAudioName" type="text" name="name" class="form-control"/>
+                                    <input id="addAudioFile" type="text" name="soundCloudUrl" class="form-control"/>
                                 </div>
 
                                 <div class="col-md-3" style="text-align: right;">
                                     <button id="addAudioButton" class="button btn-default"><spring:message
                                             code="global.add"></spring:message></button>
                                 </div>
+
                             </div>
 
-                            <!-- Progress bar -->
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div  class="progress progress-striped">
-                                        <div id="audioProgress" class="progress-bar progress-success" role="progressbar" aria-valuenow="0"
-                                             aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                                            <span class="sr-only"></span>
-                                            <span ></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </form:form>
 
                         <div id="audioContainerRow" class="row">
@@ -280,12 +255,7 @@
             </c:forEach>
         </c:if>
 
-        /*$("#saveVideosLink").click(function() {
-            $("#videosForm").submit();
-        });*/
 
-        // Sets video form async
-        //initVideoForm();
 
         // inits gallery form
         initGalleryForm();
@@ -394,10 +364,10 @@
 
     function initAudioForm() {
         <c:forEach var="audio" items="${bandModel.mediaModel.audios}">
-            addAudio(${audio.id}, "${audio.name}");
+            addAudio(${audio.id}, "${audio.soundCloudUrl}");
         </c:forEach>
 
-        $("#audioProgress").parent().hide();
+        //$("#audioProgress").parent().hide();
 
         var options = {
             beforeSubmit: function() {
@@ -406,7 +376,21 @@
                     return false;
                 }
 
-                if ($.trim($("#addAudioName").val()) == "") {
+                if (!isSoundCloudUrl($("#addAudioFile").val())) {
+                    showApplicationMessages({
+                        "<%=Constants.APPLICATION_MESSAGES_KEY%>" : [
+                            {
+                                message : "<spring:message code="band.validation.invalid-soundcloud-url"></spring:message>",
+                                severity: "<%=MessageSeverity.FATAL%>",
+                                link : null
+                            }
+                        ]
+                    });
+
+                    return false;
+                }
+
+                /*if ($.trim($("#addAudioName").val()) == "") {
                     showApplicationMessages({
                         "<%=Constants.APPLICATION_MESSAGES_KEY%>" : [
                             {
@@ -418,22 +402,22 @@
                     });
 
                     return false;
-                }
+                }*/
 
                 return execInSession(null);
             },
             beforeSend: function()
             {
-                $("#audioProgress").parent().show();
+                /*$("#audioProgress").parent().show();
 
                 $("#audioProgress").addClass("active");
                 $("#audioProgress").attr("aria-valuenow", "0");
-                $("#audioProgress").children("span").html("0%");
+                $("#audioProgress").children("span").html("0%");*/
             },
             uploadProgress: function(event, position, total, percentComplete)
             {
-                $("#audioProgress").attr("aria-valuenow", percentComplete);
-                $("#audioProgress").children("span").html(percentComplete + "%");
+                /*$("#audioProgress").attr("aria-valuenow", percentComplete);
+                $("#audioProgress").children("span").html(percentComplete + "%");*/
 
             },
             success: function(data)
@@ -441,13 +425,13 @@
 
                 showApplicationMessages(data);
 
-                $("#audioProgress").removeClass("active");
+                /*$("#audioProgress").removeClass("active");
                 $("#audioProgress").attr("aria-valuenow", "100");
-                $("#audioProgress").children("span").html("100");
+                $("#audioProgress").children("span").html("100");*/
 
                 //console.log("uploadedImageId: " + data.uploadedImageId);
-                if (data.success == true && data.uploadedAudioId != null && data.uploadedAudioName != null) {
-                    addAudio(data.uploadedAudioId, data.uploadedAudioName);
+                if (data.success == true && data.audioId != null && data.soundCloudUrl != null) {
+                    addAudio(data.audioId, data.soundCloudUrl);
 
                     showBandStatus();
                 }
@@ -521,7 +505,60 @@
         });
     }
 
-    function addAudio(audioId, name) {
+    function addAudio(audioId, soudCloudUrl) {
+
+        var audioName = $("<span>" + name + "</span>");
+        var audioDelete = $("<img src='" + CONTEXT_PATH + "/resources/images/delete_32x32.png' class='img-responsive' />");
+        audioDelete.css("cursor", "pointer");
+
+        var row = $("<div class='row'></div>");
+        row.css("margin-bottom", "20px");
+
+        var colAudio = $("<div class='col-md-10'></div>");
+        var colDelete = $("<div class='col-md-2'></div>");
+
+        colDelete.append(audioDelete);
+
+        row.append(colAudio).append(colDelete);
+
+        SC.oEmbed(soudCloudUrl, { auto_play: false, maxheight:80}).then(function(oEmbed) {
+            console.log('oEmbed response: ', oEmbed);
+            colAudio.html(oEmbed.html);
+        });
+
+        var container = $("#audioContainerRow");
+
+        container.append(row);
+
+        audioDelete.click(function() {
+            if (confirm("<spring:message code="band.media.audio.confirm-delete"></spring:message>")) {
+                execInSession(function() {
+
+                    $.ajax({
+                        url : "${contextPath}/private/editBand/removeAudio",
+                        data : {
+                            audioId : audioId
+                        },
+                        async : true,
+                        type : "post",
+                        dataType : "json",
+                        success : function(data) {
+                            showApplicationMessages(data);
+
+                            if (data.success == true) {
+                                row.remove();
+
+                                showBandStatus();
+                            }
+                        }
+                    });
+
+                });
+            }
+        });
+    }
+
+    function addAudio_(audioId, name) {
 
 
         var url = CONTEXT_PATH + "/media/getAudio?audioId=" + audioId;
@@ -579,9 +616,9 @@
     }
 
     function initAudioControls() {
-        $(".audio").bind("onerror", function() {
+        /*$(".audio").bind("onerror", function() {
             $(this).load();
-        });
+        });*/
     }
 
     function deleteVideo(videoId) {

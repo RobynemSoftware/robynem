@@ -23,6 +23,12 @@ public class AudioEntity extends BaseEntity {
     @Column
     private String fileName;
 
+    @Column
+    private String soundCloudUrl;
+
+    @Column
+    protected Long linkId;
+
     public String getName() {
         return name;
     }
@@ -45,5 +51,21 @@ public class AudioEntity extends BaseEntity {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getSoundCloudUrl() {
+        return soundCloudUrl;
+    }
+
+    public void setSoundCloudUrl(String soundCloudUrl) {
+        this.soundCloudUrl = soundCloudUrl;
+    }
+
+    public Long getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(Long linkId) {
+        this.linkId = linkId;
     }
 }

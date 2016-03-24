@@ -1,6 +1,7 @@
 package com.robynem.mit.web.persistence.dao;
 
 import com.robynem.mit.web.persistence.criteria.BandComponentsCriteria;
+import com.robynem.mit.web.persistence.entity.AudioEntity;
 import com.robynem.mit.web.persistence.entity.BandEntity;
 import com.robynem.mit.web.persistence.entity.UserEntity;
 import com.robynem.mit.web.persistence.entity.VideoEntity;
@@ -71,7 +72,13 @@ public interface BandDao {
 
     Long getStageGalleryImageId(Long publishedBandId, Long publishedImageId);
 
+    Long getStageAudioId(Long publishedBandId, Long publishedAudioId);
+
     Long getStageBandComponentId(Long publishedBandId, Long publishedBandComponentId);
 
     String getBandStatusCode(Long bandId);
+
+    Long addBandAudio(Long bandId, AudioEntity audioEntity);
+
+    void removeBandAudio(Long bandId, Long audioId);
 }

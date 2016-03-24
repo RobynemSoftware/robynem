@@ -14,6 +14,7 @@
 <spring:eval var="softwareVersion" expression="@commonProperties['software.version']" scope="session"/>
 <spring:eval var="notificationIconInterval" expression="@commonProperties['notification.icon-interval']" scope="session"/>
 <spring:eval var="notificationReadInterval" expression="@commonProperties['notification.read-interval']" scope="session"/>
+<spring:eval var="soudCloudClientId" expression="@commonProperties['soundcloud.client-id']" scope="session"/>
 
 <!-- JSTL VARIABLES -->
 <c:set var="contextPath" value="<%=request.getContextPath()%>" scope="application"></c:set>
@@ -80,6 +81,9 @@ Creates the localized date format
 <!-- BLOCK UI -->
 <script src="${contextPath}/resources/js/blockui.js?v=${softwareVersion}"></script>
 
+<!-- SOUNDCLOUD -->
+<script src="https://connect.soundcloud.com/sdk/sdk-3.0.0.js"></script>
+
 
 
 
@@ -102,6 +106,10 @@ Creates the localized date format
     $(function() {
         $.blockUI.defaults.message = '<div class="row"><div class="col-md-2"><img src="${contextPath}/resources/images/ajax-loader.gif" class="img-responsive" /></div><div class="col-md-10"><span class="loading"><spring:message code="global.loading"/></span></div></div>';
         $(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);
+
+        SC.initialize({
+            client_id: '${soudCloudClientId}'
+        });
     });
 
 </script>

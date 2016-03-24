@@ -496,7 +496,7 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
         return newAudioId;
     }
 
-    @Override
+    /*@Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
     public void removeBandAudio(Long bandId, Long audioId) {
         this.hibernateTemplate.execute(session -> {
@@ -529,5 +529,5 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
 
             return null;
         });
-    }
+    }*/
 }

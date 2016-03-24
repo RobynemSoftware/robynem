@@ -30,6 +30,12 @@ import java.util.Set;
                 "        inner join pb.stageVersions sb\n" +
                 "        inner join sb.images si\n" +
                 "    where pb.id = :bandId and pi.id = :imageId and pi.linkId = si.linkId"),
+        @NamedQuery(name = "@HQL_GET_STAGE_BAND_AUDIO_ID", query = "select sa.id\n" +
+                "    from BandEntity pb\n" +
+                "        inner join pb.audios pa\n" +
+                "        inner join pb.stageVersions sb\n" +
+                "        inner join sb.audios sa\n" +
+                "    where pb.id = :bandId and pa.id = :audioId and pa.linkId = sa.linkId"),
         @NamedQuery(name = "@HQL_GET_STAGE_BAND_COMPONENT_ID", query = "select sc.id\n" +
                 "    from BandEntity pb\n" +
                 "        inner join pb.components pc\n" +

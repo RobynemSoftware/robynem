@@ -185,6 +185,11 @@ function isYoutubeUrl(url) {
     }
 }
 
+function isSoundCloudUrl(url){
+    var regexp = /^https?:\/\/(soundcloud.com|snd.sc)\/(.*)$/;
+    return url.match(regexp) && url.match(regexp)[2]
+}
+
 /**
  * Checks if url is a youtube url. Then adds the video into container based on submitSettings object.
  * Settings has following attributes:

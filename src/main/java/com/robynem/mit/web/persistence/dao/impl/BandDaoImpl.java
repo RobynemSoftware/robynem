@@ -332,6 +332,8 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
                 audioEntity.setName(a.getName());
                 audioEntity.setFile(a.getFile());
+                audioEntity.setSoundCloudUrl(a.getSoundCloudUrl());
+                audioEntity.setLinkId(a.getLinkId());
 
                 destination.getAudios().add(audioEntity);
             });
@@ -823,40 +825,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 } else if (bandEntity.getMusicGenres() == null || bandEntity.getMusicGenres().size() == 0) {
                     publishBandResult = new PublishBandResult(false, null, PublishBandErrorCode.GENRE_MISSING);
                 } else {
-                    /*Query statusQuery = session.getNamedQuery("@HQL_GET_ENTITY_STATUS_BY_CODE");
-                    statusQuery.setParameter("code", EntityStatus.PUBLISHED.toString());
-                    EntityStatusEntity publishedStatus = (EntityStatusEntity) statusQuery.uniqueResult();
 
-                    this.copyBandData(bandEntity, publishedVersion, session);
-
-                    bandEntity = (BandEntity) session.get(BandEntity.class, bandEntity.getId());
-
-                    session.delete(bandEntity);
-
-                    session.flush();
-
-
-                    publishedVersion.setId(bandEntity.getPublishedVersion().getId());
-
-                    //bandEntity = publishedVersion;
-
-                    publishedVersion.setPublishedVersion(null);
-                    publishedVersion.setStageVersions(null);
-
-
-
-                    publishedVersion.setUpdated(Calendar.getInstance().getTime());
-                    if (publishedVersion.getFirstPublishDate() == null) {
-                        publishedVersion.setFirstPublishDate(Calendar.getInstance().getTime());
-                    }
-
-                    publishedVersion.setStatus(publishedStatus);
-
-                    publishedVersion.setModifiedBy((UserEntity) session.get(UserEntity.class, userId));
-
-                    session.update(publishedVersion);*/
-
-                    //session.flush();
 
                     Query callableQuery = session.createSQLQuery("call mit_spPublishBand(:stageBandId, :publishedBandId, :publishUserId)");
                     callableQuery.setParameter("stageBandId", bandEntity.getId());
@@ -907,6 +876,21 @@ public class BandDaoImpl extends BaseDao implements BandDao {
     }
 
     @Override
+    public Long getStageAudioId(Long publishedBandId, Long publishedAudioId) {
+        Long audioId = null;
+
+        List<Long> result = this.hibernateTemplate.findByNamedQueryAndNamedParam(
+                "@HQL_GET_STAGE_BAND_AUDIO_ID", new String[] {"bandId", "audioId"},
+                new Object[] {publishedBandId, publishedAudioId});
+
+        if (result != null && result.size() > 0) {
+            audioId = result.get(0);
+        }
+
+        return audioId;
+    }
+
+    @Override
     public Long getStageBandComponentId(Long publishedBandId, Long publishedBandComponentId) {
         Long componentId = null;
 
@@ -933,6 +917,52 @@ public class BandDaoImpl extends BaseDao implements BandDao {
         }
 
         return code;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public Long addBandAudio(Long bandId, AudioEntity audioEntity) {
+        return this.hibernateTemplate.execute(session -> {
+
+            BandEntity bandEntity = (BandEntity) session.get(BandEntity.class, bandId);
+
+            if (bandEntity.getAudios() == null) {
+                bandEntity.setAudios(new HashSet<AudioEntity>());
+            }
+
+            bandEntity.getAudios().add(audioEntity);
+
+            session.update(bandEntity);
+
+            session.flush();
+
+            return audioEntity.getId();
+        });
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public void removeBandAudio(Long bandId, Long audioId) {
+        this.hibernateTemplate.execute(session -> {
+
+            BandEntity bandEntity = (BandEntity) session.get(BandEntity.class, bandId);
+
+            List<AudioEntity> audiosToDelete = new ArrayList<AudioEntity>();
+
+            if (bandEntity.getAudios() != null) {
+                bandEntity.getAudios().stream().filter(a -> a.getId().equals(audioId)).forEach(i -> {
+                    audiosToDelete.add(i);
+                });
+            }
+
+            audiosToDelete.stream().forEach(i -> {
+                bandEntity.getAudios().remove(i);
+            });
+
+            session.update(bandEntity);
+
+            return null;
+        });
     }
 
 

@@ -772,10 +772,10 @@ public class EditBandController extends BaseController {
     }
 
     @RequestMapping(value = "/addAudio", method = RequestMethod.POST)
-    public AbstractView addAudio(@RequestParam MultipartFile audio, @RequestParam String name, ModelMap modelMap) {
+    public AbstractView addAudio(@RequestParam String soundCloudUrl, ModelMap modelMap) {
 
         try {
-            if (!audio.isEmpty()) {
+            /*if (!audio.isEmpty()) {
 
                 if (!StringUtils.trimToEmpty(audio.getContentType()).toLowerCase().contains("mp3")) {
                     this.addApplicationMessage(this.getMessage("profile.validation.invalid-image"),
@@ -793,7 +793,21 @@ public class EditBandController extends BaseController {
                     modelMap.put("uploadedAudioId", audioId);
                     modelMap.put("uploadedAudioName", name);
                 }
-            }
+            }*/
+
+            BandEntity bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.MEDIA);
+
+            AudioEntity audioEntity = new AudioEntity();
+            audioEntity.setSoundCloudUrl(soundCloudUrl);
+            audioEntity.setLinkId(PortalHelper.getUniqueId());
+
+            this.bandDao.addBandAudio(bandEntity.getId(), audioEntity);
+
+            modelMap.put("success", true);
+            modelMap.put("audioId", audioEntity.getId());
+            modelMap.put("name", audioEntity.getName());
+            modelMap.put("soundCloudUrl", audioEntity.getSoundCloudUrl());
+
         } catch (Throwable e) {
             modelMap.addAttribute("success", false);
             this.manageException(e, LOG, modelMap);
@@ -841,10 +855,33 @@ public class EditBandController extends BaseController {
     public AbstractView removeAudio(@RequestParam Long audioId, ModelMap modelMap) {
 
         try {
+            if (audioId != null) {
 
-            this.mediaDao.removeBandAudio(this.getSessionAttribute(Constants.EDIT_BAND_ID), audioId);
+                Long bandId = null;
 
-            modelMap.put("success", true);
+                // Checks actual band status
+                String code = this.bandDao.getBandStatusCode(this.getSessionAttribute(Constants.EDIT_BAND_ID));
+
+                if (EntityStatus.PUBLISHED.toString().equals(code)) {
+                    /*We store the published id before createìing a stage version. After session id will be replaced.*/
+                    Long publishedBandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+
+                    // We need it to create a stage version for modification
+                    BandEntity bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.MEDIA);
+
+                    // Rtrieves the viedo id belonging to the stage versione
+                    audioId = this.bandDao.getStageAudioId(publishedBandId, audioId);
+
+                    bandId = bandEntity.getId();
+                } else {
+                    bandId = this.getSessionAttribute(Constants.EDIT_BAND_ID);
+                }
+
+                this.bandDao.removeBandAudio(bandId, audioId);
+
+                modelMap.put("success", true);
+            }
+
         } catch (Throwable e) {
             modelMap.addAttribute("success", false);
             this.manageException(e, LOG, modelMap);
@@ -1086,6 +1123,7 @@ public class EditBandController extends BaseController {
                 AudioEntity audioEntity = new AudioEntity();
                 audioEntity.setId(a.getId());
                 audioEntity.setName(a.getName());
+                audioEntity.setSoundCloudUrl(a.getSoundCloudUrl());
 
                 bandModel.getMediaModel().getAudios().add(audioEntity);
             });
