@@ -83,7 +83,8 @@
 
 <script type="text/javascript">
     var GENERAL_TAB_MODIFIED = false;
-    var DO_PUBLISH = false;
+    var DO_PUBLISH = false;  // Raises publish event
+    var SWITCH_TAB_TO = null; // Raises tab switch event. Must be populated with tab index
 
     $(function () {
 
@@ -106,19 +107,26 @@
         $("#tabs").tabs({
 
             beforeActivate: function (event, ui) {
+                SWITCH_TAB_TO = null; // Resets event
+
                 var id = ui.newPanel.attr('id');
                 var oldId = ui.oldPanel.attr('id');
                 //console.log("new tab id: " + id);
 
-                /*If we're leaveng general form, we save it before.*/
+                /*If we're leaving general form, we save it before.*/
                 console.log("formField modified: " + GENERAL_TAB_MODIFIED);
                 if (oldId == "tabs-general" && GENERAL_TAB_MODIFIED == true) {
 
-                        if (validateGeneralForm()) {
-                            $("#editBandGeneralForm").submit();
-                        } else {
-                            return false;
-                        }
+                    GENERAL_TAB_MODIFIED = false;
+
+                    if (validateGeneralForm()) {
+                        // Tells to form submit handler to switch tab
+                        SWITCH_TAB_TO = ui.newTab.index();
+                        $("#editBandGeneralForm").submit();
+                        return false;
+                    } else {
+                        return false;
+                    }
                 }
 
                 switch(id) {

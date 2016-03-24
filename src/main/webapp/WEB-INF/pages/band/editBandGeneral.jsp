@@ -507,6 +507,13 @@
                     $("#publishBandForm").submit();
                 }
 
+                // If tab switch is requested.
+                if (SWITCH_TAB_TO != null) {
+                    var index = SWITCH_TAB_TO;
+                    SWITCH_TAB_TO = null;
+                    $("#tabs").tabs("option", "active", index);
+                }
+
                 showBandStatus();
             },
             complete: function(response)

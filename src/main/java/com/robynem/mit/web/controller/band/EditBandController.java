@@ -172,9 +172,6 @@ public class EditBandController extends BaseController {
             if (bandId != null) {
 
                 bandEntity = this.getBandToEdit(false, bandId, EditBandTabIndex.COMPONENTS);
-            } else if (this.getSessionAttribute(Constants.EDIT_BAND_ID) != null) {
-                // If we have band id in session, populate model.
-                bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.COMPONENTS);
             }
 
             bandModel = this.getBandModel(bandEntity, EditBandTabIndex.COMPONENTS);
