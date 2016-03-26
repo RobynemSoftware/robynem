@@ -4,7 +4,15 @@ import com.robynem.mit.web.controller.BaseController;
 import com.robynem.mit.web.model.home.NewArtistModel;
 import com.robynem.mit.web.model.home.NewClubsModel;
 import com.robynem.mit.web.model.home.NextEventModel;
+import com.robynem.mit.web.persistence.criteria.NewArtistsCriteria;
+import com.robynem.mit.web.persistence.dao.HomeDao;
+import com.robynem.mit.web.persistence.util.ArtistMapResult;
+import com.robynem.mit.web.util.ImageSize;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,6 +26,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/")
 public class HomeController extends BaseController {
+
+    static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
+
+    @Autowired
+    private HomeDao homeDao;
 
     @RequestMapping(method = RequestMethod.GET)
     public String viewIndex() {
@@ -42,9 +55,15 @@ public class HomeController extends BaseController {
     }
 
     @RequestMapping("home/loadNewArtists")
-    public ModelAndView loadNewArtists() {
+    public ModelAndView loadNewArtists(ModelMap modelMap) {
         ModelAndView mv = new ModelAndView("home/newArtistsCarousel");
-        mv.addObject("newArtists", this.stubNewArtistsList()) ;
+
+        try {
+            mv.addObject("newArtists", this.getNewArtistsList()) ;
+        } catch (Exception e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
         return mv;
     }
 
@@ -218,6 +237,33 @@ public class HomeController extends BaseController {
         list.add(model);
 
 
+
+        return list;
+    }
+
+    private List<NewArtistModel> getNewArtistsList() {
+        List<NewArtistModel> list = new ArrayList<NewArtistModel>();
+
+        NewArtistModel model = null;
+
+        ArtistMapResult mapResult = this.homeDao.getNewArtists(new NewArtistsCriteria());
+
+        while (mapResult.next()) {
+            model = new NewArtistModel();
+            model.setId(mapResult.get(ArtistMapResult.ID));
+            model.setArtistDescription(mapResult.get(ArtistMapResult.ARTIST_DESCRIPTION));
+            model.setArtistName(mapResult.get(ArtistMapResult.NAME));
+
+            String imageUrl = this.getContextPath() + "/resources/images/profile_avatar_50x50.png";
+
+            if (mapResult.get(ArtistMapResult.IMAGE_ID) != null) {
+                imageUrl = this.getContextPath() + String.format("/media/getImage?imageId=%s&size=%s", mapResult.get(ArtistMapResult.IMAGE_ID).toString(), ImageSize.MEDIUM);
+            }
+
+            model.setImgUrl(imageUrl);
+
+            list.add(model);
+        }
 
         return list;
     }

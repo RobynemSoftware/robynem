@@ -21,7 +21,7 @@ BEGIN
         pub.updated = curdate(),
         pub.bandLogo = stage.bandLogo,
         pub.statusId = publishedStateId,
-        pub.firstPublishDate = case when pub.firstPublishDate is null then curdate() else pub.firstPublishDate end,
+        pub.firstPublishDate = case when pub.firstPublishDate is null then now() else pub.firstPublishDate end,
         pub.publishedBandId = null
     where stage.id = stageBandId;
     

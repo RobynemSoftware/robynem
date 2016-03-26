@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.CharBuffer;
@@ -22,59 +24,24 @@ public class ImageHelper {
 
     }
 
-    public static void _scaleAndSaveImage(String originalFileName, String destinationFileName, int width, int height) throws Exception {
-
-
-        StringBuffer cmd = new StringBuffer();
-        cmd.append("convert -resize ")
-                .append(String.format("%sx%s ", String.valueOf(width), String.valueOf(height)))
-                .append(String.format("\"%s\" ", originalFileName))
-                .append(String.format("\"%s\" ", destinationFileName));
-
-        String finalCmd = cmd.toString().replace("/", "\\");
-        String[] cmdArr = finalCmd.split(" ");
-
-        Process p = Runtime.getRuntime().exec(cmdArr);
-        int result = p.waitFor();
-
-        InputStreamReader isr = new InputStreamReader(p.getInputStream());
-        CharBuffer cb = CharBuffer.allocate(p.getInputStream().available());
-
-        isr.read(cb);
-
-        LOG.debug("Process result: {}", cb.toString());
-
-
-        isr = new InputStreamReader(p.getErrorStream());
-        cb = CharBuffer.allocate(p.getInputStream().available());
-
-        isr.read(cb);
-
-        LOG.debug("Process Error: {}", cb.toString());
-
-
-    }
-
-    public static void scaleAndSaveImage(String originalFileName, String destinationFileName, int width, int height, String imageFormat) throws Exception {
-
-        BufferedImage originalImage = ImageIO.read(new File(originalFileName));
-
-        BufferedImage resizedImage = new BufferedImage(width, height, originalImage.getType());
-        Graphics2D g = resizedImage.createGraphics();
-        g.drawImage(originalImage, 0, 0, width, height, null);
-        g.dispose();
-
-        ImageIO.write(resizedImage, imageFormat, new File(destinationFileName));
-    }
-
     public static InputStream scaleImage(InputStream stream, int width, int height, String imageFormat) throws Exception {
 
         BufferedImage originalImage = ImageIO.read(stream);
 
-        BufferedImage resizedImage = new BufferedImage(width, height, originalImage.getType());
+        int imageWidth  = originalImage.getWidth();
+        int imageHeight = originalImage.getHeight();
+
+        double scaleX = (double)width/imageWidth;
+        double scaleY = (double)height/imageHeight;
+        AffineTransform scaleTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
+        AffineTransformOp bilinearScaleOp = new AffineTransformOp(scaleTransform, AffineTransformOp.TYPE_BILINEAR);
+
+        BufferedImage resizedImage = bilinearScaleOp.filter(originalImage, new BufferedImage(width, height, originalImage.getType()));
+
+        /*BufferedImage resizedImage = new BufferedImage(width, height, originalImage.getType());
         Graphics2D g = resizedImage.createGraphics();
         g.drawImage(originalImage, 0, 0, width, height, null);
-        g.dispose();
+        g.dispose();*/
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

@@ -26,6 +26,7 @@
     </appender>
 
     <logger name="com.robynem.mit.web" level="TRACE"/>
+    <logger name="org.hibernate" level="INFO"/>
 
 
     <root level="debug">

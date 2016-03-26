@@ -404,6 +404,9 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             bandComponentEntity.setDiscJockey(userEntity.isDiscJockey());
             bandComponentEntity.setPlayedInstruments(new HashSet<MusicalInstrumentEntity>());
 
+            // If component is the user is doing the operation, we confirm it directly
+            bandComponentEntity.setConfirmed(userEntity.getId().equals(operationUserId));
+
             if (userEntity.getPlayedMusicInstruments() != null) {
                 userEntity.getPlayedMusicInstruments().stream().forEach(i -> {
                     bandComponentEntity.getPlayedInstruments().add((MusicalInstrumentEntity) session.get(MusicalInstrumentEntity.class, i.getId()));
