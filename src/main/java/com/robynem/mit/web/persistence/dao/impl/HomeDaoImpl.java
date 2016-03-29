@@ -28,12 +28,13 @@ public class HomeDaoImpl extends BaseDao implements HomeDao {
 
             StringBuilder queryBuilder = new StringBuilder();
 
-            queryBuilder.append(String.format("select new map (b.id as %s, b.name as %s, bg.name as %s, bi.id as %s, '%s' as artistType)",
+            queryBuilder.append(String.format("select new map (b.id as %s, b.name as %s, bg.name as %s, bi.id as %s, '%s' as artistType, b.firstPublishDate as %s)",
                     ArtistMapResult.ID,
                     ArtistMapResult.NAME,
                     ArtistMapResult.ARTIST_DESCRIPTION,
                     ArtistMapResult.IMAGE_ID,
-                    ArtistType.BAND.toString()));
+                    ArtistType.BAND.toString(),
+                    ArtistMapResult.FIRST_PUBLISH_DATE));
             queryBuilder.append("from BandEntity b\n" +
                     "        left join b.musicGenres bg\n" +
                     "        left join b.bandLogo bi ");

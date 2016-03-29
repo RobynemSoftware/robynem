@@ -18,7 +18,7 @@ BEGIN
         pub.placeId = stage.placeId,
         pub.town = stage.town,
         pub.website = stage.website,
-        pub.updated = curdate(),
+        pub.updated = now(),
         pub.bandLogo = stage.bandLogo,
         pub.statusId = publishedStateId,
         pub.firstPublishDate = case when pub.firstPublishDate is null then now() else pub.firstPublishDate end,
@@ -29,7 +29,7 @@ BEGIN
     delete from mit_bandOwnership where bandId = publishedBandId;
     
     insert into mit_bandOwnership(created, bandId, userId, ownerTypeId)
-		select curdate(), publishedBandId, userId, ownerTypeId
+		select now(), publishedBandId, userId, ownerTypeId
         from mit_bandOwnership
         where bandId = stageBandId;
         
@@ -56,7 +56,7 @@ BEGIN
     delete from mit_bandcomponent where bandId = publishedBandId;
     
     insert into mit_bandcomponent (created, confirmed, bandId, userId, discJockey, singer)
-		select curdate(), confirmed, publishedBandId, userId, discJockey, singer
+		select now(), confirmed, publishedBandId, userId, discJockey, singer
         from mit_bandcomponent
         where bandId = stageBandId;
         

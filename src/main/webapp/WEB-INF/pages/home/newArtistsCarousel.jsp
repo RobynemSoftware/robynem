@@ -1,7 +1,17 @@
+<%@ page import="com.robynem.mit.web.util.ArtistType" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+<form id="newArtistsForm" action="${contextPath}/viewBand">
+    <input type="hidden" id="newArtistsForm_bandId" name="bandId">
+</form>
 
+<script type="text/javascript">
+    function goToBand(bandId) {
+        $("#newArtistsForm_bandId").val(bandId);
+        $("#newArtistsForm").submit();
+    }
+</script>
 
 <div class="carousel slide" id="newArtistsCarousel" data-interval="false">
     <%--
@@ -35,7 +45,21 @@
                 </div>
                 <div class="nextEventData">
                   <span class="bandName" style="font-weight: bold;">
-                          ${artist.artistName}
+                      <c:set var="ARTIST_TYPE_BAND">
+                          <%=ArtistType.BAND%>
+                      </c:set>
+
+                      <c:choose>
+                          <c:when test="${ARTIST_TYPE_BAND eq artist.artistType}">
+                              <c:set var="newArtistsJs">
+                                  javascript:goToBand(${artist.id});
+                              </c:set>
+                          </c:when>
+                          <c:otherwise>
+                              <c:set var="newArtistsJs" value="#"/>
+                          </c:otherwise>
+                      </c:choose>
+                          <a href="${newArtistsJs}">${artist.artistName}</a>
                   </span>
                 </div>
                 <div class="nextEventData">

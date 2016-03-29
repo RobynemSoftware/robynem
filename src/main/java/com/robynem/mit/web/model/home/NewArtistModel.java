@@ -3,6 +3,7 @@ package com.robynem.mit.web.model.home;
 import com.robynem.mit.web.util.ArtistType;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by roberto on 08/12/2015.
@@ -17,7 +18,10 @@ public class NewArtistModel implements Serializable {
 
     protected String imgUrl;
 
-    protected ArtistType artistType;
+    protected String artistType;
+
+    protected Date firstPublishDate;
+
 
     public Long getId() {
         return id;
@@ -51,11 +55,19 @@ public class NewArtistModel implements Serializable {
         this.imgUrl = imgUrl;
     }
 
-    public ArtistType getArtistType() {
+    public String getArtistType() {
         return artistType;
     }
 
-    public void setArtistType(ArtistType artistType) {
+    public void setArtistType(String artistType) {
         this.artistType = artistType;
+    }
+
+    public Date getFirstPublishDate() {
+        return firstPublishDate;
+    }
+
+    public void setFirstPublishDate(Date firstPublishDate) {
+        this.firstPublishDate = firstPublishDate;
     }
 }

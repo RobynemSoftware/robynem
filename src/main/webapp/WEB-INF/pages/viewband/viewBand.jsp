@@ -15,6 +15,12 @@
 
     <div id="container" class="container mainContainer pageContent">
 
+        <!-- MENU START -->
+        <jsp:include page="../common/menu.jsp">
+            <jsp:param name="activeItem" value="menuCreateBand"></jsp:param>
+        </jsp:include>
+        <!-- MENU END -->
+
         <div id="viewBandContainer" class="row">
 
         </div>
@@ -23,5 +29,17 @@
 </body>
 
 <script type="text/javascript">
-
+    $(function () {
+        $.ajax({
+            url : "${contextPath}/viewBand/viewContent",
+            data : {
+                bandId : ${bandId}
+            },
+            dataType : "html",
+            cache : false,
+            success : function (data) {
+                $("#viewBandContainer").html(data);
+            }
+        });
+    });
 </script>

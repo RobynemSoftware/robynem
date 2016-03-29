@@ -1,0 +1,33 @@
+.pageContent {
+    background-color: white;
+}
+
+.viewBand {
+    align-content: center;
+}
+
+.viewBand .header {
+    background-color: #454447;
+}
+
+.viewBand .headerDescription {
+    margin-left: 40px;
+}
+
+.viewBand .headerRow {
+    margin-bottom: 20px;
+}
+
+.viewBand .headerText {
+    color: white;
+    font-size: 32px;
+}
+
+.viewBand .musicGenre {
+    font-size: 14px;
+}
+
+.viewBand .town {
+    color: white;
+    font-size: 28px;
+}

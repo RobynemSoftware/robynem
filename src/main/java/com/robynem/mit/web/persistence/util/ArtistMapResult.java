@@ -25,4 +25,6 @@ public class ArtistMapResult extends MapResult {
     public static final String IMAGE_ID = "imageId";
 
     public static final String ARTIST_TYPE = "artistType";
+
+    public static final String FIRST_PUBLISH_DATE = "firstPublishDate";
 }

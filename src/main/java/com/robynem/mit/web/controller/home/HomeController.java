@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by roberto on 06/12/2015.
@@ -262,10 +262,14 @@ public class HomeController extends BaseController {
 
             model.setImgUrl(imageUrl);
 
+            model.setFirstPublishDate(mapResult.get(ArtistMapResult.FIRST_PUBLISH_DATE));
+
+            model.setArtistType(mapResult.get(ArtistMapResult.ARTIST_TYPE).toString());
+
             list.add(model);
         }
 
-        return list;
+        return list.stream().sorted((m1, m2) -> m2.getFirstPublishDate().compareTo(m1.getFirstPublishDate())).collect(Collectors.toList());
     }
 
     private List<NewArtistModel> stubNewArtistsList() {
