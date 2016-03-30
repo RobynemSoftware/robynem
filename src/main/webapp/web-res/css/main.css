@@ -24,6 +24,15 @@ legend {
     /*border:1px solid #ff9e45;*/
 }
 
+button {
+    background-color: #454447;
+    color: #e09e12;
+    /*-webkit-border-radius: 20%;
+    -moz-border-radius: 20%;
+    border-radius: 20%;*/
+    height: 30px;
+}
+
 .mainContainer {
     background-color: #252221;
     max-width: 980px;
