@@ -15,7 +15,7 @@ public class BaseEntity implements Serializable {
     @Column(name = "id", unique = true, nullable = false)
     protected Long id;
 
-    @Column(nullable=true)
+    @Column(nullable=true, columnDefinition = "DEFAULT now()")
     protected Date created;
 
     @Column(nullable=true)

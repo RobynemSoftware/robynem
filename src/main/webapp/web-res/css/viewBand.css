@@ -1,5 +1,6 @@
 .pageContent {
     background-color: white;
+    min-height: 100%;
 }
 
 .viewBand {
@@ -8,6 +9,15 @@
 
 .viewBand .header {
     background-color: #454447;
+    margin-bottom: 15px;
+}
+
+.viewBand .actions {
+    margin-bottom: 15px;
+}
+
+.viewBand .info {
+    margin-bottom: 15px;
 }
 
 .viewBand .headerDescription {
@@ -30,4 +40,94 @@
 .viewBand .town {
     color: white;
     font-size: 28px;
+}
+
+.viewBand .vote {
+    font-size: 14px;
+    color: #ffb514;
+    font-weight: bold;
+}
+
+.viewBand .voteLink {
+    cursor: pointer;
+    max-width: 20px;
+    max-height: 20px;
+}
+
+.viewBand button {
+    min-width: 160px;
+}
+
+.viewBand .componentsTitle {
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.viewBand .componentName {
+    color: black;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.viewBand .componentInstrument {
+    color: black;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+.viewBand .componentsList {
+    background-color: #dae2c5;
+    height: 200px;
+    overflow-y: auto;
+}
+
+.viewBand .contactsList {
+    margin-top: 30px;
+}
+
+.viewBand .contactsTitle {
+    color: black;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.viewBand .contactItem {
+    color: black;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+
+.viewBand .biographyTitle {
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.viewBand .biographyContent  {
+    background-color: #dae2c5;
+    height: 200px;
+    overflow-y: auto;
+}
+
+.viewBand .biographyContentPre {
+    background-color: #dae2c5;
+}
+
+.viewBand .videos {
+    margin-top: 30px;
+}
+
+.viewBand .videos .videosTitle {
+    background-color: #454447;
+    height: 60px;
+    text-align: center;
+}
+
+.viewBand .videos .videosTitle span {
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    vertical-align: middle;
 }

@@ -277,8 +277,10 @@ $(function() {
 
     if (isMobile()) {
         $(".forMobile").show();
+        $(".forDesktop").hide();
     } else {
         $(".forMobile").hide();
+        $(".forDesktop").show();
     }
 })
 
