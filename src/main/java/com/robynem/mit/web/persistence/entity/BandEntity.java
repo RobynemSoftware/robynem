@@ -1,5 +1,6 @@
 package com.robynem.mit.web.persistence.entity;
 
+import com.robynem.mit.web.persistence.util.VideoMapResult;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
@@ -44,7 +45,15 @@ import java.util.Set;
                 "    where pb.id = :bandId and pc.id = :componentId and pc.user.id = sc.user.id"),
         @NamedQuery(name = "@HQL_GET_BAND_STATUS_CODE", query = "select s.code from BandEntity b " +
                 "inner join b.status s " +
-                "where b.id = :bandId")
+                "where b.id = :bandId"),
+        @NamedQuery(name = "@HQL_GET_COUNT_BAND_VIDEOS", query = " select count(v) from BandEntity b " +
+                "inner join b.videos v " +
+                "where b.id = :bandId"),
+        @NamedQuery(name = "@HQL_GET_BAND_VIDEOS", query = " select v " +
+                "from BandEntity b " +
+                "inner join b.videos v " +
+                "where b.id = :bandId " +
+                "order by v.created desc ")
 })
 public class BandEntity extends BaseEntity {
 

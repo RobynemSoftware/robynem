@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by robyn_000 on 08/03/2016.
  */
-public class PagedEntity<T extends BaseEntity> {
+public class PagedEntity<T> {
 
     protected long totalRows;
 

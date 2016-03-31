@@ -1,10 +1,9 @@
 package com.robynem.mit.web.persistence.dao;
 
 import com.robynem.mit.web.persistence.criteria.BandComponentsCriteria;
-import com.robynem.mit.web.persistence.entity.AudioEntity;
-import com.robynem.mit.web.persistence.entity.BandEntity;
-import com.robynem.mit.web.persistence.entity.UserEntity;
-import com.robynem.mit.web.persistence.entity.VideoEntity;
+import com.robynem.mit.web.persistence.criteria.VideosCriteria;
+import com.robynem.mit.web.persistence.entity.*;
+import com.robynem.mit.web.persistence.util.VideoMapResult;
 import com.robynem.mit.web.util.OwnerType;
 import com.robynem.mit.web.util.PublishBandResult;
 import org.hibernate.Session;
@@ -81,4 +80,6 @@ public interface BandDao {
     Long addBandAudio(Long bandId, AudioEntity audioEntity);
 
     void removeBandAudio(Long bandId, Long audioId);
+
+    PagedEntity<VideoEntity> getBandVideos(VideosCriteria criteria);
 }

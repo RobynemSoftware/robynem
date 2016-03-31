@@ -1,11 +1,13 @@
 package com.robynem.mit.web.persistence.dao.impl;
 
 import com.robynem.mit.web.persistence.criteria.BandComponentsCriteria;
+import com.robynem.mit.web.persistence.criteria.VideosCriteria;
 import com.robynem.mit.web.persistence.dao.BandDao;
 import com.robynem.mit.web.persistence.dao.BaseDao;
 import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.dao.UtilsDao;
 import com.robynem.mit.web.persistence.entity.*;
+import com.robynem.mit.web.persistence.util.VideoMapResult;
 import com.robynem.mit.web.util.EntityStatus;
 import com.robynem.mit.web.util.OwnerType;
 import com.robynem.mit.web.util.PublishBandErrorCode;
@@ -965,6 +967,31 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             session.update(bandEntity);
 
             return null;
+        });
+    }
+
+    @Override
+    public PagedEntity<VideoEntity> getBandVideos(VideosCriteria criteria) {
+        return this.hibernateTemplate.execute(session -> {
+
+            Map<String, Object> parameters = new HashMap<String, Object>() {
+                {
+                    put("bandId", criteria.getBandId());
+                }
+            };
+
+            PagedEntity<VideoEntity> resultEntity = this.getPagingInfo("@HQL_GET_COUNT_BAND_VIDEOS",
+                    parameters, criteria.getPageSize(), criteria.getCurrentPage(), session);
+
+
+            Query query = session.getNamedQuery("@HQL_GET_BAND_VIDEOS");
+            this.setParameters(query, parameters);
+
+            this.setPagination(query, resultEntity);
+
+            resultEntity.setResults((List<VideoEntity>) query.list());
+
+            return resultEntity;
         });
     }
 

@@ -3,7 +3,7 @@ package com.robynem.mit.web.persistence.criteria;
 /**
  * Created by robyn_000 on 01/02/2016.
  */
-public class BandComponentsCriteria {
+public class BandComponentsCriteria extends BaseCriteria {
 
     protected Long instrumentId;
 

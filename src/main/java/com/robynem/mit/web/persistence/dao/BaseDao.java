@@ -26,7 +26,7 @@ public abstract class BaseDao {
     @Qualifier("hibernateTemplate")
     protected HibernateTemplate hibernateTemplate;
 
-    protected <T extends BaseEntity> PagedEntity<T> getPagingInfo(String namedQuery, Map parameters, Integer pageSize, Integer currentPage, Session session) {
+    protected <T> PagedEntity<T> getPagingInfo(String namedQuery, Map parameters, Integer pageSize, Integer currentPage, Session session) {
         PagedEntity<T> pagedEntity = new PagedEntity<T>();
 
         if (pageSize != null && currentPage != null) {
