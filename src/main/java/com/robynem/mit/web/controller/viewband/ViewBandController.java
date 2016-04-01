@@ -4,13 +4,19 @@ import com.robynem.mit.web.controller.BaseController;
 import com.robynem.mit.web.model.band.BandModel;
 import com.robynem.mit.web.model.band.ComponentModel;
 import com.robynem.mit.web.model.band.ContactModel;
+import com.robynem.mit.web.model.viewband.GalleryModel;
+import com.robynem.mit.web.model.viewband.VideosModel;
+import com.robynem.mit.web.persistence.criteria.GalleryCriteria;
+import com.robynem.mit.web.persistence.criteria.VideosCriteria;
 import com.robynem.mit.web.persistence.dao.BandDao;
-import com.robynem.mit.web.persistence.entity.AudioEntity;
-import com.robynem.mit.web.persistence.entity.BandEntity;
+import com.robynem.mit.web.persistence.entity.*;
+import com.robynem.mit.web.persistence.util.VideoMapResult;
+import com.robynem.mit.web.util.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by robyn_000 on 26/03/2016.
@@ -31,6 +38,12 @@ public class ViewBandController extends BaseController {
 
     @Autowired
     private BandDao bandDao;
+
+    @Value("${viewband.videos.page-size}")
+    private int videosPageSize;
+
+    @Value("${viewband.gallery.page-size}")
+    private int galleryPageSize;
 
     @RequestMapping
     public ModelAndView view(@RequestParam Long bandId, ModelMap modelMap) {
@@ -50,16 +63,42 @@ public class ViewBandController extends BaseController {
         ModelAndView modelAndView = new ModelAndView("viewband/viewBandContent");
 
         try {
+            this.addSessionAttribute(Constants.VIEW_BAND_ID, bandId);
+
             BandModel bandModel = new BandModel();
 
             this.populateGeneralInfoModel(bandId, bandModel);
 
             this.populateComponentsModel(bandId, bandModel);
 
-            this.populateMediaModel(bandId, bandModel);
-
             modelMap.addAttribute("bandModel", bandModel);
 
+        } catch (Exception e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return modelAndView;
+    }
+
+    @RequestMapping("/getVideos")
+    public ModelAndView getVideos(@RequestParam(required = false, defaultValue = "1") int currentPage, ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("viewband/viewBandVideosList");
+
+        try {
+            modelMap.addAttribute("videosModel", this.getVideosModel(this.getSessionAttribute(Constants.VIEW_BAND_ID), currentPage));
+        } catch (Exception e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return modelAndView;
+    }
+
+    @RequestMapping("/getGallery")
+    public ModelAndView getGallery(@RequestParam(required = false, defaultValue = "1") int currentPage, ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("viewband/viewBandGalleryList");
+
+        try {
+            modelMap.addAttribute("galleryModel", this.getGalleryModel(this.getSessionAttribute(Constants.VIEW_BAND_ID), currentPage));
         } catch (Exception e) {
             this.manageException(e, LOG, modelMap);
         }
@@ -139,8 +178,21 @@ public class ViewBandController extends BaseController {
 
                                 componentModel.setInstruments(new ArrayList<ComponentModel.Instrument>());
 
+                                if (c.getPlayedInstruments() != null) {
+                                    c.getPlayedInstruments().stream().forEach(i -> {
+                                        ComponentModel.Instrument instrument = componentModel.createInstrumentInstance();
+                                        instrument.setName(i.getName());
+                                        instrument.setId(i.getId().toString());
+                                        if (c.getPlayedInstruments() != null && c.getPlayedInstruments().stream().filter(pi -> pi.getId().equals(i.getId())).findFirst().isPresent()) {
+                                            instrument.setSelected(true);
+                                        }
+
+                                        componentModel.getInstruments().add(instrument);
+                                    });
+                                }
+
                                 // Adds instruments from the user set
-                                if (c.getUser().getPlayedMusicInstruments() != null) {
+                                /*if (c.getUser().getPlayedMusicInstruments() != null) {
                                     c.getUser().getPlayedMusicInstruments().stream().forEach(i -> {
                                         ComponentModel.Instrument instrument = componentModel.createInstrumentInstance();
                                         instrument.setName(i.getName());
@@ -160,7 +212,7 @@ public class ViewBandController extends BaseController {
                                     instrument.setId(i.getId().toString());
                                     instrument.setSelected(true);
                                     componentModel.getInstruments().add(instrument);
-                                });
+                                });*/
 
 
                                 bandModel.getComponents().add(componentModel);
@@ -168,31 +220,42 @@ public class ViewBandController extends BaseController {
         }
     }
 
-    private void populateMediaModel(Long bandId, BandModel bandModel) {
-        BandEntity bandEntity = this.bandDao.getBandMedia(bandId);
+    private VideosModel getVideosModel(Long bandId, int currentPage) {
+        VideosModel videosModel = new VideosModel();
 
-        if (bandEntity.getVideos() != null) {
-            bandEntity.getVideos().stream().forEach(v -> {
-                bandModel.getMediaModel().getVideos().add(v);
-            });
-        }
+        VideosCriteria videosCriteria = new VideosCriteria();
 
-        if (bandEntity.getImages() != null) {
-            bandEntity.getImages().stream().forEach(i -> {
-                bandModel.getMediaModel().getImageIds().add(i.getId());
-            });
-        }
+        videosCriteria.setBandId(bandId);
+        videosCriteria.setCurrentPage(currentPage);
+        videosCriteria.setPageSize(this.videosPageSize);
 
-        if (bandEntity.getAudios() != null) {
-            bandEntity.getAudios().stream().forEach(a -> {
-                AudioEntity audioEntity = new AudioEntity();
-                audioEntity.setId(a.getId());
-                audioEntity.setName(a.getName());
-                audioEntity.setSoundCloudUrl(a.getSoundCloudUrl());
+        PagedEntity<VideoEntity> pagedEntity = this.bandDao.getBandVideos(videosCriteria);
 
-                bandModel.getMediaModel().getAudios().add(audioEntity);
-            });
-        }
+        videosModel.setCurrentPage(pagedEntity.getCurrentPage());
+        videosModel.setNextRows(pagedEntity.getNextPageRows());
+        videosModel.setPreviousRows(pagedEntity.getPreviousPageRows());
+        videosModel.setVideos(pagedEntity.getResults().stream().sorted((v1, v2) -> v2.getCreated().compareTo(v1.getCreated())).collect(Collectors.toList()));
+
+        return videosModel;
+    }
+
+    private GalleryModel getGalleryModel(Long bandId, int currentPage) {
+        GalleryModel galleryModel = new GalleryModel();
+
+        GalleryCriteria galleryCriteria = new GalleryCriteria();
+
+        galleryCriteria.setBandId(bandId);
+        galleryCriteria.setCurrentPage(currentPage);
+        galleryCriteria.setPageSize(this.galleryPageSize);
+
+        PagedEntity<ImageEntity> pagedEntity = this.bandDao.getBandGallery(galleryCriteria);
+
+        galleryModel.setCurrentPage(pagedEntity.getCurrentPage());
+        galleryModel.setNextRows(pagedEntity.getNextPageRows());
+        galleryModel.setPreviousRows(pagedEntity.getPreviousPageRows());
+        galleryModel.setImages(pagedEntity.getResults().stream().sorted((v1, v2) -> v2.getCreated().compareTo(v1.getCreated())).collect(Collectors.toList()));
+
+        return galleryModel;
     }
 
 }

@@ -37,6 +37,12 @@ pre {
     border: none;
 }
 
+a:link, a:hover, a:visited, a:active {
+    color: #e09e12;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
 .mainContainer {
     background-color: #252221;
     max-width: 980px;

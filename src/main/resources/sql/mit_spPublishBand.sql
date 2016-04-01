@@ -8,7 +8,7 @@ BEGIN
     set publishedStateId = (select id from mit_entityStatus where code = 'PUBLISHED');
 
 	-- updates published band data
-    update mit_band pub 
+    update mit_band pub
 		inner join mit_band stage on pub.id = stage.publishedBandId
 	set pub.biography = stage.biography,
 		pub.created = stage.created,
@@ -24,101 +24,134 @@ BEGIN
         pub.firstPublishDate = case when pub.firstPublishDate is null then now() else pub.firstPublishDate end,
         pub.publishedBandId = null
     where stage.id = stageBandId;
-    
+
     -- update published band owners
     delete from mit_bandOwnership where bandId = publishedBandId;
-    
+
     insert into mit_bandOwnership(created, bandId, userId, ownerTypeId)
 		select now(), publishedBandId, userId, ownerTypeId
         from mit_bandOwnership
         where bandId = stageBandId;
-        
+
 	-- delete stage band owners
     delete from mit_bandOwnership where bandId = stageBandId;
-        
+
 	-- update published band music genres
     delete from mit_bandMusicGenre where bandId = publishedBandId;
-    
+
     insert into mit_bandMusicGenre (bandId, musicGenreId)
 		select publishedBandId, musicGenreId
         from mit_bandMusicGenre
         where bandId = stageBandId;
-        
+
 	-- delete stage music genres
     delete from mit_bandMusicGenre where bandId = stageBandId;
-        
+
 	-- update published band components
-    delete pci 
+    delete pci
     from mit_bandcomponentinstrument pci
 		inner join mit_bandcomponent pc on pci.bandComponentId = pc.id
 	where pc.bandId = publishedBandId;
-    
+
     delete from mit_bandcomponent where bandId = publishedBandId;
-    
+
     insert into mit_bandcomponent (created, confirmed, bandId, userId, discJockey, singer)
 		select now(), confirmed, publishedBandId, userId, discJockey, singer
         from mit_bandcomponent
         where bandId = stageBandId;
-        
+
 	insert into mit_bandcomponentinstrument (bandComponentId, musicalInstrumentId)
 		select pc.id, sci.musicalInstrumentId
         from mit_bandcomponentinstrument sci
 			inner join mit_bandcomponent sc on sci.bandComponentId = sc.id and sc.bandId = stageBandId
             inner join mit_bandcomponent pc on sc.userId = pc.userId and pc.bandId = publishedBandId;
-            
+
 	-- delete stage band components and instruments
-    delete sci 
+    delete sci
     from mit_bandcomponentinstrument sci
 		inner join mit_bandcomponent sc on sci.bandComponentId = sc.id
 	where sc.bandId = stageBandId;
-    
+
     delete from mit_bandcomponent where bandId = stageBandId;
-            
+
 	-- update published band contacts
     delete from mit_bandContact where bandId = publishedBandId;
-    
+
     insert into mit_bandContact (created, emailAddress, phoneNumber, bandId)
 		select created, emailAddress, phoneNumber, publishedBandId
         from mit_bandContact
         where bandId = stageBandId;
-        
+
 	-- delete stage band contacts
     delete from mit_bandContact where bandId = stageBandId;
-	
+
     -- update published band videos
+  create temporary table videosToDelete engine=memory
+      select videoId
+      from mit_bandVideo where bandId = publishedBandId;
+
     delete from mit_bandVideo where bandId = publishedBandId;
-    
+
     insert into mit_bandVideo (bandId, videoId)
 		select publishedBandId, videoId
         from mit_bandVideo
         where bandId = stageBandId;
-        
+
 	-- delete stage band videos
     delete from mit_bandVideo where bandId = stageBandId;
-        
+
+  -- Deletes old published videos
+  delete v
+  from mit_video v
+    inner join videosToDelete tmp on v.id = tmp.videoId;
+
+  drop temporary table if exists videosToDelete;
+
 	-- update published band images
+  create temporary table imagesToDelete engine=memory
+      select imageId
+      from mit_bandImage where bandId = publishedBandId;
+
     delete from mit_bandImage where bandId = publishedBandId;
-    
+
     insert into mit_bandImage(bandId, imageId)
 		select publishedBandId, imageId
         from mit_bandImage
         where bandId = stageBandId;
-        
+
 	-- delete stage band images
     delete from mit_bandImage where bandId = stageBandId;
-        
+
+  -- Deletes old published images
+  delete i
+  from mit_image i
+    inner join imagesToDelete tmp on i.id = tmp.imageId;
+
+  drop temporary table if exists imagesToDelete;
+
 	-- update published band audios
+  create temporary table audiosToDelete engine=memory
+      select audioId
+      from mit_bandAudio where bandId = publishedBandId;
+
     delete from mit_bandAudio where bandId = publishedBandId;
-    
+
     insert into mit_bandAudio(bandId, audioId)
 		select publishedBandId, audioId
         from mit_bandAudio
         where bandId = stageBandId;
-        
+
 	-- delete stage band audios
     delete from mit_bandAudio where bandId = stageBandId;
-    
+
+  -- Deletes old published images
+  delete a
+  from mit_audio a
+    inner join audiosToDelete tmp on a.id = tmp.audioId;
+
+  drop temporary table if exists audiosToDelete;
+
     -- delete stage band 
     delete from mit_band where id = stageBandId;
-    
+
 END

@@ -122,14 +122,14 @@
 
                         <span class="componentInstrument">
 
-                            <c:if test="${component.singer eq true}">
+                            <c:if test="${component.singerSelected eq true}">
                                 <spring:message code="profile.musician-form.singer"></spring:message>
-                                <c:if test="${component.discJockey eq true}">
+                                <c:if test="${component.discJockeySelected eq true}">
                                     ,&nbsp;
                                 </c:if>
                             </c:if>
 
-                        <c:if test="${component.discJockey eq true}">
+                        <c:if test="${component.discJockeySelected eq true}">
                             <spring:message code="profile.musician-form.dj"></spring:message>
                             <c:if test="${not empty component.instruments}">
                                 ,&nbsp;
@@ -197,12 +197,82 @@
     <div class="row videos">
 
         <div class="col-md-12 videosTitle">
-            <span>
+            <span class="span12">
                 <spring:message code="band.media.videos"></spring:message>
             </span>
         </div>
 
+        <div class="col-md-12">
+
+            <div id="videosContainer" class="row">
+
+            </div>
+
+        </div>
+
     </div>
+
+        <%-- GALLERY --%>
+        <div class="row gallery">
+
+            <div class="col-md-12 galleryTitle">
+            <span class="span12">
+                <spring:message code="band.media.images"></spring:message>
+            </span>
+            </div>
+
+            <div class="col-md-12">
+
+                <div id="galleryContainer" class="row">
+
+                </div>
+
+            </div>
+
+        </div>
 
 
 </div>
+
+<script type="text/javascript">
+
+    $(function () {
+        loadVideos(1);
+
+        loadGallery(1);
+    })
+
+    function loadVideos(currentPage) {
+        $.ajax({
+            url : "${contextPath}/viewBand/getVideos",
+            data : {
+                currentPage : currentPage
+            },
+            type : "get",
+            dataType : "html",
+            async : true,
+            cache : false,
+            success : function(data) {
+                $("#showNextVideos").remove();
+                $("#videosContainer").append(data);
+            }
+        });
+    }
+
+    function loadGallery(currentPage) {
+        $.ajax({
+            url : "${contextPath}/viewBand/getGallery",
+            data : {
+                currentPage : currentPage
+            },
+            type : "get",
+            dataType : "html",
+            async : true,
+            cache : false,
+            success : function(data) {
+                $("#showNextGallery").remove();
+                $("#galleryContainer").append(data);
+            }
+        });
+    }
+</script>

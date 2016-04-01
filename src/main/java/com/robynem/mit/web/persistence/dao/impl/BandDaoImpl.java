@@ -1,6 +1,7 @@
 package com.robynem.mit.web.persistence.dao.impl;
 
 import com.robynem.mit.web.persistence.criteria.BandComponentsCriteria;
+import com.robynem.mit.web.persistence.criteria.GalleryCriteria;
 import com.robynem.mit.web.persistence.criteria.VideosCriteria;
 import com.robynem.mit.web.persistence.dao.BandDao;
 import com.robynem.mit.web.persistence.dao.BaseDao;
@@ -178,6 +179,8 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             destination.getBandLogo().setLargeFile(source.getBandLogo().getLargeFile());
             destination.getBandLogo().setOriginalFile(source.getBandLogo().getOriginalFile());
             destination.getBandLogo().setFilePath(source.getBandLogo().getFilePath());
+            destination.getBandLogo().setCreated(source.getBandLogo().getCreated());
+            destination.getBandLogo().setUpdated(source.getBandLogo().getUpdated());
         }
 
 
@@ -230,6 +233,8 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 bandComponentEntity.setSinger(c.isSinger());
                 bandComponentEntity.setDiscJockey(c.isDiscJockey());
                 bandComponentEntity.setConfirmed(c.isConfirmed());
+                bandComponentEntity.setCreated(c.getCreated());
+                bandComponentEntity.setUpdated(c.getUpdated());
 
 
                 if (c.getPlayedInstruments() != null) {
@@ -289,7 +294,12 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
                 videoEntity.setLinkId(v.getLinkId());
 
+                videoEntity.setCreated(v.getCreated());
+                videoEntity.setUpdated(v.getUpdated());
+
                 destination.getVideos().add(videoEntity);
+
+
             });
         }
 
@@ -314,6 +324,9 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 imageEntity.setSmallFile(i.getSmallFile());
                 imageEntity.setLinkId(i.getLinkId());
 
+                imageEntity.setCreated(i.getCreated());
+                imageEntity.setUpdated(i.getUpdated());
+
                 destination.getImages().add(imageEntity);
             });
         }
@@ -336,6 +349,9 @@ public class BandDaoImpl extends BaseDao implements BandDao {
                 audioEntity.setFile(a.getFile());
                 audioEntity.setSoundCloudUrl(a.getSoundCloudUrl());
                 audioEntity.setLinkId(a.getLinkId());
+
+                audioEntity.setCreated(a.getCreated());
+                audioEntity.setUpdated(a.getUpdated());
 
                 destination.getAudios().add(audioEntity);
             });
@@ -990,6 +1006,31 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             this.setPagination(query, resultEntity);
 
             resultEntity.setResults((List<VideoEntity>) query.list());
+
+            return resultEntity;
+        });
+    }
+
+    @Override
+    public PagedEntity<ImageEntity> getBandGallery(GalleryCriteria criteria) {
+        return this.hibernateTemplate.execute(session -> {
+
+            Map<String, Object> parameters = new HashMap<String, Object>() {
+                {
+                    put("bandId", criteria.getBandId());
+                }
+            };
+
+            PagedEntity<ImageEntity> resultEntity = this.getPagingInfo("@HQL_GET_COUNT_BAND_GALLERY",
+                    parameters, criteria.getPageSize(), criteria.getCurrentPage(), session);
+
+
+            Query query = session.getNamedQuery("@HQL_GET_BAND_GALLERY");
+            this.setParameters(query, parameters);
+
+            this.setPagination(query, resultEntity);
+
+            resultEntity.setResults((List<ImageEntity>) query.list());
 
             return resultEntity;
         });

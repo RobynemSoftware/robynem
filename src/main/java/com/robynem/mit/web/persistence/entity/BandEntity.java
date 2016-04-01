@@ -53,7 +53,15 @@ import java.util.Set;
                 "from BandEntity b " +
                 "inner join b.videos v " +
                 "where b.id = :bandId " +
-                "order by v.created desc ")
+                "order by v.created desc "),
+        @NamedQuery(name = "@HQL_GET_COUNT_BAND_GALLERY", query = " select count(i) from BandEntity b " +
+                "inner join b.images i " +
+                "where b.id = :bandId"),
+        @NamedQuery(name = "@HQL_GET_BAND_GALLERY", query = " select i " +
+                "from BandEntity b " +
+                "inner join b.images i " +
+                "where b.id = :bandId " +
+                "order by i.created desc ")
 })
 public class BandEntity extends BaseEntity {
 

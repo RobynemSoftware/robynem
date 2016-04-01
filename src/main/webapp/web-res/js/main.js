@@ -197,6 +197,7 @@ function isSoundCloudUrl(url){
  *      saveCallback: the function to be called if on viedo add. If it's not null and returs new video id, the video will be added to container
  *      deleteCallback: the function to be called if a video gets deleted. It takes the videoId to delete on server. If it's not null and returns true, the video will be removed from container
  *      videoId: the persistent video id. If this parameter is set, saveCallback should be null.
+ *      readOnly: (dafault false) - if true, delete link won't be added
  * @param url youtube url
  * @param container jQuery container div
  * @param submitSettings an object with settings
@@ -205,13 +206,18 @@ function isSoundCloudUrl(url){
 function addYoutubeVideo(url, container, submitSettings) {
     var success = isYoutubeUrl((url));
 
+    var readonly = false;
+    if (submitSettings.readOnly != null && submitSettings.readOnly != undefined) {
+        readonly = submitSettings.readOnly;
+    }
+
     /*
     * If it's a youtube video and, if there is a save callback function and it retirns true, viedel gets added.
     * If save callback function is not present video gets added. Otherwise, no.*/
     var videoId = submitSettings.videoId;
     if (success && ((submitSettings.saveCallback != null && (videoId = submitSettings.saveCallback()) != null) || submitSettings.saveCallback == null)) {
 
-        console.log("addYoutubeVideo - videoId: " + videoId);
+        //console.log("addYoutubeVideo - videoId: " + videoId);
 
         var iFrameCode = '<iframe width="200" height="150" src="http://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>';
 
@@ -239,29 +245,34 @@ function addYoutubeVideo(url, container, submitSettings) {
         var hdn = $("<input type='hidden' name='" + submitSettings.name + "' value='" + url + "' />");
         hdn.appendTo(container);
 
-        var del = $("<img src='" + CONTEXT_PATH + "/resources/images/delete_16x16.png' />");
-        del = del.css("cursor", "pointer");
+        console.log("readonly: " + readonly);
 
-        del = del.appendTo(container);
+        if (!readonly) {
+            var del = $("<img src='" + CONTEXT_PATH + "/resources/images/delete_16x16.png' />");
+            del = del.css("cursor", "pointer");
 
-        del = del.position({
-            my: "right top",
-            at: "right top",
-            of: iFrame
-        });
+            del = del.appendTo(container);
 
-        del.click(function() {
+            del = del.position({
+                my: "right top",
+                at: "right top",
+                of: iFrame
+            });
 
-            /*
-            * If delete callback is present and returns true, video gets deleted.
-            * If delete callback is not present, video gets deleted.
-            * Otherwise, no.*/
-            if ((submitSettings.deleteCallback != null && submitSettings.deleteCallback(videoId)) || submitSettings.deleteCallback == null) {
-                iFrame.remove();
-                hdn.remove();
-                $(this).remove();
-            }
-        });
+            del.click(function() {
+
+                /*
+                 * If delete callback is present and returns true, video gets deleted.
+                 * If delete callback is not present, video gets deleted.
+                 * Otherwise, no.*/
+                if ((submitSettings.deleteCallback != null && submitSettings.deleteCallback(videoId)) || submitSettings.deleteCallback == null) {
+                    iFrame.remove();
+                    hdn.remove();
+                    $(this).remove();
+                }
+            });
+        }
+
     } else {
         // If url is correctly validated but save callback returns false, this variable needs to be overwritten.
         success = false;

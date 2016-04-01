@@ -1,6 +1,7 @@
 package com.robynem.mit.web.persistence.dao;
 
 import com.robynem.mit.web.persistence.criteria.BandComponentsCriteria;
+import com.robynem.mit.web.persistence.criteria.GalleryCriteria;
 import com.robynem.mit.web.persistence.criteria.VideosCriteria;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.persistence.util.VideoMapResult;
@@ -82,4 +83,6 @@ public interface BandDao {
     void removeBandAudio(Long bandId, Long audioId);
 
     PagedEntity<VideoEntity> getBandVideos(VideosCriteria criteria);
+
+    PagedEntity<ImageEntity> getBandGallery(GalleryCriteria criteria);
 }

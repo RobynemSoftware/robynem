@@ -119,7 +119,17 @@
     margin-top: 30px;
 }
 
+.viewBand .gallery {
+    margin-top: 30px;
+}
+
 .viewBand .videos .videosTitle {
+    background-color: #454447;
+    height: 60px;
+    text-align: center;
+}
+
+.viewBand .gallery .galleryTitle {
     background-color: #454447;
     height: 60px;
     text-align: center;
@@ -130,4 +140,28 @@
     font-size: 30px;
     font-weight: bold;
     vertical-align: middle;
+}
+
+.viewBand .gallery .galleryTitle span {
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.viewBand .videoColumn {
+    margin-top: 50px;
+}
+
+.viewBand #showNextVideos {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.viewBand .noVideos {
+    text-align: center;
+    margin-top: 50px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #e22b20;
 }
