@@ -123,15 +123,26 @@
     margin-top: 30px;
 }
 
+.viewBand .audio {
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
 .viewBand .videos .videosTitle {
     background-color: #454447;
-    height: 60px;
+    min-height: 60px;
     text-align: center;
 }
 
 .viewBand .gallery .galleryTitle {
     background-color: #454447;
-    height: 60px;
+    min-height: 60px;
+    text-align: center;
+}
+
+.viewBand .audio .audioTitle {
+    background-color: #454447;
+    min-height: 60px;
     text-align: center;
 }
 
@@ -143,6 +154,13 @@
 }
 
 .viewBand .gallery .galleryTitle span {
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.viewBand .audio .audioTitle span {
     color: white;
     font-size: 30px;
     font-weight: bold;

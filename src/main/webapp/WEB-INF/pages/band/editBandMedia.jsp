@@ -48,18 +48,6 @@
                             </div>
                         </div>
 
-                        <%--<div class="row">
-
-                            <div class="col-md-12 saveBandLink">
-                                <span class="saveBandLink">
-                                    <spring:message code="band.media.videos.save-alert"></spring:message>
-
-                                    <a id="saveVideosLink" href="#"><spring:message code="global.here"></spring:message> </a>
-                                </span>
-                            </div>
-
-                        </div>--%>
-
                         <%--<form:form id="videosForm" method="post" action="${contextPath}/private/editBand/saveVideos" modelAttribute="bandModel" >--%>
                             <input type="hidden" name="currentTabIndex" value="2">
 
@@ -522,7 +510,6 @@
         row.append(colAudio).append(colDelete);
 
         SC.oEmbed(soudCloudUrl, { auto_play: false, maxheight:80}).then(function(oEmbed) {
-            console.log('oEmbed response: ', oEmbed);
             colAudio.html(oEmbed.html);
         });
 

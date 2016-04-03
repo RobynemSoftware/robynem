@@ -212,18 +212,37 @@
 
     </div>
 
-        <%-- GALLERY --%>
-        <div class="row gallery">
+    <%-- GALLERY --%>
+    <div class="row gallery">
 
-            <div class="col-md-12 galleryTitle">
+        <div class="col-md-12 galleryTitle">
             <span class="span12">
                 <spring:message code="band.media.images"></spring:message>
+            </span>
+        </div>
+
+        <div class="col-md-12">
+
+            <div id="galleryContainer" class="row">
+
+            </div>
+
+        </div>
+
+    </div>
+
+        <%-- AUDIO --%>
+        <div class="row audio">
+
+            <div class="col-md-12 audioTitle">
+            <span class="span12">
+                <spring:message code="band.media.audio"></spring:message>
             </span>
             </div>
 
             <div class="col-md-12">
 
-                <div id="galleryContainer" class="row">
+                <div id="audioContainer" class="row">
 
                 </div>
 
@@ -240,19 +259,21 @@
         loadVideos(1);
 
         loadGallery(1);
+
+        loadAudios(1);
     })
 
     function loadVideos(currentPage) {
         $.ajax({
-            url : "${contextPath}/viewBand/getVideos",
-            data : {
-                currentPage : currentPage
+            url: "${contextPath}/viewBand/getVideos",
+            data: {
+                currentPage: currentPage
             },
-            type : "get",
-            dataType : "html",
-            async : true,
-            cache : false,
-            success : function(data) {
+            type: "get",
+            dataType: "html",
+            async: true,
+            cache: false,
+            success: function (data) {
                 $("#showNextVideos").remove();
                 $("#videosContainer").append(data);
             }
@@ -261,17 +282,34 @@
 
     function loadGallery(currentPage) {
         $.ajax({
-            url : "${contextPath}/viewBand/getGallery",
-            data : {
-                currentPage : currentPage
+            url: "${contextPath}/viewBand/getGallery",
+            data: {
+                currentPage: currentPage
             },
-            type : "get",
-            dataType : "html",
-            async : true,
-            cache : false,
-            success : function(data) {
+            type: "get",
+            dataType: "html",
+            async: true,
+            cache: false,
+            success: function (data) {
                 $("#showNextGallery").remove();
                 $("#galleryContainer").append(data);
+            }
+        });
+    }
+
+    function loadAudios(currentPage) {
+        $.ajax({
+            url: "${contextPath}/viewBand/getAudios",
+            data: {
+                currentPage: currentPage
+            },
+            type: "get",
+            dataType: "html",
+            async: true,
+            cache: false,
+            success: function (data) {
+                $("#showNextAudios").remove();
+                $("#audioContainer").append(data);
             }
         });
     }

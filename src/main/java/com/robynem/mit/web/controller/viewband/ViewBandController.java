@@ -4,8 +4,10 @@ import com.robynem.mit.web.controller.BaseController;
 import com.robynem.mit.web.model.band.BandModel;
 import com.robynem.mit.web.model.band.ComponentModel;
 import com.robynem.mit.web.model.band.ContactModel;
+import com.robynem.mit.web.model.viewband.AudioModel;
 import com.robynem.mit.web.model.viewband.GalleryModel;
 import com.robynem.mit.web.model.viewband.VideosModel;
+import com.robynem.mit.web.persistence.criteria.AudioCriteria;
 import com.robynem.mit.web.persistence.criteria.GalleryCriteria;
 import com.robynem.mit.web.persistence.criteria.VideosCriteria;
 import com.robynem.mit.web.persistence.dao.BandDao;
@@ -44,6 +46,9 @@ public class ViewBandController extends BaseController {
 
     @Value("${viewband.gallery.page-size}")
     private int galleryPageSize;
+
+    @Value("${viewband.audio.page-size}")
+    private int audiosPageSize;
 
     @RequestMapping
     public ModelAndView view(@RequestParam Long bandId, ModelMap modelMap) {
@@ -99,6 +104,19 @@ public class ViewBandController extends BaseController {
 
         try {
             modelMap.addAttribute("galleryModel", this.getGalleryModel(this.getSessionAttribute(Constants.VIEW_BAND_ID), currentPage));
+        } catch (Exception e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return modelAndView;
+    }
+
+    @RequestMapping("/getAudios")
+    public ModelAndView getAudios(@RequestParam(required = false, defaultValue = "1") int currentPage, ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("viewband/viewBandAudioList");
+
+        try {
+            modelMap.addAttribute("audioModel", this.getAudioModel(this.getSessionAttribute(Constants.VIEW_BAND_ID), currentPage));
         } catch (Exception e) {
             this.manageException(e, LOG, modelMap);
         }
@@ -256,6 +274,25 @@ public class ViewBandController extends BaseController {
         galleryModel.setImages(pagedEntity.getResults().stream().sorted((v1, v2) -> v2.getCreated().compareTo(v1.getCreated())).collect(Collectors.toList()));
 
         return galleryModel;
+    }
+
+    private AudioModel getAudioModel(Long bandId, int currentPage) {
+        AudioModel audioModel = new AudioModel();
+
+        AudioCriteria audioCriteria = new AudioCriteria();
+
+        audioCriteria.setBandId(bandId);
+        audioCriteria.setCurrentPage(currentPage);
+        audioCriteria.setPageSize(this.audiosPageSize);
+
+        PagedEntity<AudioEntity> pagedEntity = this.bandDao.getBandAudios(audioCriteria);
+
+        audioModel.setCurrentPage(pagedEntity.getCurrentPage());
+        audioModel.setNextRows(pagedEntity.getNextPageRows());
+        audioModel.setPreviousRows(pagedEntity.getPreviousPageRows());
+        audioModel.setAudios(pagedEntity.getResults().stream().sorted((a1, a2) -> a2.getCreated().compareTo(a1.getCreated())).collect(Collectors.toList()));
+
+        return audioModel;
     }
 
 }

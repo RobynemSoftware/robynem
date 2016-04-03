@@ -775,31 +775,14 @@ public class EditBandController extends BaseController {
     public AbstractView addAudio(@RequestParam String soundCloudUrl, ModelMap modelMap) {
 
         try {
-            /*if (!audio.isEmpty()) {
 
-                if (!StringUtils.trimToEmpty(audio.getContentType()).toLowerCase().contains("mp3")) {
-                    this.addApplicationMessage(this.getMessage("profile.validation.invalid-image"),
-                            MessageSeverity.FATAL, null, modelMap);
-                } else if (audio.getSize() > this.maxAudioFileSize) {
-                    this.addApplicationMessage(this.getMessage("band.validation.audio-to-large"),
-                            MessageSeverity.FATAL, null, modelMap);
-                } else {
-
-                    ByteArrayInputStream bais = new ByteArrayInputStream(audio.getBytes());
-
-                    Long audioId = this.mediaDao.addBandAudio(this.getSessionAttribute(Constants.EDIT_BAND_ID), bais, name);
-
-                    modelMap.put("success", true);
-                    modelMap.put("uploadedAudioId", audioId);
-                    modelMap.put("uploadedAudioName", name);
-                }
-            }*/
 
             BandEntity bandEntity = this.getBandToEdit(true, this.getSessionAttribute(Constants.EDIT_BAND_ID), EditBandTabIndex.MEDIA);
 
             AudioEntity audioEntity = new AudioEntity();
             audioEntity.setSoundCloudUrl(soundCloudUrl);
             audioEntity.setLinkId(PortalHelper.getUniqueId());
+            audioEntity.setCreated(Calendar.getInstance().getTime());
 
             this.bandDao.addBandAudio(bandEntity.getId(), audioEntity);
 

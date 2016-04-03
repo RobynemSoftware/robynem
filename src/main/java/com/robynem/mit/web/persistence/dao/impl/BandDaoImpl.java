@@ -1,5 +1,6 @@
 package com.robynem.mit.web.persistence.dao.impl;
 
+import com.robynem.mit.web.persistence.criteria.AudioCriteria;
 import com.robynem.mit.web.persistence.criteria.BandComponentsCriteria;
 import com.robynem.mit.web.persistence.criteria.GalleryCriteria;
 import com.robynem.mit.web.persistence.criteria.VideosCriteria;
@@ -1031,6 +1032,31 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             this.setPagination(query, resultEntity);
 
             resultEntity.setResults((List<ImageEntity>) query.list());
+
+            return resultEntity;
+        });
+    }
+
+    @Override
+    public PagedEntity<AudioEntity> getBandAudios(AudioCriteria criteria) {
+        return this.hibernateTemplate.execute(session -> {
+
+            Map<String, Object> parameters = new HashMap<String, Object>() {
+                {
+                    put("bandId", criteria.getBandId());
+                }
+            };
+
+            PagedEntity<AudioEntity> resultEntity = this.getPagingInfo("@HQL_GET_COUNT_BAND_AUDIOS",
+                    parameters, criteria.getPageSize(), criteria.getCurrentPage(), session);
+
+
+            Query query = session.getNamedQuery("@HQL_GET_BAND_AUDIOS");
+            this.setParameters(query, parameters);
+
+            this.setPagination(query, resultEntity);
+
+            resultEntity.setResults((List<AudioEntity>) query.list());
 
             return resultEntity;
         });
