@@ -1,5 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
+<c:set var="redirectView" value="forward:/viewBand?bandId=${bandId}" scope="session"></c:set>
 <html>
 <head>
     <jsp:include page="../common/head-include.jsp"></jsp:include>
@@ -17,7 +19,7 @@
 
         <!-- MENU START -->
         <jsp:include page="../common/menu.jsp">
-            <jsp:param name="activeItem" value="menuCreateBand"></jsp:param>
+            <jsp:param name="activeItem" value=""></jsp:param>
         </jsp:include>
         <!-- MENU END -->
 

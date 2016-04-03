@@ -65,6 +65,9 @@
 
 <script type="text/javascript">
     $(function() {
-        $(".${param.activeItem}").addClass("active");
+        <c:if test="${not empty param and not empty param.activeItem}">
+            $(".${param.activeItem}").addClass("active");
+        </c:if>
+
     });
 </script>

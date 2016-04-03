@@ -6,9 +6,12 @@
 <c:choose>
     <c:when test="${not empty galleryModel.images}">
         <c:forEach var="image" items="${galleryModel.images}">
-            <div id="image_${image.id}" class="col-md-4 videoColumn">
+            <div id="image_${image.id}" class="col-md-3 videoColumn">
 
-                <img src="${contextPath}/media/getImage?imageId=${image.id}&size=<%=ImageSize.MEDIUM.toString()%>" class="img-responsive">
+                <a href="#photoViewer" onclick="javarscript:return showOriginalPhoto(${image.id});" data-toggle="modal">
+                    <img src="${contextPath}/media/getImage?imageId=${image.id}&size=<%=ImageSize.MEDIUM.toString()%>" class="img-responsive">
+                </a>
+
 
             </div>
 
@@ -33,3 +36,42 @@
 
 
 </c:if>
+
+
+<%-- PHOTO VIEWER --%>
+<div class="modal fade" id="photoViewer" role="dialog" aria-labelledby="photoViewerTitle" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!--
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    ×
+                </button>
+
+                <h4 class="modal-title" id="photoViewerTitle">
+                    Modal title
+                </h4>
+                -->
+            </div>
+            <div class="modal-body">
+                <img id="photoViewerImg" src="" class="img-responsive">
+            </div>
+            <div class="modal-footer">
+
+                <button type="button"  data-dismiss="modal">
+                    <spring:message code="global.close"></spring:message>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    function showOriginalPhoto(imageId) {
+        $("#photoViewerImg").attr("src", "${contextPath}/media/getImage?imageId=" + imageId + "&size=<%=ImageSize.ORIGINAL%>");
+
+        return true;
+    }
+</script>
