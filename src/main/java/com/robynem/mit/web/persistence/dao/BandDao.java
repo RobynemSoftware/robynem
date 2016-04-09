@@ -88,4 +88,8 @@ public interface BandDao {
     PagedEntity<ImageEntity> getBandGallery(GalleryCriteria criteria);
 
     PagedEntity<AudioEntity> getBandAudios(AudioCriteria criteria);
+
+    BandComponentEntity getBandComponent(Long bandId, Long userId);
+
+    boolean isBandComponent(Long bandId, Long userId);
 }

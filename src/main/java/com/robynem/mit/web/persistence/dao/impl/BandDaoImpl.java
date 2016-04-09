@@ -1062,6 +1062,39 @@ public class BandDaoImpl extends BaseDao implements BandDao {
         });
     }
 
+    @Override
+    public BandComponentEntity getBandComponent(Long bandId, Long userId) {
+        BandComponentEntity bandComponentEntity = null;
+
+        List<BandComponentEntity> result = this.hibernateTemplate.findByNamedQueryAndNamedParam("@HQL_GET_BAND_COMPONENT_BY_BID_AND_UID",
+                new String[] {"bandId", "userId"}, new Object[] {bandId, userId});
+
+        if (result != null && result.size() > 0) {
+            bandComponentEntity = result.get(0);
+        }
+
+        return bandComponentEntity;
+    }
+
+    @Override
+    public boolean isBandComponent(Long bandId, Long userId) {
+        boolean result = false;
+
+        result = this.hibernateTemplate.execute(session -> {
+
+            Query query = session.createSQLQuery("call mit_spGetBandComponentAnyVersion(:bandId, :userId);")
+                .addEntity(BandComponentEntity.class)
+                .setParameter("bandId", bandId)
+                .setParameter("userId", userId);
+
+            List<BandComponentEntity> qResult = query.list();
+
+            return qResult.size() > 0;
+        });
+
+        return result;
+    }
+
 
     private void addComponentInstrument(Long bandId, Long userId, Long instrumentId, Session session) {
         Criteria criteria = session.createCriteria(BandComponentEntity.class, "component");

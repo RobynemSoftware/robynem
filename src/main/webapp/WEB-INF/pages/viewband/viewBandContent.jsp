@@ -66,42 +66,6 @@
     <%-- ACTIONS --%>
     <div class="row actions">
 
-        <%-- VOTE --%>
-        <div class="col-md-3 col-xs-12">
-
-                <span class="vote">
-                    <spring:message code="viewband.vote"></spring:message>
-                </span>
-
-            &nbsp;
-
-                <span>
-                    <img id="vote_1" class="voteLink" src="${contextPath}/resources/images/star-empty.png">
-                    &nbsp;
-                    <img id="vote_2" class="voteLink" src="${contextPath}/resources/images/star-empty.png">
-                    &nbsp;
-                    <img id="vote_3" class="voteLink" src="${contextPath}/resources/images/star-empty.png">
-                    &nbsp;
-                    <img id="vote_4" class="voteLink" src="${contextPath}/resources/images/star-empty.png">
-                    &nbsp;
-                    <img id="vote_5" class="voteLink" src="${contextPath}/resources/images/star-empty.png">
-                </span>
-
-
-        </div>
-
-
-        <div class="col-md-9 col-xs-12">
-            <%-- FAVOURITES --%>
-            <button><spring:message code="viewband.add-favorite"></spring:message></button>
-
-            &nbsp;
-
-            <%-- CONTACT BAND --%>
-            <button><spring:message code="viewband.contact-band"></spring:message></button>
-        </div>
-
-
     </div>
 
     <%-- INFO --%>
@@ -261,6 +225,8 @@
         loadGallery(1);
 
         loadAudios(1);
+
+        loadActions();
     })
 
     function loadVideos(currentPage) {
@@ -310,6 +276,19 @@
             success: function (data) {
                 $("#showNextAudios").remove();
                 $("#audioContainer").append(data);
+            }
+        });
+    }
+
+    function loadActions() {
+        $.ajax({
+            url: "${contextPath}/viewBand/getActions",
+            type: "get",
+            dataType: "html",
+            async: true,
+            cache: false,
+            success: function (data) {
+                $(".viewBand .actions").html(data);
             }
         });
     }

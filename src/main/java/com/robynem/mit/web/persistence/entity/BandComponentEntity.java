@@ -5,6 +5,8 @@ import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.util.Set;
 
@@ -13,6 +15,12 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "mit_bandComponent")
+@NamedQueries({
+        @NamedQuery(name = "@HQL_GET_BAND_COMPONENT_BY_BID_AND_UID",
+                query = "from BandComponentEntity bc " +
+                        "inner join fetch bc.band b " +
+                "where b.id = :bandId and bc.user.id = :userId")
+})
 public class BandComponentEntity extends BaseEntity {
 
     @ManyToOne

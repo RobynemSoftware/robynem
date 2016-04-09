@@ -50,6 +50,10 @@
 
 </div>
 
+<form id="dashboardForm" method="post" action="">
+
+</form>
+
 <script type="text/javascript">
 
     var READ_NOTIFICATION_TIMOUT = null;
@@ -145,6 +149,16 @@
             });
         }
 
+    }
+
+    function viewBand(bandId) {
+        $("#dashboardForm").html("");
+
+        $("#dashboardForm").attr("action", "${contextPath}/viewBand");
+
+        $("<input type='hidden' name='bandId'/>").val(bandId).appendTo($("#dashboardForm"));
+
+        $("#dashboardForm").submit();
     }
 
 </script>

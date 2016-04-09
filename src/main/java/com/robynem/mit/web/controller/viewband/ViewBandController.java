@@ -1,19 +1,25 @@
 package com.robynem.mit.web.controller.viewband;
 
 import com.robynem.mit.web.controller.BaseController;
+import com.robynem.mit.web.model.authentication.PortalUserModel;
 import com.robynem.mit.web.model.band.BandModel;
 import com.robynem.mit.web.model.band.ComponentModel;
 import com.robynem.mit.web.model.band.ContactModel;
 import com.robynem.mit.web.model.viewband.AudioModel;
+import com.robynem.mit.web.model.viewband.BandRequest;
 import com.robynem.mit.web.model.viewband.GalleryModel;
 import com.robynem.mit.web.model.viewband.VideosModel;
 import com.robynem.mit.web.persistence.criteria.AudioCriteria;
 import com.robynem.mit.web.persistence.criteria.GalleryCriteria;
 import com.robynem.mit.web.persistence.criteria.VideosCriteria;
 import com.robynem.mit.web.persistence.dao.BandDao;
+import com.robynem.mit.web.persistence.dao.UtilsDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.persistence.util.VideoMapResult;
 import com.robynem.mit.web.util.Constants;
+import com.robynem.mit.web.util.EntityStatus;
+import com.robynem.mit.web.util.MessageSeverity;
+import com.robynem.mit.web.util.OwnerType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +48,9 @@ public class ViewBandController extends BaseController {
 
     @Autowired
     private BandDao bandDao;
+
+    @Autowired
+    private UtilsDao<BandEntity> bandUtilsDao;
 
     @Value("${viewband.videos.page-size}")
     private int videosPageSize;
@@ -68,13 +79,17 @@ public class ViewBandController extends BaseController {
         ModelAndView modelAndView = new ModelAndView("viewband/viewBandContent");
 
         try {
-            this.addSessionAttribute(Constants.VIEW_BAND_ID, bandId);
-
             BandModel bandModel = new BandModel();
 
-            this.populateGeneralInfoModel(bandId, bandModel);
+            bandId = this.getBandIdToView(bandId);
 
-            this.populateComponentsModel(bandId, bandModel);
+            if (bandId != null) {
+                this.addSessionAttribute(Constants.VIEW_BAND_ID, bandId);
+
+                this.populateGeneralInfoModel(bandId, bandModel);
+
+                this.populateComponentsModel(bandId, bandModel);
+            }
 
             modelMap.addAttribute("bandModel", bandModel);
 
@@ -122,6 +137,39 @@ public class ViewBandController extends BaseController {
         }
 
         return modelAndView;
+    }
+
+    @RequestMapping("/getActions")
+    public ModelAndView getActions(ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("viewband/viewBandActions");
+
+        try {
+            List<BandRequest> bandRequests = new ArrayList<BandRequest>();
+
+            this.hasComponentInvitation(bandRequests);
+
+            modelMap.addAttribute("bandRequests", bandRequests);
+        } catch (Exception e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return modelAndView;
+    }
+
+    private boolean hasComponentInvitation(List<BandRequest> bandRequests) {
+        boolean result = false;
+
+        if (this.getAuthenticatedUser() != null) {
+            BandComponentEntity bandComponentEntity = this.bandDao.getBandComponent(this.getSessionAttribute(Constants.VIEW_BAND_ID), this.getAuthenticatedUser().getId());
+
+            if (bandComponentEntity != null && !bandComponentEntity.isConfirmed()) {
+                result = true;
+
+                bandRequests.add(new BandRequest(BandRequest.COMPONENT_INVITATION));
+            }
+        }
+
+        return result;
     }
 
     private void populateGeneralInfoModel(Long bandId, BandModel bandModel) {
@@ -293,6 +341,116 @@ public class ViewBandController extends BaseController {
         audioModel.setAudios(pagedEntity.getResults().stream().sorted((a1, a2) -> a2.getCreated().compareTo(a1.getCreated())).collect(Collectors.toList()));
 
         return audioModel;
+    }
+
+    private Long getBandIdToView(Long bandId) {
+        BandEntity bandEntity = this.bandUtilsDao.getByIdWithFetchedObjects(BandEntity.class, bandId, "status", "publishedVersion");
+
+        String code = bandEntity.getStatus().getCode();
+
+        if (!EntityStatus.PUBLISHED.toString().equalsIgnoreCase(code)) {
+
+            // Checks if user is authenticated
+            if (this.getAuthenticatedUser() == null) {
+                bandId = null;
+                this.addApplicationMessage(this.getMessage("viewband.cannot-view"), MessageSeverity.WARNING, null, null, this.getHomeUrl());
+            } else {
+                // Checks if current user is owner or adiminstrator
+                if (!this.isOwnerOrAdmin(bandId)) {
+
+                    // Checks if user is a band component
+                    if (this.isUserBandComponent(bandId)) {
+                        // gets the better id band to view
+                        bandId = this.getBandIdByStatusEscalation(bandId);
+
+                        if (bandId == null) {
+                            this.addApplicationMessage(this.getMessage("viewband.cannot-view"), MessageSeverity.WARNING, null, null, this.getHomeUrl());
+                        }
+
+                    } else {
+                        bandId = null;
+                        this.addApplicationMessage(this.getMessage("viewband.cannot-view"), MessageSeverity.WARNING, null, null, this.getHomeUrl());
+                    }
+                }
+            }
+        }
+
+
+        return bandId;
+    }
+
+    /**
+     * Returns the correct band id based on the following priority:
+     * 1. PUBLISHED (if exists)
+     * 2. STAGE (if exists)
+     * 3. NOT PUBLISHED
+     * @param bandId
+     * @return
+     */
+    private Long getBandIdByStatusEscalation(Long bandId) {
+        Long id = null;
+
+        String code = this.bandDao.getBandStatusCode(bandId);
+
+        BandEntity bandEntity = null;
+
+        if (EntityStatus.PUBLISHED.toString().equalsIgnoreCase(code)) {
+            id = bandId;
+        } else if (EntityStatus.STAGE.toString().equalsIgnoreCase(code)) {
+            bandEntity = this.bandUtilsDao.getByIdWithFetchedObjects(BandEntity.class, bandId, "publishedVersion");
+
+            String publishedVersionStatus = this.bandDao.getBandStatusCode(bandEntity.getId());
+
+            // If published version status in PUBLISHED, we return its id otherwise we return stage version id
+            if (EntityStatus.PUBLISHED.toString().equalsIgnoreCase(publishedVersionStatus)) {
+                id = bandEntity.getId();
+            } else {
+                id = bandId;
+            }
+        } else if (EntityStatus.NOT_PUBLISHED.toString().equalsIgnoreCase(code)) {
+            bandEntity = this.bandUtilsDao.getByIdWithFetchedObjects(BandEntity.class, bandId, "stageVersions");
+
+            if (bandEntity.getStageVersions() != null && bandEntity.getStageVersions().size() > 0) {
+                id = bandEntity.getStageVersions().get(0).getId();
+            } else {
+                id = bandId;
+            }
+        }
+        return id;
+    }
+
+    private boolean isUserBandComponent(Long bandId) {
+        boolean isComponent = false;
+
+        if (this.getAuthenticatedUser() != null) {
+            isComponent = this.bandDao.isBandComponent(bandId, this.getAuthenticatedUser().getId());
+        }
+
+        return isComponent;
+    }
+
+    private boolean isOwnerOrAdmin(Long bandId) {
+        boolean isOwnerOrAdmin = false;
+
+        BandEntity bandEntity = this.bandUtilsDao.getByIdWithFetchedObjects(BandEntity.class, bandId, "owners");
+
+        Collection<BandOwnershipEntity> owners = bandEntity.getOwners();
+
+        PortalUserModel currentUser = this.getAuthenticatedUser();
+
+        if (currentUser != null) {
+            Collection<String> allowedOwers = Arrays.asList(OwnerType.ADMINISTRATOR.toString(), OwnerType.OWNER.toString());
+
+            // Checks if current user is one of allowed band's owners for editing
+            isOwnerOrAdmin = (owners.stream().filter(
+                    o -> o.getUser() != null
+                            && currentUser.getId() != null
+                            && currentUser.getId().equals(o.getUser().getId())
+                            && allowedOwers.contains(o.getOwnerType().getCode()))
+                    .collect(Collectors.toList()).size() > 0);
+        }
+
+        return isOwnerOrAdmin;
     }
 
 }

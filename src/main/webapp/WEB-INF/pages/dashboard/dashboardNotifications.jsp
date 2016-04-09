@@ -32,6 +32,8 @@
     <c:set var="isUnread" value="${empty notification.readDate ? true : false}"></c:set>
     <c:set var="rowClass" value="${isUnread eq true ? 'unreadNotification' : 'readNotification'}"></c:set>
 
+    <c:set var="bandId" value="${notification.band.id}"></c:set>
+
     <div class="row notificationRow ${rowClass} row_id_${notification.id}">
 
         <%--<!-- Type logo -->--%>
@@ -49,7 +51,7 @@
         <%--<!-- Description -->--%>
         <div class="col-md-8 notificationDescription">
 
-            <div class="row notificationContent" id="${notification.id}" isUnread="${isUnread}">
+            <div class="row notificationContent" id="${notification.id}" isUnread="${isUnread}" onclick="javascript:viewBand(${bandId})">
                 <c:choose>
                     <%--<!-- BAND INVITATION -->--%>
                     <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION}">
@@ -57,7 +59,7 @@
                         <%-- Sender name --%>
                         <c:set var="senderName" value="${notification.senderUser.firstName} ${notification.senderUser.lastName}"></c:set>
 
-                        <%-- Band name --%>
+                        <%-- Band name--%>
                         <c:choose>
                             <c:when test="${notification.band.status.code eq ENTITY_STATUS_NOT_PUBLISHED}">
                                 <%-- Takes stage at last position (actually we have just one) --%>

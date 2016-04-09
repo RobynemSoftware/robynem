@@ -132,7 +132,7 @@ public class BaseController {
         model.put(Constants.APPLICATION_MESSAGES_KEY, messages);
     }
 
-    public void addApplicationMessage(String message, MessageSeverity severity, String link, ModelMap modelMap) {
+    public void addApplicationMessage(String message, MessageSeverity severity, String link, ModelMap modelMap, String redirectUrl) {
         MessageModel messageModel = new MessageModel(message, severity, link);
 
         List<MessageModel> messages = null;
@@ -152,9 +152,22 @@ public class BaseController {
 
         if (modelMap != null) {
             modelMap.addAttribute(Constants.APPLICATION_MESSAGES_KEY, messages);
+
+            if (redirectUrl != null) {
+                modelMap.addAttribute(Constants.APPLICATION_MESSAGES_REDIRECT_URL_KEY, redirectUrl);
+            }
         } else {
             this.request.setAttribute(Constants.APPLICATION_MESSAGES_KEY, messages);
+
+            if (redirectUrl != null) {
+                this.request.setAttribute(Constants.APPLICATION_MESSAGES_REDIRECT_URL_KEY, redirectUrl);
+            }
         }
+
+    }
+
+    public void addApplicationMessage(String message, MessageSeverity severity, String link, ModelMap modelMap) {
+        this.addApplicationMessage(message, severity, link, modelMap, null);
 
     }
 
@@ -221,5 +234,9 @@ public class BaseController {
 
     public String getContextPath() {
         return this.request.getContextPath();
+    }
+
+    public String getHomeUrl() {
+        return this.getContextPath() + "/index";
     }
 }
