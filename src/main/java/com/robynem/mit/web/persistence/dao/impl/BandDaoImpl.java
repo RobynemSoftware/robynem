@@ -1095,6 +1095,58 @@ public class BandDaoImpl extends BaseDao implements BandDao {
         return result;
     }
 
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public void acceptDeclineBandComponentRequest(Long bandId, Long userId, boolean accept) {
+        this.hibernateTemplate.execute(session -> {
+
+            BandEntity bandEntity1 = (BandEntity) session.get(BandEntity.class, bandId);
+            BandEntity bandEntity2 = null;
+
+            // if exists, retrieves the published version or the stage one depending on the band whose id in passed
+            if (bandEntity1.getPublishedVersion() != null) {
+                bandEntity2 = bandEntity1.getPublishedVersion();
+            } else if (bandEntity1.getStageVersions() != null && bandEntity1.getStageVersions().size() > 0) {
+                bandEntity2 = bandEntity1.getStageVersions().get(0);
+            }
+
+            this.doAcceptDeclineBandComponentRequest(bandEntity1, userId, accept);
+
+            // If needed, apply operation even on published or stage version.
+            if (bandEntity2 != null) {
+                this.doAcceptDeclineBandComponentRequest(bandEntity2, userId, accept);
+            }
+
+            return null;
+        });
+    }
+
+    @Transactional(rollbackFor = Throwable.class)
+    private void doAcceptDeclineBandComponentRequest(BandEntity bandEntity, Long userId, boolean accept) {
+        this.hibernateTemplate.execute(session -> {
+
+            Query query = session.getNamedQuery("@HQL_GET_BAND_COMPONENT_BY_BID_AND_UID");
+            query.setParameter("bandId", bandEntity.getId());
+            query.setParameter("userId", userId);
+
+            BandComponentEntity bandComponentEntity = (BandComponentEntity) query.uniqueResult();
+
+            if (bandComponentEntity != null) {
+                if (accept) {
+                    bandComponentEntity.setConfirmed(true);
+
+                    session.update(bandComponentEntity);
+                } else {
+                    bandEntity.getComponents().remove(bandComponentEntity);
+
+                    session.update(bandEntity);
+                }
+            }
+
+            return null;
+        });
+    }
+
 
     private void addComponentInstrument(Long bandId, Long userId, Long instrumentId, Session session) {
         Criteria criteria = session.createCriteria(BandComponentEntity.class, "component");

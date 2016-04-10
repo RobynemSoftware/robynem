@@ -92,4 +92,6 @@ public interface BandDao {
     BandComponentEntity getBandComponent(Long bandId, Long userId);
 
     boolean isBandComponent(Long bandId, Long userId);
+
+    void acceptDeclineBandComponentRequest(Long bandId, Long userId, boolean accept);
 }

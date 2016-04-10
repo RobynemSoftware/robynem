@@ -292,4 +292,20 @@
             }
         });
     }
+
+    function acceptDeclineComponentRequest(accept) {
+        $.ajax({
+            url: "${contextPath}/viewBand/acceptDeclineComponentRequest",
+            type: "get",
+            data : {
+                accept : accept
+            },
+            dataType: "html",
+            async: true,
+            cache: false,
+            success: function (data) {
+                $("#viewBandContainer").html(data);
+            }
+        });
+    }
 </script>

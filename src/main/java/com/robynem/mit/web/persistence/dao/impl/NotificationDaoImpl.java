@@ -127,7 +127,6 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
             NotificationEntity notificationEntity = null;
 
             // Retrieves the Band Notification Type
-
             NotificationTypeEntity bandComponentRemovalNotificationType = (NotificationTypeEntity) session.getNamedQuery("@HQL_GET_NOTIFICATION_TYPE_BY_CODE").
                     setParameter("code", NotificationType.BAND_COMPONENT_REMOVAL.toString()).
                     uniqueResult();
@@ -154,6 +153,45 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
         });
 
 
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public void sendBandInvitationAnswer(Long senderUserId, List<Long> receiverUserIds, Long bandId, boolean accept) {
+        this.hibernateTemplate.execute(session -> {
+
+            NotificationEntity notificationEntity = null;
+
+            // Retrieves the Band Notification Type
+            NotificationTypeEntity notificationTypeEntity = (NotificationTypeEntity) session.getNamedQuery("@HQL_GET_NOTIFICATION_TYPE_BY_CODE").
+                    setParameter("code", accept ? NotificationType.BAND_INVITATION_ACCEPTED.toString() : NotificationType.BAND_INVITATION_DECLINED.toString()).
+                    uniqueResult();
+
+            // Retrieves band entity
+            BandEntity bandEntity = (BandEntity) session.get(BandEntity.class, bandId);
+
+            // If it's a stage version, retrieves the published one
+            if (bandEntity.getPublishedVersion() != null) {
+                bandEntity = bandEntity.getPublishedVersion();
+            }
+
+            // For each receiver it creates and stores new notification
+            for (Long receiverUserId : receiverUserIds) {
+                notificationEntity = new NotificationEntity();
+                notificationEntity.setCreated(Calendar.getInstance().getTime());
+                notificationEntity.setSenderUser((UserEntity) session.get(UserEntity.class, senderUserId));
+                notificationEntity.setReceiverUser((UserEntity) session.get(UserEntity.class, receiverUserId));
+                notificationEntity.setBand(bandEntity);
+                notificationEntity.setType(notificationTypeEntity);
+
+                session.save(notificationEntity);
+
+                session.flush();
+            }
+
+
+            return null;
+        });
     }
 
     @Override

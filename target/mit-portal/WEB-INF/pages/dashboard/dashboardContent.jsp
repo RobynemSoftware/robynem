@@ -139,7 +139,10 @@
                         showApplicationMessages(data);
 
                         if (data.success == true) {
-                            $(notificationContentElement).unbind("mouseover").unbind("mouseout");
+                            if (notificationContentElement != null) {
+                                $(notificationContentElement).unbind("mouseover").unbind("mouseout");
+                            }
+
                             $(".row_id_" + notificationId).removeClass("unreadNotification").addClass("readNotification");
                             //Updates notifications icon
                             updateNotificationsIcon();
@@ -151,7 +154,9 @@
 
     }
 
-    function viewBand(bandId) {
+    function viewBand(bandId, notificationId) {
+        setNotificationRead(notificationId, null);
+
         $("#dashboardForm").html("");
 
         $("#dashboardForm").attr("action", "${contextPath}/viewBand");

@@ -16,5 +16,13 @@ public enum NotificationType {
     /**
      * Invitation to register to M.i.T. to be a band component
      */
-    BAND_EXTERNAL_INVITATION
+    BAND_EXTERNAL_INVITATION,
+    /**
+     * Musician accepted to be a band component
+     */
+    BAND_INVITATION_ACCEPTED,
+    /**
+     * Musician declined to be a band component
+     */
+    BAND_INVITATION_DECLINED
 }

@@ -3,6 +3,20 @@
     min-height: 100%;
 }
 
+@media (min-width: 640px) {
+    .viewBand .actions #requestDDContent {
+        float: right;
+    }
+}
+
+@media (max-width: 640px) {
+    .viewBand .actions .dropdown-header {
+        font-size: 8px;
+    }
+}
+
+
+
 .viewBand {
     align-content: center;
 }

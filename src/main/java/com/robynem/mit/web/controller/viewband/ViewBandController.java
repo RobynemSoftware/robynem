@@ -6,16 +6,16 @@ import com.robynem.mit.web.model.band.BandModel;
 import com.robynem.mit.web.model.band.ComponentModel;
 import com.robynem.mit.web.model.band.ContactModel;
 import com.robynem.mit.web.model.viewband.AudioModel;
-import com.robynem.mit.web.model.viewband.BandRequest;
+import com.robynem.mit.web.model.viewband.BandRequestModel;
 import com.robynem.mit.web.model.viewband.GalleryModel;
 import com.robynem.mit.web.model.viewband.VideosModel;
 import com.robynem.mit.web.persistence.criteria.AudioCriteria;
 import com.robynem.mit.web.persistence.criteria.GalleryCriteria;
 import com.robynem.mit.web.persistence.criteria.VideosCriteria;
 import com.robynem.mit.web.persistence.dao.BandDao;
+import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.dao.UtilsDao;
 import com.robynem.mit.web.persistence.entity.*;
-import com.robynem.mit.web.persistence.util.VideoMapResult;
 import com.robynem.mit.web.util.Constants;
 import com.robynem.mit.web.util.EntityStatus;
 import com.robynem.mit.web.util.MessageSeverity;
@@ -48,6 +48,9 @@ public class ViewBandController extends BaseController {
 
     @Autowired
     private BandDao bandDao;
+
+    @Autowired
+    private NotificationDao notificationDao;
 
     @Autowired
     private UtilsDao<BandEntity> bandUtilsDao;
@@ -144,7 +147,7 @@ public class ViewBandController extends BaseController {
         ModelAndView modelAndView = new ModelAndView("viewband/viewBandActions");
 
         try {
-            List<BandRequest> bandRequests = new ArrayList<BandRequest>();
+            List<BandRequestModel> bandRequests = new ArrayList<BandRequestModel>();
 
             this.hasComponentInvitation(bandRequests);
 
@@ -156,7 +159,36 @@ public class ViewBandController extends BaseController {
         return modelAndView;
     }
 
-    private boolean hasComponentInvitation(List<BandRequest> bandRequests) {
+    @RequestMapping("/acceptDeclineComponentRequest")
+    public ModelAndView acceptDeclineComponentRequest(@RequestParam boolean accept, ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("forward:/viewBand/viewContent?bandId=" + this.getSessionAttribute(Constants.VIEW_BAND_ID));
+
+        try {
+            if (this.getAuthenticatedUser() != null) {
+
+                this.bandDao.acceptDeclineBandComponentRequest(this.getSessionAttribute(Constants.VIEW_BAND_ID), this.getAuthenticatedUser().getId(), accept);
+
+                // Retrieves owners form band to send notification
+                BandEntity bandEntity = this.bandUtilsDao.getByIdWithFetchedObjects(BandEntity.class, this.getSessionAttribute(Constants.VIEW_BAND_ID), "owners");
+
+                List<Long> notificationReceivers = new ArrayList<Long>();
+
+                for (BandOwnershipEntity owner : bandEntity.getOwners()) {
+                    notificationReceivers.add(owner.getUser().getId());
+                }
+
+                // Send notifications
+                this.notificationDao.sendBandInvitationAnswer(this.getAuthenticatedUser().getId(), notificationReceivers, bandEntity.getId(), accept);
+
+            }
+        } catch (Exception e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return modelAndView;
+    }
+
+    private boolean hasComponentInvitation(List<BandRequestModel> bandRequests) {
         boolean result = false;
 
         if (this.getAuthenticatedUser() != null) {
@@ -165,7 +197,7 @@ public class ViewBandController extends BaseController {
             if (bandComponentEntity != null && !bandComponentEntity.isConfirmed()) {
                 result = true;
 
-                bandRequests.add(new BandRequest(BandRequest.COMPONENT_INVITATION));
+                bandRequests.add(new BandRequestModel(BandRequestModel.COMPONENT_INVITATION));
             }
         }
 

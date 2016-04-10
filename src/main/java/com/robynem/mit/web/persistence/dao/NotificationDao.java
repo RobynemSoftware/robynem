@@ -15,9 +15,11 @@ public interface NotificationDao {
 
     void sendExternalBandInvitation(Long senderUserId, String receiverEmailAddress, Long bandId);
 
-    boolean externalBandInvitationExists(Long senderUserId, String receiverEmailAddress, Long bandId);
-
     void sendBandComponentRemoval(Long senderUserId, Long receiverUserId, Long bandId);
+
+    void sendBandInvitationAnswer(Long senderUserId, List<Long> receiverUserIds, Long bandId, boolean accept);
+
+    boolean externalBandInvitationExists(Long senderUserId, String receiverEmailAddress, Long bandId);
 
     List<NotificationEntity> getUnreadNotifications(Long receiverUserId);
 

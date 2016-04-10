@@ -16,6 +16,12 @@
 <c:set var="BAND_EXTERNAL_INVITATION">
     <%=NotificationType.BAND_EXTERNAL_INVITATION%>
 </c:set>
+<c:set var="BAND_INVITATION_ACCEPTED_TYPE">
+    <%=NotificationType.BAND_INVITATION_ACCEPTED%>
+</c:set>
+<c:set var="BAND_INVITATION_DECLINED_TYPE">
+    <%=NotificationType.BAND_INVITATION_DECLINED%>
+</c:set>
 
 
 <%-- ENTITY STATUS --%>
@@ -44,6 +50,18 @@
                 <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION}">
                     <img src="${contextPath}/resources/images/notification_band_invitation.jpg" class="img-responsive" />
                 </c:when>
+
+                <%--<!-- BAND INVITATION ACCEPTED -->--%>
+                <c:when test="${notification.type.code eq BAND_INVITATION_ACCEPTED_TYPE}">
+                    <img src="${contextPath}/resources/images/notification_band_invitation_accepted.png" class="img-responsive" />
+                </c:when>
+
+                <%--<!-- BAND INVITATION DECLINED -->--%>
+                <c:when test="${notification.type.code eq BAND_INVITATION_DECLINED_TYPE}">
+                    <img src="${contextPath}/resources/images/notification_band_invitation_declined.png" class="img-responsive" />
+                </c:when>
+
+
             </c:choose>
 
         </div>
@@ -51,10 +69,11 @@
         <%--<!-- Description -->--%>
         <div class="col-md-8 notificationDescription">
 
-            <div class="row notificationContent" id="${notification.id}" isUnread="${isUnread}" onclick="javascript:viewBand(${bandId})">
+            <div class="row notificationContent" id="${notification.id}" isUnread="${isUnread}" onclick="javascript:viewBand(${bandId}, ${notification.id})">
                 <c:choose>
-                    <%--<!-- BAND INVITATION -->--%>
-                    <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION}">
+                    <%--BAND INVITATION --%>
+                    <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION
+                        or notification.type.code eq BAND_INVITATION_ACCEPTED_TYPE or notification.type.code eq BAND_INVITATION_DECLINED_TYPE}">
 
                         <%-- Sender name --%>
                         <c:set var="senderName" value="${notification.senderUser.firstName} ${notification.senderUser.lastName}"></c:set>
@@ -70,11 +89,29 @@
                             </c:otherwise>
                         </c:choose>
 
+                        <c:choose>
+                            <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION}">
+                                <spring:message code="dashbord.notifications.band-invitation.description"
+                                                arguments="${senderName};${bandName}"
+                                                argumentSeparator=";"
+                                        ></spring:message>
+                            </c:when>
 
-                        <spring:message code="dashbord.notifications.band-invitation.description"
-                                        arguments="${senderName};${bandName}"
-                                        argumentSeparator=";"
-                                ></spring:message>
+                            <c:when test="${notification.type.code eq BAND_INVITATION_ACCEPTED_TYPE}">
+                                <spring:message code="dashbord.notifications.band-invitation-accepted.description"
+                                                arguments="${senderName};${bandName}"
+                                                argumentSeparator=";"
+                                        ></spring:message>
+                            </c:when>
+
+                            <c:when test="${notification.type.code eq BAND_INVITATION_DECLINED_TYPE}">
+                                <spring:message code="dashbord.notifications.band-invitation-declined.description"
+                                                arguments="${senderName};${bandName}"
+                                                argumentSeparator=";"
+                                        ></spring:message>
+                            </c:when>
+                        </c:choose>
+
                     </c:when>
                 </c:choose>
             </div>
@@ -94,7 +131,8 @@
         <div class="col-md-2">
             <c:choose>
                 <%--<!-- BAND INVITATION -->--%>
-                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION}">
+                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION
+                    or notification.type.code eq BAND_INVITATION_ACCEPTED_TYPE or notification.type.code eq BAND_INVITATION_DECLINED_TYPE}">
                     <%-- If it's not published, gets stage loge, otherwise gets published one --%>
                     <c:choose>
                         <c:when test="${notification.band.status.code eq ENTITY_STATUS_NOT_PUBLISHED}">
