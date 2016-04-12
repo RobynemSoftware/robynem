@@ -4,6 +4,7 @@ import com.robynem.mit.web.persistence.dao.BaseDao;
 import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.NotificationType;
+import com.robynem.mit.web.util.SmtpHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public void sendBandInvitation(Long senderUserId, Long receiverUserId, Long bandId) {
+    public void sendBandInvitation(Long senderUserId, Long receiverUserId, Long bandId, SmtpHelper smtpHelper) {
 
         if (senderUserId.equals(receiverUserId)) {
             return;
@@ -57,6 +58,10 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
         notificationEntity.setType(bandInvitationNotificationType);
 
         this.hibernateTemplate.save(notificationEntity);
+
+        if (smtpHelper != null) {
+            smtpHelper.send();
+        }
     }
 
     @Override

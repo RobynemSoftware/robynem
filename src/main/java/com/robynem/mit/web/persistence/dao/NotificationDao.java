@@ -3,6 +3,7 @@ package com.robynem.mit.web.persistence.dao;
 import com.robynem.mit.web.persistence.entity.NotificationEntity;
 import com.robynem.mit.web.persistence.entity.PagedEntity;
 import com.robynem.mit.web.util.NotificationType;
+import com.robynem.mit.web.util.SmtpHelper;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public interface NotificationDao {
 
-    void sendBandInvitation(Long senderUserId, Long receiverUserId, Long bandId);
+    void sendBandInvitation(Long senderUserId, Long receiverUserId, Long bandId, SmtpHelper smtpHelper);
 
     void sendExternalBandInvitation(Long senderUserId, String receiverEmailAddress, Long bandId);
 

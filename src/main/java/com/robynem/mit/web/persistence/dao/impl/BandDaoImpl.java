@@ -10,10 +10,7 @@ import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.dao.UtilsDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.persistence.util.VideoMapResult;
-import com.robynem.mit.web.util.EntityStatus;
-import com.robynem.mit.web.util.OwnerType;
-import com.robynem.mit.web.util.PublishBandErrorCode;
-import com.robynem.mit.web.util.PublishBandResult;
+import com.robynem.mit.web.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.*;
 import org.hibernate.criterion.*;
@@ -408,7 +405,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public BandEntity addSelectedComponent(Long bandId, Long userId, Long operationUserId) {
+    public BandEntity addSelectedComponent(Long bandId, Long userId, Long operationUserId, SmtpHelper smtpHelper) {
 
         return this.hibernateTemplate.execute(session -> {
             // Retrieves selected component
@@ -443,7 +440,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             // Sends notification
             // Attaches alway published band version.
             Long bandNotificationId = bandEntity.getPublishedVersion() != null ? bandEntity.getPublishedVersion().getId() : bandEntity.getId();
-            this.notificationDao.sendBandInvitation(operationUserId, userId, bandNotificationId);
+            this.notificationDao.sendBandInvitation(operationUserId, userId, bandNotificationId, smtpHelper);
 
             return bandEntity;
         });

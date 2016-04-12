@@ -116,6 +116,30 @@
                 </c:choose>
             </div>
 
+            <%-- SET LINK --%>
+            <c:choose>
+                <c:when test="${notification.type.code eq BAND_INVITATION_TYPE or notification.type.code eq BAND_EXTERNAL_INVITATION}">
+                    <c:set var="linkScript">
+                        $("#${notification.id}").click(function () {
+                            viewBand(${bandId}, ${notification.id});
+                        });
+                    </c:set>
+                </c:when>
+                <c:when test="${notification.type.code eq BAND_INVITATION_ACCEPTED_TYPE or notification.type.code eq BAND_INVITATION_DECLINED_TYPE}">
+                    <c:set var="linkScript">
+                        $("#${notification.id}").click(function () {
+                            editBand(${bandId}, ${notification.id});
+                        });
+                    </c:set>
+
+                </c:when>
+            </c:choose>
+
+            <script type="text/javascript">
+                ${linkScript}
+            </script>
+
+
             <%-- Notification Options --%>
             <div class="row notificationDescription">
 

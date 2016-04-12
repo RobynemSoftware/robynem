@@ -1,0 +1,5 @@
+<p>Ciao <strong>${receiver-name}</strong>,</p>
+<p>&nbsp;</p>
+<p>l'utente&nbsp;<strong>${sender-name}</strong> ti ha invitato ad diventare un componente della sua band <a href="${view-band-url}" target="_blank">${band-name}</a>.</p>
+<p>&nbsp;</p>
+<p>Accedi a <a href="${portal-url}" target="_blank">www.musicintown.net</a>&nbsp;per accettare o rifiutare.</p>

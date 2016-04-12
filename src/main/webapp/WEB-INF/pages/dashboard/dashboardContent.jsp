@@ -166,5 +166,17 @@
         $("#dashboardForm").submit();
     }
 
+    function editBand(bandId, notificationId) {
+        setNotificationRead(notificationId, null);
+
+        $("#dashboardForm").html("");
+
+        $("#dashboardForm").attr("action", "${contextPath}/private/editBand/edit");
+
+        $("<input type='hidden' name='bandId'/>").val(bandId).appendTo($("#dashboardForm"));
+
+        $("#dashboardForm").submit();
+    }
+
 </script>
 

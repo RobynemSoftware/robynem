@@ -16,6 +16,23 @@
 
     <context:component-scan base-package="com.robynem.mit.web.util" ></context:component-scan>
 
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <!-- SMTP settings -->
+        <property name="host" value="${smtp.host}" />
+        <property name="port" value="${smtp.port}" />
+        <!--<property name="username" value="USER_NAME" />
+        <property name="password" value="PASSWORD" />-->
+
+        <property name="javaMailProperties">
+            <!-- additional properties specific to JavaMail -->
+            <props>
+                <prop key="mail.transport.protocol">smtp</prop>
+                <prop key="mail.smtp.auth">false</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+            </props>
+        </property>
+    </bean>
+
     <!--<bean id="connectionFactoryLocator" class="org.springframework.social.connect.support.ConnectionFactoryRegistry">
         <property name="connectionFactories">
             <list>

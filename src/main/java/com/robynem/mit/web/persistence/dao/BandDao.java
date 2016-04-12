@@ -8,6 +8,7 @@ import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.persistence.util.VideoMapResult;
 import com.robynem.mit.web.util.OwnerType;
 import com.robynem.mit.web.util.PublishBandResult;
+import com.robynem.mit.web.util.SmtpHelper;
 import org.hibernate.Session;
 
 import java.io.Serializable;
@@ -39,7 +40,7 @@ public interface BandDao {
 
     BandEntity getBandById(Long bandId);
 
-    BandEntity addSelectedComponent(Long bandId, Long userId, Long operationUserId);
+    BandEntity addSelectedComponent(Long bandId, Long userId, Long operationUserId, SmtpHelper smtpHelper);
 
     BandEntity removeComponent(Long bandId, Long userId, Long operationUserId);
 

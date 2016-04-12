@@ -63,6 +63,9 @@ public class EditBandController extends BaseController {
     @Autowired
     private UtilsDao<MusicalInstrumentEntity> instrumentsUtilsDao;
 
+    @Autowired
+    private SmtpHelper componentInvitationSmtpHelper;
+
     @Value("${media.image.max-size}")
     private long maxImageFileSize;
 
@@ -467,8 +470,25 @@ public class EditBandController extends BaseController {
         try {
             // We create a stage version if needed.
             BandEntity bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.COMPONENTS);
+
+            // TODO create a factory
+            this.componentInvitationSmtpHelper.setFrom("admin@musicintown.net");
+            this.componentInvitationSmtpHelper.setFromName("Music in Town");
+            this.componentInvitationSmtpHelper.setSubject("Sei stato/a ingaggiato/a per suonare in una band");
+            this.componentInvitationSmtpHelper.setTo("roberto.renna78@libero.it");
+            this.componentInvitationSmtpHelper.setContentFileName("bandComponentInvitationEmail.txt");
+            this.componentInvitationSmtpHelper.setParameters(new HashMap<String, String>() {
+                {
+                    put("${receiver-name}", "Pippo");
+                    put("${sender-name}", "Pluto");
+                    put("${view-band-url}", "http://localhost:8081/mit-portal/viewBand?bandId=47");
+                    put("${band-name}", "I Cessoni");
+                    put("${portal-url}", "http://localhost:8081/mit-portal");
+                }
+            });
+
             // Add component
-            this.bandDao.addSelectedComponent(bandEntity.getId(), userId, this.getAuthenticatedUser().getId());
+            this.bandDao.addSelectedComponent(bandEntity.getId(), userId, this.getAuthenticatedUser().getId(), this.componentInvitationSmtpHelper);
 
             bandEntity = this.getBandToEdit(false, null, EditBandTabIndex.COMPONENTS);
 
