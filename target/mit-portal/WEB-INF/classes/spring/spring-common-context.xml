@@ -20,15 +20,16 @@
         <!-- SMTP settings -->
         <property name="host" value="${smtp.host}" />
         <property name="port" value="${smtp.port}" />
-        <!--<property name="username" value="USER_NAME" />
-        <property name="password" value="PASSWORD" />-->
+        <property name="username" value="${smtp.user}" />
+        <property name="password" value="${smtp.password}" />
 
         <property name="javaMailProperties">
             <!-- additional properties specific to JavaMail -->
             <props>
                 <prop key="mail.transport.protocol">smtp</prop>
-                <prop key="mail.smtp.auth">false</prop>
+                <prop key="mail.smtp.auth">true</prop>
                 <prop key="mail.smtp.starttls.enable">true</prop>
+                <prop key="mail.smtp.ssl.trust">*</prop>
             </props>
         </property>
     </bean>

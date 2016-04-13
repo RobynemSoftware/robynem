@@ -405,7 +405,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public BandEntity addSelectedComponent(Long bandId, Long userId, Long operationUserId, SmtpHelper smtpHelper) {
+    public BandEntity addSelectedComponent(Long bandId, Long userId, Long operationUserId) {
 
         return this.hibernateTemplate.execute(session -> {
             // Retrieves selected component
@@ -440,7 +440,7 @@ public class BandDaoImpl extends BaseDao implements BandDao {
             // Sends notification
             // Attaches alway published band version.
             Long bandNotificationId = bandEntity.getPublishedVersion() != null ? bandEntity.getPublishedVersion().getId() : bandEntity.getId();
-            this.notificationDao.sendBandInvitation(operationUserId, userId, bandNotificationId, smtpHelper);
+            this.notificationDao.sendBandInvitation(operationUserId, userId, bandNotificationId);
 
             return bandEntity;
         });

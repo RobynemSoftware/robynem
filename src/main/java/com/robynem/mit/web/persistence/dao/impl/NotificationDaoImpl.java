@@ -4,11 +4,13 @@ import com.robynem.mit.web.persistence.dao.BaseDao;
 import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.NotificationType;
+import com.robynem.mit.web.util.SmtpFactory;
 import com.robynem.mit.web.util.SmtpHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -27,9 +29,12 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
 
     private static Logger LOG = LoggerFactory.getLogger(NotificationDaoImpl.class);
 
+    @Autowired
+    private SmtpFactory smtpFactory;
+
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public void sendBandInvitation(Long senderUserId, Long receiverUserId, Long bandId, SmtpHelper smtpHelper) {
+    public void sendBandInvitation(Long senderUserId, Long receiverUserId, Long bandId) {
 
         if (senderUserId.equals(receiverUserId)) {
             return;
@@ -58,6 +63,8 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
         notificationEntity.setType(bandInvitationNotificationType);
 
         this.hibernateTemplate.save(notificationEntity);
+
+        SmtpHelper smtpHelper = this.smtpFactory.getBandComponentInvitation(bandId, senderUserId, receiverUserId);
 
         if (smtpHelper != null) {
             smtpHelper.send();

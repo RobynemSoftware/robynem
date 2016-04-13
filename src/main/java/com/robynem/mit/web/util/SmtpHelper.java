@@ -17,13 +17,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  * Created by robyn_000 on 12/04/2016.
  */
-@Service
-@Scope(value = "prototype")
 public class SmtpHelper {
 
     private String from;
@@ -38,9 +37,10 @@ public class SmtpHelper {
 
     private Map<String, String> parameters;
 
-    @Autowired
-    @Qualifier(value = "mailSender")
     private JavaMailSender javaMailSender;
+
+    private Locale locale;
+
 
     public String getFrom() {
         return from;
@@ -88,6 +88,14 @@ public class SmtpHelper {
 
     public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
+    }
+
+    public void setJavaMailSender(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     public void send() {

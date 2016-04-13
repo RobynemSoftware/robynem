@@ -40,7 +40,7 @@ public interface BandDao {
 
     BandEntity getBandById(Long bandId);
 
-    BandEntity addSelectedComponent(Long bandId, Long userId, Long operationUserId, SmtpHelper smtpHelper);
+    BandEntity addSelectedComponent(Long bandId, Long userId, Long operationUserId);
 
     BandEntity removeComponent(Long bandId, Long userId, Long operationUserId);
 

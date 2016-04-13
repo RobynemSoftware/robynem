@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface NotificationDao {
 
-    void sendBandInvitation(Long senderUserId, Long receiverUserId, Long bandId, SmtpHelper smtpHelper);
+    void sendBandInvitation(Long senderUserId, Long receiverUserId, Long bandId);
 
     void sendExternalBandInvitation(Long senderUserId, String receiverEmailAddress, Long bandId);
 

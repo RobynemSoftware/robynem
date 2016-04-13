@@ -100,6 +100,9 @@ public class UserEntity extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     protected Set<BandComponentEntity> bandsPlaying;
 
+    @Column
+    protected String language;
+
     public UserEntity() {
         this.engagementAvailable = true;
     }
@@ -288,5 +291,13 @@ public class UserEntity extends BaseEntity {
 
     public void setDiscJockey(boolean discJockey) {
         this.discJockey = discJockey;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }
