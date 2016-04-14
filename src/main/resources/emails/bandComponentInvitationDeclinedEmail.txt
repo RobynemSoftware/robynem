@@ -1,0 +1,12 @@
+<p>Ciao <strong>${receiver-name}</strong>,</p>
+<p>&nbsp;</p>
+<p>siamo spiacenti di comunicarti che l'utente&nbsp;<strong>${sender-name}</strong>&nbsp;ha rifiutato&nbsp;di diventare un componente della tua&nbsp;band <span style="color: #ff6600; text-decoration: underline;"><strong>${band-name}</strong></span>.</p>
+<p>Non demordere! Ci sono tantissimi musicisti disponibili sul portale.</p>
+<p>Affina la tua ricerca, arricchisci la pagina della band con quante pi&ugrave; informazioni possibile.</p>
+<p>&nbsp;</p>
+<p>In bocca al lupo!</p>
+<p>&nbsp;</p>
+<p>Saluti.</p>
+<p>&nbsp;</p>
+<p>L'amministrazione di <strong>Music in Town</strong>.</p>
+<p><a href="${portal-url}" target="_blank">www.musicintown.net</a></p>

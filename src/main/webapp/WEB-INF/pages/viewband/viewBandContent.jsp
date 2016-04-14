@@ -88,7 +88,7 @@
 
                             <c:if test="${component.singerSelected eq true}">
                                 <spring:message code="profile.musician-form.singer"></spring:message>
-                                <c:if test="${component.discJockeySelected eq true}">
+                                <c:if test="${component.discJockeySelected eq true or not empty component.instruments}">
                                     ,&nbsp;
                                 </c:if>
                             </c:if>

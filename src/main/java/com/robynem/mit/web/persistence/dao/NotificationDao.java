@@ -32,4 +32,6 @@ public interface NotificationDao {
 
     void reverseNotifications(Long receiverUserId);
 
+    void doAutomaticActionsOnNotifications(List<NotificationEntity> notifications);
+
 }

@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by robyn_000 on 06/03/2016.
@@ -116,7 +117,9 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
 
             session.save(notificationEntity);
 
-            session.flush();;
+            session.flush();
+
+            this.smtpFactory.getExternalBandComponentInvitation(bandId, senderUserId, receiverEmailAddress).send();
 
             invitationSent = true;
 
@@ -199,6 +202,9 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
                 session.save(notificationEntity);
 
                 session.flush();
+
+                this.smtpFactory.getBandComponentInvitationAnswer(bandId, senderUserId, receiverUserId, accept).send();
+
             }
 
 
@@ -278,16 +284,78 @@ public class NotificationDaoImpl extends BaseDao implements NotificationDao  {
             UserEntity userEntity = (UserEntity) session.get(UserEntity.class, receiverUserId);
 
             if (userEntity != null) {
-                Query reverseQuery = session.getNamedQuery("@HQL_REVERSE_NOTIFICATIONS");
-                reverseQuery.setParameter("emailAddress", userEntity.getEmailAddress());
-                reverseQuery.setParameter("receiverUser", userEntity);
 
-                reverseQuery.executeUpdate();
+                // Retrieves notifications to reverse
+                Query toReverseQuery = session.getNamedQuery("@HQL_GET_NOTIFICATIONS_TO_REVERSE");
+                toReverseQuery.setParameter("emailAddress", userEntity.getEmailAddress());
+
+                List<NotificationEntity> notifications = toReverseQuery.list();
+
+                notifications.stream().forEach(n -> {
+                    n.setReceiverEmailAddress(null);
+                    n.setReceiverUser(userEntity);
+                    session.update(n);
+                });
+
+                session.flush();
+
+                this.doAutomaticActionsOnNotifications(notifications);
 
                 reverseComplete = true;
             }
 
             return reverseComplete;
         });
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    /**
+     * Based on notification type, exec automations, such as, adding component to a band for BAND_EXTERNAL_INVITATION.
+     */
+    public void doAutomaticActionsOnNotifications(List<NotificationEntity> notifications) {
+        //BAND_EXTERNAL_INVITATION
+        /*Automaticaly adds as band component those notifications' receiver's user.*/
+
+        List<NotificationEntity> extBandInvNotifications = notifications.stream().
+                filter(n -> NotificationType.BAND_EXTERNAL_INVITATION.toString().equalsIgnoreCase(n.getType().getCode())).
+                collect(Collectors.toList());
+
+        this.hibernateTemplate.execute(session -> {
+
+            extBandInvNotifications.stream().forEach(n -> {
+                // Retrieves persisted notification with user data, instead of email address.
+                NotificationEntity storedNotification = n;
+
+                // Saves component on published version
+                BandEntity bandEntity = storedNotification.getBand();
+
+                BandComponentEntity bandComponentEntity = new BandComponentEntity();
+                bandComponentEntity.setBand(bandEntity);
+                bandComponentEntity.setUser(storedNotification.getReceiverUser());
+                bandComponentEntity.setCreated(Calendar.getInstance().getTime());
+
+                session.save(bandComponentEntity);
+
+                // If we have a stage version, we add component to this version too
+                if (bandEntity.getStageVersions() != null && bandEntity.getStageVersions().size() > 0) {
+                    bandEntity = bandEntity.getStageVersions().get(0);
+
+                    bandComponentEntity = new BandComponentEntity();
+                    bandComponentEntity.setBand(bandEntity);
+                    bandComponentEntity.setUser(storedNotification.getReceiverUser());
+                    bandComponentEntity.setCreated(Calendar.getInstance().getTime());
+
+                    session.save(bandComponentEntity);
+                }
+
+                session.flush();
+
+            });
+
+            return null;
+
+        });
+
     }
 }

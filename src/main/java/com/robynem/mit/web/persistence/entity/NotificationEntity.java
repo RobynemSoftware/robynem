@@ -36,6 +36,9 @@ import java.util.Date;
                 "where ru.id = :receiverUserId " +
                 "order by n.created desc"),
         @NamedQuery(name = "@HQL_SET_NOTIFICATION_READ", query = "update NotificationEntity set readDate = :readNate where id = :id and receiverUser.id = :receiverUserId"),
+        @NamedQuery(name = "@HQL_GET_NOTIFICATIONS_TO_REVERSE", query =
+                "from NotificationEntity " +
+                "where receiverEmailAddress = :emailAddress "),
         @NamedQuery(name = "@HQL_REVERSE_NOTIFICATIONS", query = "update NotificationEntity " +
                 "set receiverEmailAddress = null, " +
                 "    receiverUser = :receiverUser " +

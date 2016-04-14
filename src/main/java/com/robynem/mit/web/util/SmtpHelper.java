@@ -100,22 +100,27 @@ public class SmtpHelper {
 
     public void send() {
         final SmtpHelper $this = this;
-        this.javaMailSender.send(new MimeMessagePreparator() {
-            public void prepare(MimeMessage mimeMessage) throws MessagingException {
-                try {
-                    MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-                    message.setFrom($this.from, $this.fromName);
-                    message.setTo($this.to);
-                    message.setSubject($this.subject);
-                    message.setText($this.getText(), true);
-                    /*message.addInline("myLogo", new ClassPathResource("img/mylogo.gif"));
-                    message.addAttachment("myDocument.pdf", new ClassPathResource("doc/myDocument.pdf"));*/
-                } catch (Exception e) {
-                    throw new MessagingException(e.getMessage(), e);
-                }
 
-            }
-        });
+        // Sends email async
+        Runnable task = () -> {
+            this.javaMailSender.send(new MimeMessagePreparator() {
+                public void prepare(MimeMessage mimeMessage) throws MessagingException {
+                    try {
+                        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                        message.setFrom($this.from, $this.fromName);
+                        message.setTo($this.to);
+                        message.setSubject($this.subject);
+                        message.setText($this.getText(), true);
+                    } catch (Exception e) {
+                        throw new MessagingException(e.getMessage(), e);
+                    }
+
+                }
+            });
+        };
+
+        Thread thread = new Thread(task);
+        thread.start();
     }
 
     private String getText() throws Exception{
