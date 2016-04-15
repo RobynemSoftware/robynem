@@ -42,6 +42,23 @@
                 </div>
             </div>
 
+            <!-- PLAYING BANDS -->
+            <div class="accordion-group">
+
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapsePlayingBands">
+                        <span><spring:message code="dashbord.playing-bands.title"></spring:message></span>
+                    </a>
+                </div>
+
+                <div id="collapsePlayingBands" class="accordion-body collapse in">
+                    <div id="playingBandsContainer" class="accordion-inner">
+
+                    </div>
+
+                </div>
+            </div>
+
         </div>
 
 
@@ -62,6 +79,8 @@
     $(function() {
         loadOwnedBands();
 
+        loadPlayingBands();
+
         loadNotifications(1);
 
     });
@@ -75,6 +94,19 @@
             cache : false,
             success : function(data) {
                 $("#ownedBandsContainer").html(data);
+            }
+        });
+    }
+
+    function loadPlayingBands() {
+        $.ajax({
+            url : "${contextPath}/private/dashboard/viewPlayingBands",
+            type : "get",
+            dataType : "html",
+            async : true,
+            cache : false,
+            success : function(data) {
+                $("#playingBandsContainer").html(data);
             }
         });
     }

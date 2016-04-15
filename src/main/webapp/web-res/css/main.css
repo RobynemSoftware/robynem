@@ -1,3 +1,28 @@
+/*LARGE*/
+@media (min-width: 640px) {
+
+    .forMobile {
+        visibility: hidden;
+    }
+
+    .forDesktop {
+        visibility: visible;
+    }
+}
+
+/*SMALL*/
+@media (max-width: 640px) {
+
+    .forMobile {
+        visibility: visible;
+    }
+
+    .forDesktop {
+        visibility: hidden;
+    }
+}
+
+
 html * {
     font-family: Verdana !important;
 }
@@ -26,6 +51,15 @@ legend {
 
 button {
     background-color: #454447;
+    color: #e09e12;
+    /*-webkit-border-radius: 20%;
+    -moz-border-radius: 20%;
+    border-radius: 20%;*/
+    height: 30px;
+}
+
+button:hover {
+    background-color: white;
     color: #e09e12;
     /*-webkit-border-radius: 20%;
     -moz-border-radius: 20%;

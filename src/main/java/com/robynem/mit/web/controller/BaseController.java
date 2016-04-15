@@ -98,6 +98,7 @@ public class BaseController {
             this.session.setAttribute(Constants.PORTAL_USER_KEY, portalUserModel);
 
             userEntity.setLastLogin(Calendar.getInstance().getTime());
+            userEntity.setLanguage(this.request.getLocale().getLanguage());
 
             this.accountDao.updateUser(userEntity);
 

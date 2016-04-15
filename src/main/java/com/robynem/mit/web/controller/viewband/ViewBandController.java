@@ -207,6 +207,7 @@ public class ViewBandController extends BaseController {
     private void populateGeneralInfoModel(Long bandId, BandModel bandModel) {
         BandEntity bandEntity = this.bandDao.getBandGeneralInfo(bandId);
 
+        bandModel.setId(bandEntity.getId());
         bandModel.setName(bandEntity.getName());
         bandModel.setBiography(bandEntity.getBiography());
 
@@ -223,6 +224,23 @@ public class ViewBandController extends BaseController {
             bandEntity.getMusicGenres().stream().forEach(g -> musicGeneres.add(g.getName()));
 
             bandModel.setGenres(musicGeneres);
+        }
+
+        // set if user is owner or admin
+        if (this.getAuthenticatedUser() != null) {
+            Long authenticatedUserId = this.getAuthenticatedUser().getId();
+
+            if (bandEntity.getOwners() != null) {
+                bandEntity.getOwners().stream().filter(o -> o.getUser().getId().equals(authenticatedUserId)).forEach(o -> {
+                    if (OwnerType.OWNER.toString().equalsIgnoreCase(o.getOwnerType().getCode())) {
+                        bandModel.setOwner(true);
+                    }
+
+                    if (OwnerType.ADMINISTRATOR.toString().equalsIgnoreCase(o.getOwnerType().getCode())) {
+                        bandModel.setAdmin(true);
+                    }
+                });
+            }
         }
 
         this.setContactsModel(bandModel, bandEntity);

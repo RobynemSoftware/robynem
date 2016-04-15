@@ -931,6 +931,11 @@ public class EditBandController extends BaseController {
         return modelAndView;
     }
 
+    @RequestMapping("/goToPreview")
+    public ModelAndView goToPreview(ModelMap modelMap) {
+        return new ModelAndView("forward:/viewBand?bandId=" + this.getSessionAttribute(Constants.EDIT_BAND_ID));
+    }
+
     private void saveGeneralTab(BandModel bandModel) {
         BandEntity bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.GENERAL);
 

@@ -288,10 +288,16 @@ $(function() {
 
     if (isMobile()) {
         $(".forMobile").show();
+    } else {
+        $(".forMobile").hide();
+    }
+
+    /*if (isMobile()) {
+        $(".forMobile").show();
         $(".forDesktop").hide();
     } else {
         $(".forMobile").hide();
         $(".forDesktop").show();
-    }
+    }*/
 })
 

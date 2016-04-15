@@ -9,6 +9,7 @@ import com.robynem.mit.web.persistence.dao.BaseDao;
 import com.robynem.mit.web.persistence.dao.NotificationDao;
 import com.robynem.mit.web.persistence.dao.UtilsDao;
 import com.robynem.mit.web.persistence.entity.*;
+import com.robynem.mit.web.persistence.util.BandMapResult;
 import com.robynem.mit.web.persistence.util.VideoMapResult;
 import com.robynem.mit.web.util.*;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by robyn_000 on 13/01/2016.
@@ -716,6 +718,36 @@ public class BandDaoImpl extends BaseDao implements BandDao {
 
             return result;
         });
+    }
+
+    @Override
+    public BandMapResult getPlayingBands(Long userId) {
+        List<Map<String, Object>> list = this.hibernateTemplate.execute(session -> {
+
+            StringBuilder queryBuilder = new StringBuilder();
+
+            queryBuilder.append(String.format("select distinct new map(b.id as %s, b.name as %s, b.bandLogo.id as %s) ",
+                    BandMapResult.ID,
+                    BandMapResult.NAME,
+                    BandMapResult.LOGO_ID));
+            queryBuilder.append("from BandEntity  b\n" +
+                    "    inner join  b.components bc\n" +
+                    "    inner join b.status bs\n" +
+                    "where bc.user.id = :userId and bs.code = :statusCode\n" +
+                    "order by b.firstPublishDate desc");
+
+            Query query = session.createQuery(queryBuilder.toString());
+
+            query.setParameter("userId", userId);
+            query.setParameter("statusCode", EntityStatus.PUBLISHED.toString());
+
+            List<Map<String, Object>> result = query.list();
+
+            return result;
+
+        });
+
+        return new BandMapResult(list);
     }
 
     @Override

@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class BandModel implements Serializable {
 
+    private Long id;
+
     private Long logoImageId;
 
     private String biography;
@@ -31,7 +33,18 @@ public class BandModel implements Serializable {
 
     private MediaModel mediaModel = new MediaModel();
 
+    private boolean owner;
 
+    private boolean admin;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getLogoImageId() {
         return logoImageId;
@@ -119,5 +132,21 @@ public class BandModel implements Serializable {
 
     public void setMediaModel(MediaModel mediaModel) {
         this.mediaModel = mediaModel;
+    }
+
+    public boolean isOwner() {
+        return owner;
+    }
+
+    public void setOwner(boolean owner) {
+        this.owner = owner;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 }

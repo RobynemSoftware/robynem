@@ -55,6 +55,13 @@
                 <span class="headerText town">${bandModel.town}</span>
             </div>
 
+            <c:if test="${bandModel.owner eq true or bandModel.admin eq true}">
+                <div class="row headerRow">
+                    <a class="edit" href="${contextPath}/private/editBand/edit?bandId=${bandModel.id}">(Modifica)</a>
+                </div>
+            </c:if>
+
+
         </div>
 
         <div class="col-md-2 col-xs-2 forDesktop">

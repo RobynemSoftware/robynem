@@ -5,6 +5,7 @@ import com.robynem.mit.web.persistence.criteria.BandComponentsCriteria;
 import com.robynem.mit.web.persistence.criteria.GalleryCriteria;
 import com.robynem.mit.web.persistence.criteria.VideosCriteria;
 import com.robynem.mit.web.persistence.entity.*;
+import com.robynem.mit.web.persistence.util.BandMapResult;
 import com.robynem.mit.web.persistence.util.VideoMapResult;
 import com.robynem.mit.web.util.OwnerType;
 import com.robynem.mit.web.util.PublishBandResult;
@@ -57,6 +58,8 @@ public interface BandDao {
     List<UserEntity> searchBandComponents(BandComponentsCriteria criteria);
 
     List<BandEntity> getOwnedBands(Long userId, OwnerType ownerType);
+
+    BandMapResult getPlayingBands(Long userId);
 
     void saveBandComponentSinger(Long bandId, Long bandComponentId, boolean value);
 

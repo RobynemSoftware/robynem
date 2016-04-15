@@ -9,16 +9,22 @@
         <!-- SAVE AND PUBLISH BUTTONS -->
         <div class="row">
 
-            <div class="col-md-9">
+            <div class="col-md-8">
                 <span class="bandStatus"></span>
             </div>
 
-            <div class="col-md-3 saveButtons">
-                <button id="editBandPublish" class="btn-default"><spring:message
-                        code="global.publish"></spring:message></button>
+
+
+            <%--<div class="col-md-2 saveButtons">
+                <button id="editBandGoToPreview" onclick="$('#goToPreviewBandForm').submit();" ><spring:message code="band.go-to-preview"></spring:message></button>
+            </div>--%>
+            <div class="col-md-4 saveButtons">
+                <button id="editBandGoToPreview" onclick="$('#goToPreviewBandForm').submit();" ><spring:message code="band.go-to-preview"></spring:message></button>
+                <button id="editBandPublish" ><spring:message code="global.publish"></spring:message></button>
             </div>
 
             <form:form id="publishBandForm" action="${contextPath}/private/editBand/publishBand" onsubmit="javascript:$.blockUI()"></form:form>
+            <form:form id="goToPreviewBandForm" action="${contextPath}/private/editBand/goToPreview" target="_blank"></form:form>
         </div>
         <!-- TABS -->
         <div class="row">
