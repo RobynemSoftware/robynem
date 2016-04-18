@@ -1,4 +1,4 @@
-package com.robynem.mit.web.controller.band;
+package com.robynem.mit.web.controller.editband;
 
 import com.robynem.mit.web.controller.BaseController;
 import com.robynem.mit.web.model.authentication.PortalUserModel;
@@ -270,30 +270,6 @@ public class EditBandController extends BaseController {
         return this.getJsonView(modelMap);
     }
 
-    @RequestMapping(value = "/saveName", method = RequestMethod.POST)
-    public ModelAndView saveName(@RequestParam String bandName, ModelMap modelMap) {
-        ModelAndView mv = new ModelAndView();
-        BandEntity bandEntity = null;
-        try {
-            bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.GENERAL);
-
-            bandEntity.setName(StringUtils.trimToEmpty(bandName));
-
-            this.bandDao.update(bandEntity);
-
-            this.addRequestAttribute("bandId", bandEntity.getId());
-        } catch (Throwable e) {
-            this.manageException(e, LOG, modelMap);
-        }
-
-        this.setPostBack(true);
-
-        mv.setViewName("forward:/private/editBand/edit");
-        mv.addObject(modelMap);
-
-        return mv;
-    }
-
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public ModelAndView save(@ModelAttribute BandModel bandModel,
                              @RequestParam(required = false) List<String> emailContact,
@@ -355,6 +331,30 @@ public class EditBandController extends BaseController {
             modelMap.addAttribute("success", false);
         }
 
+        mv.addObject(modelMap);
+
+        return mv;
+    }
+
+    @RequestMapping(value = "/saveName", method = RequestMethod.POST)
+    public ModelAndView saveName(@RequestParam String bandName, ModelMap modelMap) {
+        ModelAndView mv = new ModelAndView();
+        BandEntity bandEntity = null;
+        try {
+            bandEntity = this.getBandToEdit(true, null, EditBandTabIndex.GENERAL);
+
+            bandEntity.setName(StringUtils.trimToEmpty(bandName));
+
+            this.bandDao.update(bandEntity);
+
+            this.addRequestAttribute("bandId", bandEntity.getId());
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        this.setPostBack(true);
+
+        mv.setViewName("forward:/private/editBand/edit");
         mv.addObject(modelMap);
 
         return mv;

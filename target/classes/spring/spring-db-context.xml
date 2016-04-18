@@ -34,6 +34,10 @@
                          <value>com.robynem.mit.web.persistence.entity.AudioEntity</value>
                          <value>com.robynem.mit.web.persistence.entity.NotificationTypeEntity</value>
                          <value>com.robynem.mit.web.persistence.entity.NotificationEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.ClubContactEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.ClubEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.ClubGenreEntity</value>
+                         <value>com.robynem.mit.web.persistence.entity.ClubOpeningInfo</value>
                      </list>
               </property>
 

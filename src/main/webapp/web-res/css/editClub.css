@@ -1,0 +1,10 @@
+.pageContent {
+    background-color: white;
+}
+
+.editClubContainer {
+    border-left-style: solid;
+    border-left-width: thin;
+    border-left-color: black;
+    height: auto;
+}

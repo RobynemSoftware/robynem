@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
 <div class="row">
     <div class="col-md-12">
 
@@ -10,7 +11,7 @@
         <div class="row">
 
             <div class="col-md-8">
-                <span class="bandStatus"></span>
+                <span class="clubStatus"></span>
             </div>
 
 
@@ -19,12 +20,12 @@
                 <button id="editBandGoToPreview" onclick="$('#goToPreviewBandForm').submit();" ><spring:message code="band.go-to-preview"></spring:message></button>
             </div>--%>
             <div class="col-md-4 saveButtons">
-                <button id="editBandGoToPreview" onclick="$('#goToPreviewBandForm').submit();" ><spring:message code="global.preview"></spring:message></button>
-                <button id="editBandPublish" ><spring:message code="global.publish"></spring:message></button>
+                <button id="editClubGoToPreview" onclick="$('#goToPreviewClubForm').submit();" ><spring:message code="global.preview"></spring:message></button>
+                <button id="editClubPublish" ><spring:message code="global.publish"></spring:message></button>
             </div>
 
-            <form:form id="publishBandForm" action="${contextPath}/private/editBand/publishBand" onsubmit="javascript:$.blockUI()"></form:form>
-            <form:form id="goToPreviewBandForm" action="${contextPath}/private/editBand/goToPreview" target="_blank"></form:form>
+            <form:form id="publishClubForm" action="${contextPath}/private/editClub/publishClub" onsubmit="javascript:$.blockUI()"></form:form>
+            <form:form id="goToPreviewClubForm" action="${contextPath}/private/editClub/goToPreview" target="_blank"></form:form>
         </div>
         <!-- TABS -->
         <div class="row">
@@ -33,15 +34,10 @@
                 <div id="tabs">
                     <ul>
                         <li><a href="#tabs-general"><spring:message code="band.tabs.general"></spring:message></a></li>
-                        <li><a href="#tabs-components"><spring:message
-                                code="band.tabs.components"></spring:message> </a></li>
                         <li><a href="#tabs-media"><spring:message code="band.tabs.media"></spring:message> </a></li>
                     </ul>
                     <div id="tabs-general">
                         <%--<jsp:include page="editBandGeneral.jsp"></jsp:include>--%>
-                    </div>
-                    <div id="tabs-components">
-                        <%--<jsp:include page="editBandComponents.jsp"></jsp:include>--%>
                     </div>
                     <div id="tabs-media">
                         <%--<jsp:include page="editBandMedia.jsp"></jsp:include>--%>
@@ -53,12 +49,12 @@
     </div>
 </div>
 
-<div id="editBandSetNameDialog" style="display: none;">
-    <form:form id="editBandSetNameForm" action="${contextPath}/private/editBand/saveName" method="post"
+<div id="editClubSetNameDialog" style="display: none;">
+    <form:form id="editClubSetNameForm" action="${contextPath}/private/editClub/saveName" method="post"
                onsubmit="javascript:$.blockUI();">
         <div class="row">
             <div class="col-md-12">
-                <span><spring:message code="band.save-name.title"></spring:message> </span>
+                <span><spring:message code="club.save-name.title"></spring:message> </span>
             </div>
         </div>
 
@@ -68,7 +64,7 @@
             </div>
 
             <div class="col-md-8 col-xs-12">
-                <input id="editBandNameInDialog" type="text" name="bandName" class="form-control"/>
+                <input id="editClubNameInDialog" type="text" name="clubName" class="form-control"/>
             </div>
         </div>
 
@@ -123,7 +119,7 @@
                     if (validateGeneralForm()) {
                         // Tells to form submit handler to switch tab
                         SWITCH_TAB_TO = ui.newTab.index();
-                        $("#editBandGeneralForm").submit();
+                        $("#editClubGeneralForm").submit();
                         return false;
                     } else {
                         return false;
@@ -135,10 +131,6 @@
                         loadGeneralTab();
                         break;
 
-                    case "tabs-components":
-                        loadComponentsTab();
-                        break;
-
                     case "tabs-media":
                         loadMediaTab();
                         break;
@@ -147,25 +139,21 @@
         });
 
         <c:if test="${not empty currentTabIndex}">
-        $("#tabs").tabs("option", "active", "${currentTabIndex}");
+            $("#tabs").tabs("option", "active", "${currentTabIndex}");
         </c:if>
 
         <c:choose>
-            <c:when test="${not empty bandId}">
+            <c:when test="${not empty clubId}">
                 loadGeneralTab();
             </c:when>
             <c:otherwise>
-               <c:set var="bandId" value="0"></c:set>
+                <c:set var="clubId" value="0"></c:set>
             </c:otherwise>
         </c:choose>
-
-
     }
 
-
-
     function initSetNameDialog() {
-        $("#editBandSetNameDialog").dialog({
+        $("#editClubSetNameDialog").dialog({
             modal: true,
             height: 'auto',
             width: 'auto',
@@ -179,11 +167,11 @@
         });
 
         <c:if test="${setName eq true}">
-        $("#editBandSetNameDialog").dialog("open");
+        $("#editClubSetNameDialog").dialog("open");
         </c:if>
 
-        $("#editBandSetNameForm button.save").click(function () {
-            var name = $.trim($("#editBandNameInDialog").val());
+        $("#editClubSetNameForm button.save").click(function () {
+            var name = $.trim($("#editClubNameInDialog").val());
 
             if (name != "") {
                 return true;
@@ -192,8 +180,8 @@
             }
         });
 
-        $("#editBandSetNameForm button.cancel").click(function () {
-            $("#editBandSetNameDialog").dialog("close");
+        $("#editClubSetNameForm button.cancel").click(function () {
+            $("#editClubSetNameDialog").dialog("close");
 
             return false;
         });
@@ -202,9 +190,9 @@
     function loadGeneralTab() {
         execInSession(function() {
             $.ajax({
-                url : "${contextPath}/private/editBand/showGeneralInfo",
+                url : "${contextPath}/private/editClub/showGeneralInfo",
                 data : {
-                    bandId : ${bandId}
+                    clubId : ${clubId}
                 },
                 dataType : "html",
                 success : function(data) {
@@ -212,24 +200,7 @@
 
                     GENERAL_TAB_MODIFIED = false;
 
-                    showBandStatus();
-                }
-            });
-        });
-    }
-
-    function loadComponentsTab() {
-        execInSession(function() {
-            $.ajax({
-                url : "${contextPath}/private/editBand/showComponents",
-                data : {
-                    bandId : ${bandId}
-                },
-                dataType : "html",
-                success : function(data) {
-                    $("#tabs-components").html(data);
-
-                    showBandStatus();
+                    showClubStatus();
                 }
             });
         });
@@ -238,15 +209,15 @@
     function loadMediaTab() {
         execInSession(function() {
             $.ajax({
-                url : "${contextPath}/private/editBand/showMedia",
+                url : "${contextPath}/private/editClub/showMedia",
                 data : {
-                    bandId : ${bandId}
+                    clubId : ${clubId}
                 },
                 dataType : "html",
                 success : function(data) {
                     $("#tabs-media").html(data);
 
-                    showBandStatus();
+                    showClubStatus();
                 }
             });
         });
@@ -256,25 +227,25 @@
 
         setTimeout(function () {
             $.ajax({
-                url : "${contextPath}/private/editBand/getBandStatus",
+                url : "${contextPath}/private/editClub/getClubStatus",
                 data : {
-                    bandId : ${bandId != null ? bandId : 0}
+                    clubId : ${clubId != null ? clubId : 0}
                 },
                 dataType : "json",
                 cache : false,
                 global : false,
                 success : function (data) {
-                    $(".bandStatus").val("");
+                    $(".clubStatus").val("");
 
-                    if (data.bandStatus != null) {
+                    if (data.clubStatus != null) {
                         var alertMessage = "";
-                        if (data.bandStatus == '<%=EntityStatus.NOT_PUBLISHED.toString()%>') {
-                            alertMessage = "<spring:message code="band.status.not-published.alert"></spring:message>";
+                        if (data.clubStatus == '<%=EntityStatus.NOT_PUBLISHED.toString()%>') {
+                            alertMessage = "<spring:message code="club.status.not-published.alert"></spring:message>";
                         } else if (data.bandStatus == '<%=EntityStatus.STAGE.toString()%>') {
-                            alertMessage = "<spring:message code="band.status.stage.alert"></spring:message>";
+                            alertMessage = "<spring:message code="club.status.stage.alert"></spring:message>";
                         }
 
-                        $(".bandStatus").html(alertMessage);
+                        $(".clubStatus").html(alertMessage);
                     }
                 }
             });
@@ -284,18 +255,18 @@
     }
 
     function initPublishButton() {
-        $("#editBandPublish").click(function () {
+        $("#editClubPublish").click(function () {
 
             /*
-            * If general form has been modified and not saved, we indicate that we request to publish and we submit general form.
-            * This form, after saving, reads DO_PUBLISH equals true and raises publish event.
-            * */
+             * If general form has been modified and not saved, we indicate that we request to publish and we submit general form.
+             * This form, after saving, reads DO_PUBLISH equals true and raises publish event.
+             * */
             //console.log("Publish: GENERAL_TAB_MODIFIED: " + GENERAL_TAB_MODIFIED);
             if (GENERAL_TAB_MODIFIED == true) {
                 DO_PUBLISH = true;
-                $("#editBandGeneralForm").submit();
+                $("#editClubGeneralForm").submit();
             } else {
-                $("#publishBandForm").submit();
+                $("#publishClubForm").submit();
             }
 
 
@@ -365,11 +336,11 @@
 
         var messages = new Array();
 
-        if ($.trim($("#editBandName").val()) == "") {
+        if ($.trim($("#editClubName").val()) == "") {
             messages.push({
                 severity: "FATAL",
                 link: null,
-                message: "<spring:message code="band.validation.band-name-mandatory"></spring:message>"
+                message: "<spring:message code="club.validation.band-name-mandatory"></spring:message>"
             });
             valid = false;
         }
@@ -385,6 +356,4 @@
         return valid;
 
     }
-
-
 </script>

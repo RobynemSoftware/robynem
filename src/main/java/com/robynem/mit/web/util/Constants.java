@@ -17,6 +17,7 @@ public class Constants {
     public static final String APPLICATION_MESSAGES_REDIRECT_URL_KEY = "redirectUrl";
     public static final String IS_POST_BACK = "isPostBack";
     public static final String EDIT_BAND_ID = "editBandId";
+    public static final String EDIT_CLUB_ID = "editClubId";
     public static final String VIEW_BAND_ID = "viewBandId";
     // ------------------------------
 

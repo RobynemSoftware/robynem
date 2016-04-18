@@ -57,7 +57,7 @@
 
             <c:if test="${bandModel.owner eq true or bandModel.admin eq true}">
                 <div class="row headerRow">
-                    <a class="edit" href="${contextPath}/private/editBand/edit?bandId=${bandModel.id}">(Modifica)</a>
+                    <a class="edit" href="${contextPath}/private/editBand/edit?bandId=${bandModel.id}"><spring:message code="viewband.edit"></spring:message></a>
                 </div>
             </c:if>
 

@@ -48,13 +48,11 @@
                             </div>
                         </div>
 
-                        <%--<form:form id="videosForm" method="post" action="${contextPath}/private/editBand/saveVideos" modelAttribute="bandModel" >--%>
-                            <input type="hidden" name="currentTabIndex" value="2">
+                        <input type="hidden" name="currentTabIndex" value="2">
 
-                            <div id="videoContainerRow" class="row">
+                        <div id="videoContainerRow" class="row">
 
-                            </div>
-                        <%--</form:form>--%>
+                        </div>
 
 
                     </div>
@@ -199,9 +197,6 @@
                                         dataType : "json",
                                         async : false,
                                         cache : false,
-                                        beforeSend : function (jqXHR, settings ) {
-                                            $.blockUI();
-                                        },
                                         success : function(data) {
                                             showApplicationMessages(data);
 
@@ -210,9 +205,6 @@
                                                 //console.log("newVideoId: " + newVideoId);
                                                 showBandStatus();
                                             }
-                                        },
-                                        complete : function() {
-                                            $.unblockUI();
                                         }
                                     });
                                 }
@@ -609,7 +601,7 @@
     }
 
     function deleteVideo(videoId) {
-        if (videoId != null && execInSession(null)) {
+        if (videoId != null /*&& execInSession(null)*/) {
             var success = false;
 
             $.ajax({
@@ -621,18 +613,12 @@
                 dataType : "json",
                 async : false,
                 cache : false,
-                beforeSend : function (jqXHR, settings ) {
-                    $.blockUI();
-                },
                 success : function(data) {
                     showApplicationMessages(data);
 
                     success = data.success;
 
                     showBandStatus();
-                },
-                complete : function() {
-                    $.unblockUI();
                 }
             });
         }

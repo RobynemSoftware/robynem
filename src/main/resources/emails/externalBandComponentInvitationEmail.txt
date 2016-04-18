@@ -1,10 +1,12 @@
 <p>Ciao,</p>
 <p>&nbsp;</p>
 <p>il tuo amico&nbsp;<strong>${sender-name} </strong>ti ha mandato un invito a registrarti sul portale <strong>Music in Town&nbsp;</strong>in quanto vorrebbe averti come componente della sua band&nbsp;<span style="color: #ff6600; text-decoration: underline;"><strong>${band-name}</strong></span>.</p>
-<p>Accedi al portale&nbsp;<a href="${portal-url}" target="_blank">www.musicintown.net</a>, registrati tramite email o Facebook e unisciti alla band del tuo amico.</p>
+<p>Accedi al portale&nbsp;<a href="${portal-url}" target="_blank">www.musicintown.net</a>, registrati tramite questo indirizzo email e farai automaticamente parte della sua band.</p>
+<p>&nbsp;</p>
+<p>In alternativa puoi accedere tramite Facebook e, se l'email &egrave; diversa,&nbsp;suggerisci al tuo amico di aggiungerti alla band.</p>
 <p>&nbsp;</p>
 <p>Inoltre esplorando il portale&nbsp;<strong>Music in Town&nbsp;</strong>scoprirai una community musicale tutta nuova che ti d&agrave; la possibilit&agrave; di emergere come musicista.</p>
-<p>Potrai creare un tuo profilo indicando gli strumenti che suoni, se sei maestro di musica.</p>
+<p>Potrai creare un tuo profilo indicando gli strumenti che suoni, proporti come maestro di musica e quant'altro.</p>
 <p>Potrai essere ingaggiato per altre band oppure per live performaces e quant'altro.</p>
 <h3><span style="color: #ff6600;"><strong>Vivi la musica, vivi di musica!</strong></span></h3>
 <p>&nbsp;</p>
