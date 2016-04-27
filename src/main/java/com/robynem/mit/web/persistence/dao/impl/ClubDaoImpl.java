@@ -144,45 +144,16 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
         if (source.getContacts() != null) {
 
             source.getContacts().stream().forEach(c -> {
-                BandContactEntity bandContactEntity = new BandContactEntity(c.getEmailAddress(), c.getPhoneNumber());
+                ClubContactEntity clubContactEntity = new ClubContactEntity(c.getEmailAddress(), c.getPhoneNumber());
 
-                bandContactEntity.setBand(destination);
+                clubContactEntity.setClub(destination);
 
-                destination.getContacts().add(bandContactEntity);
+                destination.getContacts().add(clubContactEntity);
             });
         }
-
-
-
-        if (destination.getVideos() == null) {
-            destination.setVideos(new HashSet<VideoEntity>());
-        }
-        destination.getVideos().clear();
-
-
-
-        if (source.getVideos() != null) {
-
-            source.getVideos().stream().forEach(v -> {
-                VideoEntity videoEntity = new VideoEntity();
-
-                videoEntity.setYoutubeUrl(v.getYoutubeUrl());
-
-                videoEntity.setLinkId(v.getLinkId());
-
-                videoEntity.setCreated(v.getCreated());
-                videoEntity.setUpdated(v.getUpdated());
-
-                destination.getVideos().add(videoEntity);
-
-
-            });
-        }
-
-
 
         if (destination.getImages() == null) {
-            destination.setImages(new HashSet<ImageEntity>());
+            destination.setImages(new ArrayList<>());
         }
         destination.getImages().clear();
 
@@ -206,33 +177,6 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
                 destination.getImages().add(imageEntity);
             });
         }
-
-
-
-        if (destination.getAudios() == null) {
-            destination.setAudios(new HashSet<AudioEntity>());
-        }
-        destination.getAudios().clear();
-
-
-
-        if (source.getAudios() != null) {
-
-            source.getAudios().stream().forEach(a -> {
-                AudioEntity audioEntity = new AudioEntity();
-
-                audioEntity.setName(a.getName());
-                audioEntity.setFile(a.getFile());
-                audioEntity.setSoundCloudUrl(a.getSoundCloudUrl());
-                audioEntity.setLinkId(a.getLinkId());
-
-                audioEntity.setCreated(a.getCreated());
-                audioEntity.setUpdated(a.getUpdated());
-
-                destination.getAudios().add(audioEntity);
-            });
-        }
-
 
     }
 }
