@@ -13,7 +13,7 @@ public interface ClubDao {
 
     ClubEntity createStageVersion(ClubEntity clubEntity);
 
-    ClubEntity createEmptyClub(Long clubId);
+    ClubEntity createEmptyClub(Long userId);
 
     ClubEntity getClubGeneralInfo(Long clubId);
 

@@ -4,14 +4,20 @@ import com.robynem.mit.web.persistence.dao.BaseDao;
 import com.robynem.mit.web.persistence.dao.ClubDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.EntityStatus;
+import com.robynem.mit.web.util.OwnerType;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by robyn_000 on 18/04/2016.
@@ -57,8 +63,80 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
     }
 
     @Override
-    public ClubEntity createEmptyClub(Long clubId) {
-        return null;
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public ClubEntity createEmptyClub(Long userId) {
+        ClubEntity clubEntity = null;
+
+        if (userId == null) {
+            throw new RuntimeException("User id cannot be null.");
+        }
+
+        final ClubDao thisInstance = this;
+
+        clubEntity = this.hibernateTemplate.execute(new HibernateCallback<ClubEntity>() {
+            @Override
+            public ClubEntity doInHibernate(Session session) throws HibernateException, SQLException {
+                ClubEntity parentClubEntity = null;
+
+                // Gets the owner's owner type
+                OwnerTypeEntity ownerOwnerTypeEntity = (OwnerTypeEntity) session.getNamedQuery("@HQL_GET_OWNER_TYPE_BY_CODE")
+                        .setParameter("code", OwnerType.OWNER.toString())
+                        .list()
+                        .get(0);
+
+                // Gets the  NOT PUBLISHED status
+                EntityStatusEntity notPublishedStatus = (EntityStatusEntity) session.getNamedQuery("@HQL_GET_ENTITY_STATUS_BY_CODE")
+                        .setParameter("code", EntityStatus.NOT_PUBLISHED.toString())
+                        .list()
+                        .get(0);
+
+                // Gets the  STAGE status
+                EntityStatusEntity stageStatus = (EntityStatusEntity) session.getNamedQuery("@HQL_GET_ENTITY_STATUS_BY_CODE")
+                        .setParameter("code", EntityStatus.STAGE.toString())
+                        .list()
+                        .get(0);
+
+                // Gets the owner user
+                UserEntity ownerUser = (UserEntity) session.get(UserEntity.class, userId);
+
+                if (ownerUser == null) {
+                    throw new RuntimeException("Cannot retrieve ownere user");
+                }
+
+                // Creates the parent club (NOT PUBLISHED)
+                parentClubEntity = new ClubEntity();
+
+                parentClubEntity.setCreatedBy(ownerUser);
+
+                parentClubEntity.setCreated(Calendar.getInstance().getTime());
+                parentClubEntity.setStatus(notPublishedStatus);
+
+                // Saves the new parent band
+                session.saveOrUpdate(parentClubEntity);
+
+                // Save the club ownership
+                ClubOwnershipEntity parentClubOwnershipEntity = new ClubOwnershipEntity(ownerUser, parentClubEntity, ownerOwnerTypeEntity);
+                session.saveOrUpdate(parentClubOwnershipEntity);
+
+                // Creates and save stage version
+                ClubEntity stageVersion = thisInstance.createStageVersion(parentClubEntity);
+                //session.saveOrUpdate(stageVersion); we save it into createStageVersioneMethod
+
+                // Save the band ownership
+                ClubOwnershipEntity stageClubOwnershipEntity = new ClubOwnershipEntity(ownerUser, stageVersion, ownerOwnerTypeEntity);
+                session.saveOrUpdate(stageClubOwnershipEntity);
+
+                // Update stege version reference on parent one
+                List<ClubEntity> stageVersions = new ArrayList<ClubEntity>();
+                stageVersions.add(stageVersion);
+
+                parentClubEntity.setStageVersions(stageVersions);
+
+                return parentClubEntity;
+            }
+        });
+
+        return clubEntity;
     }
 
     @Override
@@ -72,8 +150,28 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
     }
 
     @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
     public void update(ClubEntity clubEntity) {
+        this.hibernateTemplate.execute(session -> {
 
+            /*Deletes all contacts to recreate list*/
+            /*Query query = session.getNamedQuery("@HQL_DELETE_ALL_BAND_CONTACTS");
+            query.setParameter("bandId", clubEntity.getId());
+
+            query.executeUpdate();*/
+
+            /*session.clear();
+
+            *//*Stores new videos before associating them*//*
+            if (bandEntity.getVideos() != null) {
+                bandEntity.getVideos().stream().forEach(v -> {
+                    session.saveOrUpdate(v);
+                });
+            }*/
+
+            session.update(clubEntity);
+            return null;
+        });
     }
 
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
@@ -89,6 +187,8 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
         destination.setTown(source.getTown());
         destination.setWebSite(source.getWebSite());
         destination.setUpdated(source.getUpdated());
+        destination.setAddress(source.getAddress());
+
 
 
 
@@ -175,6 +275,31 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
                 imageEntity.setUpdated(i.getUpdated());
 
                 destination.getImages().add(imageEntity);
+            });
+        }
+
+        if (destination.getOpeningInfos() == null) {
+            destination.setOpeningInfos(new ArrayList<>());
+        }
+        destination.getOpeningInfos().clear();
+
+
+
+        if (source.getOpeningInfos() != null) {
+
+            source.getOpeningInfos().stream().forEach(i -> {
+                ClubOpeningInfo clubOpeningInfo = new ClubOpeningInfo();
+
+                clubOpeningInfo.setEndDay(i.getEndDay());
+                clubOpeningInfo.setEndHour(i.getEndHour());
+                clubOpeningInfo.setOpened(i.isOpened());
+                clubOpeningInfo.setStartDay(i.getStartDay());
+                clubOpeningInfo.setStartHour(i.getStartHour());
+
+                clubOpeningInfo.setCreated(i.getCreated());
+                clubOpeningInfo.setUpdated(i.getUpdated());
+
+                destination.getOpeningInfos().add(clubOpeningInfo);
             });
         }
 

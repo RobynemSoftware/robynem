@@ -41,7 +41,7 @@
                                     <a href="${contextPath}/private/editBand/edit?create=true" ><spring:message code="menu.create-band-page"></spring:message></a>
                                 </li>
                                 <li class="menuCreateClub">
-                                    <a href="${contextPath}/private/profile/createClub" ><spring:message code="menu.create-club"></spring:message></a>
+                                    <a href="${contextPath}/private/editClub/edit?create=true" ><spring:message code="menu.create-club"></spring:message></a>
                                 </li>
                                 <li class="menuCreateEvent">
                                     <a href="${contextPath}/private/profile/createEvent" ><spring:message code="menu.create-event"></spring:message></a>

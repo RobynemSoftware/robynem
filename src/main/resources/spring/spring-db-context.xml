@@ -38,6 +38,7 @@
                          <value>com.robynem.mit.web.persistence.entity.ClubEntity</value>
                          <value>com.robynem.mit.web.persistence.entity.ClubGenreEntity</value>
                          <value>com.robynem.mit.web.persistence.entity.ClubOpeningInfo</value>
+                         <value>com.robynem.mit.web.persistence.entity.ClubOwnershipEntity</value>
                      </list>
               </property>
 
