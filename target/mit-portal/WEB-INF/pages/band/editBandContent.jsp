@@ -19,7 +19,7 @@
                 <button id="editBandGoToPreview" onclick="$('#goToPreviewBandForm').submit();" ><spring:message code="band.go-to-preview"></spring:message></button>
             </div>--%>
             <div class="col-md-4 saveButtons">
-                <button id="editBandGoToPreview" onclick="$('#goToPreviewBandForm').submit();" ><spring:message code="band.go-to-preview"></spring:message></button>
+                <button id="editBandGoToPreview" onclick="$('#goToPreviewBandForm').submit();" ><spring:message code="global.preview"></spring:message></button>
                 <button id="editBandPublish" ><spring:message code="global.publish"></spring:message></button>
             </div>
 
@@ -74,11 +74,11 @@
 
         <div class="row">
             <div class="col-md-12">
-                <button class="btn btn-default save">
+                <button class="save">
                     <spring:message code="global.save"></spring:message>
                 </button>
                 &nbsp;
-                <button class="btn cancel">
+                <button class="cancel">
                     <spring:message code="global.cancel"></spring:message>
                 </button>
             </div>
@@ -100,11 +100,7 @@
     function init() {
         initTabs();
 
-        //setCurrentSaveForm();
-
         initSetNameDialog();
-
-        //showBandStatus();
 
         initPublishButton();
     }
@@ -120,7 +116,6 @@
                 //console.log("new tab id: " + id);
 
                 /*If we're leaving general form, we save it before.*/
-                console.log("formField modified: " + GENERAL_TAB_MODIFIED);
                 if (oldId == "tabs-general" && GENERAL_TAB_MODIFIED == true) {
 
                     GENERAL_TAB_MODIFIED = false;

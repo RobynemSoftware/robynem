@@ -601,7 +601,7 @@
     }
 
     function deleteVideo(videoId) {
-        if (videoId != null /*&& execInSession(null)*/) {
+        if (videoId != null && execInSession(null)) {
             var success = false;
 
             $.ajax({

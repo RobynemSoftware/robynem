@@ -10,7 +10,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "mit_clubOwnership")
-public class ClubOwnershipEntity {
+public class ClubOwnershipEntity extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
