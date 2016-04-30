@@ -55,13 +55,13 @@ public class ClubEntity extends BaseEntity {
     @JoinColumn(name = "statusId")
     private EntityStatusEntity status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "publishedClubId")
     /**
      * In the club staging mode, (when user hasn't published yet modifications),
      * we create a record on the band table, containig latest modifications, linked to its published version
      * with a self reference.
      */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publishedClubId")
     private ClubEntity publishedVersion;
 
     @OneToMany(mappedBy = "publishedVersion", fetch = FetchType.LAZY)

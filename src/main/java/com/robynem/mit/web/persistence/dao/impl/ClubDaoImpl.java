@@ -5,9 +5,12 @@ import com.robynem.mit.web.persistence.dao.ClubDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.EntityStatus;
 import com.robynem.mit.web.util.OwnerType;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -141,7 +144,26 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
 
     @Override
     public ClubEntity getClubGeneralInfo(Long clubId) {
-        return null;
+        return this.hibernateTemplate.execute(session -> {
+            ClubEntity clubEntity = null;
+
+            Criteria criteria = session.createCriteria(ClubEntity.class, "club");
+
+            criteria = criteria.add(Restrictions.idEq(clubId));
+
+            criteria = criteria.createAlias("club.owners", "owners", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.clubLogo", "clubLogo", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.status", "status", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.publishedVersion", "publishedVersion", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.stageVersions", "stageVersions", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.clubGenres", "clubGenres", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.contacts", "contacts", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.openingInfos", "openingInfos", CriteriaSpecification.LEFT_JOIN);
+
+            clubEntity = (ClubEntity) criteria.uniqueResult();
+
+            return clubEntity;
+        });
     }
 
     @Override

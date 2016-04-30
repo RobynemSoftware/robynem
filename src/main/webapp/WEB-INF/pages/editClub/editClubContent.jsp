@@ -37,10 +37,10 @@
                         <li><a href="#tabs-media"><spring:message code="band.tabs.media"></spring:message> </a></li>
                     </ul>
                     <div id="tabs-general">
-                        <%--<jsp:include page="editBandGeneral.jsp"></jsp:include>--%>
+
                     </div>
                     <div id="tabs-media">
-                        <%--<jsp:include page="editBandMedia.jsp"></jsp:include>--%>
+
                     </div>
                 </div>
 
@@ -223,7 +223,7 @@
         });
     }
 
-    function showBandStatus() {
+    function showClubStatus() {
 
         setTimeout(function () {
             $.ajax({

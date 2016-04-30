@@ -2,9 +2,9 @@ package com.robynem.mit.web.controller.viewband;
 
 import com.robynem.mit.web.controller.BaseController;
 import com.robynem.mit.web.model.authentication.PortalUserModel;
-import com.robynem.mit.web.model.band.BandModel;
-import com.robynem.mit.web.model.band.ComponentModel;
-import com.robynem.mit.web.model.band.ContactModel;
+import com.robynem.mit.web.model.editband.BandModel;
+import com.robynem.mit.web.model.editband.ComponentModel;
+import com.robynem.mit.web.model.ContactModel;
 import com.robynem.mit.web.model.viewband.AudioModel;
 import com.robynem.mit.web.model.viewband.BandRequestModel;
 import com.robynem.mit.web.model.viewband.GalleryModel;
