@@ -237,13 +237,16 @@
                 success : function (data) {
                     $(".clubStatus").val("");
 
+
+
                     if (data.clubStatus != null) {
                         var alertMessage = "";
                         if (data.clubStatus == '<%=EntityStatus.NOT_PUBLISHED.toString()%>') {
                             alertMessage = "<spring:message code="club.status.not-published.alert"></spring:message>";
-                        } else if (data.bandStatus == '<%=EntityStatus.STAGE.toString()%>') {
+                        } else if (data.clubStatus == '<%=EntityStatus.STAGE.toString()%>') {
                             alertMessage = "<spring:message code="club.status.stage.alert"></spring:message>";
                         }
+
 
                         $(".clubStatus").html(alertMessage);
                     }

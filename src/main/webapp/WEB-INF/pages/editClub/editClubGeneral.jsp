@@ -51,7 +51,7 @@
     </div>
 
     <!-- FORM FIELDS -->
-    <form:form id="editClubGeneralForm" cssClass="formFields" action="${contextPath}/private/editClub/save" method="post" modelAttribute="clubModel" >
+    <form:form id="editClubGeneralForm" cssClass="formFields" action="${contextPath}/private/editClub/saveGeneralInfo" method="post" modelAttribute="clubModel" >
         <input type="hidden" name="currentTabIndex" value="0">
 
         <div class="col-md-8 col-xs-12">
@@ -89,7 +89,7 @@
                         <option><spring:message  code="club.genres.placeholder"></spring:message></option>
                         <c:if test="${not empty clubGenresList}">
                             <c:forEach var="genre" items="${clubGenresList}">
-                                <option value="${genre.id}">${genre.name}</option>
+                                <option value="${genre.id}"><spring:message code="${genre.resourceBundleCode}"></spring:message></option>
                             </c:forEach>
                         </c:if>
                     </select>

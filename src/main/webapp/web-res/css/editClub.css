@@ -12,3 +12,8 @@
 .saveClubLink {
     margin-bottom: 50px;
 }
+
+.clubStatus {
+    font-size: 11px;
+    color: red;
+}

@@ -5,8 +5,11 @@ import com.robynem.mit.web.model.ContactModel;
 import com.robynem.mit.web.model.authentication.PortalUserModel;
 import com.robynem.mit.web.model.editclub.ClubModel;
 import com.robynem.mit.web.persistence.dao.ClubDao;
+import com.robynem.mit.web.persistence.dao.RegistryDao;
 import com.robynem.mit.web.persistence.dao.UtilsDao;
+import com.robynem.mit.web.persistence.entity.ClubContactEntity;
 import com.robynem.mit.web.persistence.entity.ClubEntity;
+import com.robynem.mit.web.persistence.entity.ClubGenreEntity;
 import com.robynem.mit.web.persistence.entity.ClubOwnershipEntity;
 import com.robynem.mit.web.util.*;
 import org.apache.commons.lang3.StringUtils;
@@ -15,16 +18,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.AbstractView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -32,9 +30,15 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("/private/editClub")
+@SessionAttributes({
+        "clubGenresList"
+})
 public class EditClubController extends BaseController {
 
     static final Logger LOG = LoggerFactory.getLogger(EditClubController.class);
+
+    @Autowired
+    private RegistryDao registryDao;
 
     @Autowired
     private ClubDao clubDao;
@@ -73,6 +77,8 @@ public class EditClubController extends BaseController {
                 modelMap.addAttribute("clubId", clubId);
             }
 
+            modelMap.addAttribute("clubGenresList", this.registryDao.getAllClubGenres());
+
         } catch (Exception e) {
             this.manageException(e, LOG, modelMap);
         }
@@ -109,7 +115,7 @@ public class EditClubController extends BaseController {
     @RequestMapping(value = "/showGeneralInfo")
     public ModelAndView showGeneralInfo(@RequestParam(required = false) Long clubId, ModelMap modelMap) {
 
-        ModelAndView mv = new ModelAndView("band/editClubGeneral");
+        ModelAndView mv = new ModelAndView("editClub/editClubGeneral");
 
         try {
 
@@ -154,6 +160,74 @@ public class EditClubController extends BaseController {
         return this.getJsonView(modelMap);
     }
 
+    @RequestMapping(value = "/saveGeneralInfo", method = RequestMethod.POST)
+    public ModelAndView saveGeneralInfo(@ModelAttribute ClubModel clubModel,
+                             @RequestParam(required = false) List<String> emailContact,
+                             @RequestParam(required = false) List<String> phoneContact,
+                             @RequestParam int currentTabIndex, ModelMap modelMap) {
+
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("forward:/private/editClub/showGeneralInfo");
+
+        modelMap.addAttribute("currentTabIndex", currentTabIndex);
+        modelMap.addAttribute("success", "true");
+
+        try {
+            EditClubTabIndex tabIndex = EditClubTabIndex.fromInt(currentTabIndex);
+
+            if (emailContact != null) {
+                emailContact.stream().distinct().forEach(c -> {
+                    clubModel.getEmailContacts().add(new ContactModel(c));
+                });
+            }
+
+            if (phoneContact != null) {
+                phoneContact.stream().distinct().forEach(c -> {
+                    clubModel.getPhoneNumberContacts().add(new ContactModel(c));
+                });
+            }
+
+            ClubEntity clubEntity = this.getClubToEdit(true, null, EditClubTabIndex.GENERAL);
+
+            clubEntity.setName(StringUtils.trimToNull(clubModel.getName()));
+            clubEntity.setPlaceId(StringUtils.trimToNull(clubModel.getPlaceId()));
+            clubEntity.setTown(StringUtils.trimToNull(clubModel.getTown()));
+            clubEntity.setAddress(StringUtils.trimToNull(clubModel.getAddress()));
+            clubEntity.setWebSite(StringUtils.trimToNull(clubModel.getWebSite()));
+            clubEntity.setDescription(StringUtils.trimToNull(clubModel.getDescription()));
+
+            // Save genres
+            clubEntity.setClubGenres(new HashSet<ClubGenreEntity>());
+
+            if (clubModel.getGenres() != null) {
+                clubModel.getGenres().stream().forEach(g -> clubEntity.getClubGenres().add(new ClubGenreEntity(Long.parseLong(g))));
+            }
+
+            // Save contacts
+            clubEntity.setContacts(new HashSet<>());
+
+            // Email
+            clubModel.getEmailContacts().stream().forEach(c -> {
+                clubEntity.getContacts().add(new ClubContactEntity(StringUtils.trimToNull(c.getValue()), null, clubEntity));
+            });
+
+            // Phone numbers
+            clubModel.getPhoneNumberContacts().stream().forEach(c -> {
+                clubEntity.getContacts().add(new ClubContactEntity(null, StringUtils.trimToNull(c.getValue()), clubEntity));
+            });
+
+
+            this.clubDao.update(clubEntity);
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+            modelMap.addAttribute("success", false);
+        }
+
+        mv.addObject(modelMap);
+
+        return mv;
+    }
+
     private String getClubStatus(Long clubId) {
         String clubStatus = null;
 
@@ -185,7 +259,7 @@ public class EditClubController extends BaseController {
                 case GENERAL:
 
                     clubModel.setName(clubEntity.getName());
-                    clubModel.setBiography(clubEntity.getDescription());
+                    clubModel.setDescription(clubEntity.getDescription());
 
                     if (clubEntity.getClubLogo() != null) {
                         clubModel.setLogoImageId(clubEntity.getClubLogo().getId());

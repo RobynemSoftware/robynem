@@ -5,6 +5,7 @@ import org.hibernate.annotations.Cascade;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by robyn_000 on 16/04/2016.
@@ -49,7 +50,7 @@ public class ClubEntity extends BaseEntity {
             inverseJoinColumns = { @JoinColumn(name = "imageId", nullable = false) }
     )
     @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-    private List<ImageEntity> images;
+    private Set<ImageEntity> images;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "statusId")
@@ -68,24 +69,24 @@ public class ClubEntity extends BaseEntity {
     protected List<ClubEntity> stageVersions;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    protected List<ClubContactEntity> contacts;
+    protected Set<ClubContactEntity> contacts;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "mit_club_clubGenre",
             joinColumns = {@JoinColumn(name = "clubId", nullable = false) },
             inverseJoinColumns = { @JoinColumn(name = "clubGenreId", nullable = false)}
     )
-    protected List<ClubGenreEntity> clubGenres;
+    protected Set<ClubGenreEntity> clubGenres;
 
     @Column
     private Date firstPublishDate;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "clubId", nullable = false)
-    private List<ClubOpeningInfo> openingInfos;
+    private Set<ClubOpeningInfo> openingInfos;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ClubOwnershipEntity> owners;
+    private Set<ClubOwnershipEntity> owners;
 
 
     public String getName() {
@@ -160,11 +161,11 @@ public class ClubEntity extends BaseEntity {
         this.clubLogo = clubLogo;
     }
 
-    public List<ImageEntity> getImages() {
+    public Set<ImageEntity> getImages() {
         return images;
     }
 
-    public void setImages(List<ImageEntity> images) {
+    public void setImages(Set<ImageEntity> images) {
         this.images = images;
     }
 
@@ -192,11 +193,11 @@ public class ClubEntity extends BaseEntity {
         this.stageVersions = stageVersions;
     }
 
-    public List<ClubContactEntity> getContacts() {
+    public Set<ClubContactEntity> getContacts() {
         return contacts;
     }
 
-    public void setContacts(List<ClubContactEntity> contacts) {
+    public void setContacts(Set<ClubContactEntity> contacts) {
         this.contacts = contacts;
     }
 
@@ -208,27 +209,27 @@ public class ClubEntity extends BaseEntity {
         this.firstPublishDate = firstPublishDate;
     }
 
-    public List<ClubGenreEntity> getClubGenres() {
+    public Set<ClubGenreEntity> getClubGenres() {
         return clubGenres;
     }
 
-    public void setClubGenres(List<ClubGenreEntity> clubGenres) {
+    public void setClubGenres(Set<ClubGenreEntity> clubGenres) {
         this.clubGenres = clubGenres;
     }
 
-    public List<ClubOpeningInfo> getOpeningInfos() {
+    public Set<ClubOpeningInfo> getOpeningInfos() {
         return openingInfos;
     }
 
-    public void setOpeningInfos(List<ClubOpeningInfo> openingInfos) {
+    public void setOpeningInfos(Set<ClubOpeningInfo> openingInfos) {
         this.openingInfos = openingInfos;
     }
 
-    public List<ClubOwnershipEntity> getOwners() {
+    public Set<ClubOwnershipEntity> getOwners() {
         return owners;
     }
 
-    public void setOwners(List<ClubOwnershipEntity> owners) {
+    public void setOwners(Set<ClubOwnershipEntity> owners) {
         this.owners = owners;
     }
 }
