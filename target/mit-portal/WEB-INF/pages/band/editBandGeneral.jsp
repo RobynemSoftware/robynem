@@ -20,7 +20,7 @@
 <div class="row">
 
     <!-- LOGO -->
-    <div class="col-md-4 col-xs-12">
+    <div class="col-md-12 col-xs-12">
 
         <div class="row">
 
@@ -50,11 +50,21 @@
 
     </div>
 
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <hr/>
+    </div>
+</div>
+
+<div class="row">
+
     <!-- FORM FIELDS -->
     <form:form id="editBandGeneralForm" cssClass="formFields" action="${contextPath}/private/editBand/save" method="post" modelAttribute="bandModel" >
         <input type="hidden" name="currentTabIndex" value="0">
 
-        <div class="col-md-8 col-xs-12">
+        <div class="col-md-12 col-xs-12">
 
             <!-- NAME -->
             <div class="row">

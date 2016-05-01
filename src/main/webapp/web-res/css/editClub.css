@@ -17,3 +17,7 @@
     font-size: 11px;
     color: red;
 }
+
+.ui-widget .openingInfoControl {
+    font-size: 10px;
+}

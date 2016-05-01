@@ -20,7 +20,7 @@
 <div class="row">
 
     <!-- LOGO -->
-    <div class="col-md-4 col-xs-12">
+    <div class="col-md-12 col-xs-12">
 
         <div class="row">
 
@@ -50,11 +50,21 @@
 
     </div>
 
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <hr/>
+    </div>
+</div>
+
+<div class="row">
+
     <!-- FORM FIELDS -->
     <form:form id="editClubGeneralForm" cssClass="formFields" action="${contextPath}/private/editClub/saveGeneralInfo" method="post" modelAttribute="clubModel" >
         <input type="hidden" name="currentTabIndex" value="0">
 
-        <div class="col-md-8 col-xs-12">
+        <div class="col-md-12 col-xs-12">
 
             <!-- NAME -->
             <div class="row">
@@ -201,38 +211,45 @@
                             <div class="row openingInfo">
 
                                 <!-- Opening info list -->
-                                <div id="openingInfoList" class="col-md-10">
+                                <div id="openingInfoList" class="col-md-12">
                                     <c:forEach var="info" items="${clubModel.openingInfos}" varStatus="status">
                                         <div id="info_${status.index}" class="row">
 
                                             <div class="col-md-12">
 
                                                 <div class="row headerRow">
-                                                    <div>
+                                                    <div class="col-md-2">
                                                         <span><spring:message code="club.opening-info.start-day"></spring:message> </span>
                                                     </div>
 
-                                                    <div>
+                                                    <div class="col-md-2">
                                                         <span><spring:message code="club.opening-info.end-day"></spring:message> </span>
                                                     </div>
 
-                                                    <div>
+                                                    <div class="col-md-2">
                                                         <span><spring:message code="club.opening-info.opening-hour"></spring:message> </span>
                                                     </div>
 
-                                                    <div>
+                                                    <div class="col-md-2">
                                                         <span><spring:message code="club.opening-info.closing-hour"></spring:message> </span>
                                                     </div>
 
-                                                    <div>
+                                                    <div class="col-md-2">
                                                         <span><spring:message code="club.opening-info.opened"></spring:message> </span>
+                                                    </div>
+
+                                                    <div id="addOpeningInfoLink" class="col-md-2">
+                                                        <img  src="${contextPath}/resources/images/add_32x32.png"
+                                                              class="img-responsive clickable"
+                                                              title="<spring:message code="club.opening-info.add-new.tooltip"></spring:message>"
+                                                              onclick="javascript:addOpeningInfo();">
                                                     </div>
                                                 </div>
 
                                                 <div class="row dataRow">
                                                         <%-- start day --%>
-                                                    <div>
-                                                        <select>
+                                                    <div class="col-md-2">
+                                                        <select class="form-control openingInfoControl">
                                                             <option></option>
                                                             <c:forEach var="day" items="${daysOfWeek}">
                                                                 <option value="${day.value}"
@@ -243,8 +260,8 @@
                                                     </div>
 
                                                         <%-- end day --%>
-                                                    <div>
-                                                        <select>
+                                                    <div class="col-md-2">
+                                                        <select class="form-control openingInfoControl">
                                                             <option></option>
                                                             <c:forEach var="day" items="${daysOfWeek}">
                                                                 <option value="${day.value}"
@@ -255,50 +272,37 @@
                                                     </div>
 
                                                         <%-- start hour --%>
-                                                    <div>
-                                                        <select>
-                                                            <option></option>
-                                                            <c:forEach var="hour" items="${hoursOfDay}">
-                                                                <option value="${hour.value}"
-                                                                        <c:if test="${hour.value eq info.startHour}">selected="selected"</c:if>
-                                                                        >${hour.text}</option>
-                                                            </c:forEach>
-                                                        </select>
+                                                    <div class="col-md-2">
+
+                                                        <input type="text" class="form-control timeText openingInfoControl" />
+
                                                      </div>
 
                                                         <%-- end hour --%>
-                                                    <div>
-                                                        <select>
-                                                            <option></option>
-                                                            <c:forEach var="hour" items="${hoursOfDay}">
-                                                                <option value="${hour.value}"
-                                                                        <c:if test="${hour.value eq info.endHour}">selected="selected"</c:if>
-                                                                        >${hour.text}</option>
-                                                            </c:forEach>
-                                                        </select>
+                                                    <div class="col-md-2">
+
+                                                        <input type="text" class="form-control timeText openingInfoControl" />
+
                                                     </div>
 
-                                                    <div>
-                                                        <input type="checkbox"  <c:if test="${info.opened eq true}">checked="checked"</c:if> />
+                                                    <div class="col-md-2">
+                                                        <input type="checkbox" class="openingInfoControl" <c:if test="${info.opened eq true}">checked="checked"</c:if> />
+                                                    </div>
+
+                                                    <div class="col-md-2">
+                                                        <img src="${contextPath}/resources/images/delete_32x32.png" class="img-responsive clickable" onclick="javascript:removeOpeningInfo('info_${status.index}')">
                                                     </div>
 
                                                 </div>
 
                                             </div>
 
-                                            <div class="col-md-2">
-                                                <img src="${contextPath}/resources/images/delete_32x32.png" class="img-responsive clickable" onclick="javascript:removeOpeningInfo('info_${status.index}')">
-                                            </div>
+
                                         </div>
                                     </c:forEach>
                                 </div>
 
-                                <div id="addOpeningInfoLink" class="col-md-2">
-                                    <img  src="${contextPath}/resources/images/add_32x32.png"
-                                          class="img-responsive clickable"
-                                          title="<spring:message code="club.opening-info.add-new.tooltip"></spring:message>"
-                                          onclick="javascript:addOpeningInfo();">
-                                </div>
+
 
                             </div>
 
@@ -601,6 +605,8 @@
         }).keydown(function () {
             GENERAL_TAB_MODIFIED = true;
         });
+
+        initOpeningInfo();
     }
 
     function initGeneralForm() {
@@ -746,6 +752,10 @@
 
 
         });
+    }
+
+    function initOpeningInfo() {
+        $(".timeText").timepicker({ 'timeFormat': 'H:i:s' });
     }
 
     function addEmailContactField() {
