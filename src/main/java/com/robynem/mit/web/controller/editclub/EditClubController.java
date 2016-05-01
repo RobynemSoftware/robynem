@@ -4,7 +4,9 @@ import com.robynem.mit.web.controller.BaseController;
 import com.robynem.mit.web.model.ContactModel;
 import com.robynem.mit.web.model.authentication.PortalUserModel;
 import com.robynem.mit.web.model.editclub.ClubModel;
+import com.robynem.mit.web.model.editclub.OpeningInfoModel;
 import com.robynem.mit.web.persistence.dao.ClubDao;
+import com.robynem.mit.web.persistence.dao.MediaDao;
 import com.robynem.mit.web.persistence.dao.RegistryDao;
 import com.robynem.mit.web.persistence.dao.UtilsDao;
 import com.robynem.mit.web.persistence.entity.ClubContactEntity;
@@ -16,12 +18,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.AbstractView;
 
+import java.io.ByteArrayInputStream;
+import java.time.DayOfWeek;
+import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +38,9 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/private/editClub")
 @SessionAttributes({
-        "clubGenresList"
+        "clubGenresList",
+        "daysOfWeek",
+        "hoursOfDay"
 })
 public class EditClubController extends BaseController {
 
@@ -44,7 +53,13 @@ public class EditClubController extends BaseController {
     private ClubDao clubDao;
 
     @Autowired
+    private MediaDao mediaDao;
+
+    @Autowired
     private UtilsDao<ClubEntity> clubDaoUtils;
+
+    @Value("${media.image.max-size}")
+    private long maxImageFileSize;
 
     @RequestMapping(value = "/edit")
     public ModelAndView edit(@RequestParam(required = false) Long clubId, @RequestParam(required = false) boolean create, ModelMap modelMap) {
@@ -78,6 +93,8 @@ public class EditClubController extends BaseController {
             }
 
             modelMap.addAttribute("clubGenresList", this.registryDao.getAllClubGenres());
+            modelMap.addAttribute("daysOfWeek", PortalHelper.getDaysOfWeek(TextStyle.SHORT, this.getLocale()));
+            modelMap.addAttribute("hoursOfDay", PortalHelper.getHoursOfDay());
 
         } catch (Exception e) {
             this.manageException(e, LOG, modelMap);
@@ -228,6 +245,41 @@ public class EditClubController extends BaseController {
         return mv;
     }
 
+    @RequestMapping(value = "/uploadLogoImage", method = RequestMethod.POST)
+    public AbstractView uploadLogoImage(@RequestParam MultipartFile pictureFile, ModelMap modelMap) {
+
+        try {
+            if (!pictureFile.isEmpty()) {
+
+                if (!StringUtils.trimToEmpty(pictureFile.getContentType()).toLowerCase().contains("image")) {
+                    this.addApplicationMessage(this.getMessage("profile.validation.invalid-image"),
+                            MessageSeverity.FATAL, null, modelMap);
+                } else if (pictureFile.getSize() > this.maxImageFileSize) {
+                    this.addApplicationMessage(this.getMessage("profile.validation.image-to-large"),
+                            MessageSeverity.FATAL, null, modelMap);
+                } else {
+
+                    ByteArrayInputStream bais = new ByteArrayInputStream(pictureFile.getBytes());
+
+                    ClubEntity clubToEdit = this.getClubToEdit(true, null, EditClubTabIndex.GENERAL);
+
+                    this.mediaDao.updateClubLogoImage(clubToEdit.getId(), bais);
+
+                    // Retrive band entity from db to get logo image id to pass to the view and let it to refresh the image on page
+                    clubToEdit = this.clubDaoUtils.getByIdWithFetchedObjects(ClubEntity.class, clubToEdit.getId(), "clubLogo");
+
+                    Long imageId = clubToEdit.getClubLogo().getId();
+                    modelMap.put("success", true);
+                    modelMap.put("uploadedImageId", imageId);
+                }
+            }
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
     private String getClubStatus(Long clubId) {
         String clubStatus = null;
 
@@ -278,6 +330,7 @@ public class EditClubController extends BaseController {
                     }
 
                     this.setContactsModel(clubModel, clubEntity);
+                    this.setOpeningInfoModel(clubModel, clubEntity);
                     break;
 
 
@@ -320,6 +373,28 @@ public class EditClubController extends BaseController {
                     .forEach(c -> {
                         clubModel.getPhoneNumberContacts().add(new ContactModel(c.getId(), c.getPhoneNumber()));
                     });
+        }
+    }
+
+    private void setOpeningInfoModel(ClubModel clubModel, ClubEntity clubEntity) {
+        if (clubEntity.getOpeningInfos() != null) {
+            clubEntity.getOpeningInfos().stream().forEach(oi -> {
+                OpeningInfoModel openingInfoModel = new OpeningInfoModel();
+
+                openingInfoModel.setStartDay(oi.getStartDay());
+                openingInfoModel.setEndDay(oi.getEndDay());
+                openingInfoModel.setOpened(oi.isOpened());
+
+                if (oi.getStartHour() != null) {
+                    openingInfoModel.setStartHour(PortalHelper.getHour(oi.getStartHour()));
+                }
+
+                if (oi.getEndHour() != null) {
+                    openingInfoModel.setEndHour(PortalHelper.getHour(oi.getEndHour()));
+                }
+
+                clubModel.getOpeningInfos().add(openingInfoModel);
+            });
         }
     }
 

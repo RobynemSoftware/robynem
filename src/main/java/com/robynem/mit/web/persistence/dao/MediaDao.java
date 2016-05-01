@@ -14,6 +14,8 @@ public interface MediaDao {
 
     void updateBandLogoImage(Long bandId, InputStream imageStream);
 
+    void updateClubLogoImage(Long clubId, InputStream imageStream);
+
     Long addBandGalleryImage(Long bandId, InputStream imageStream);
 
     void removeBandGalleryImage(Long bandId, Long imageId);

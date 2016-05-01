@@ -20,10 +20,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by roberto on 14/12/2015.
@@ -239,5 +236,9 @@ public class BaseController {
 
     public String getHomeUrl() {
         return this.getContextPath() + "/index";
+    }
+
+    public Locale getLocale() {
+        return  this.request.getLocale();
     }
 }

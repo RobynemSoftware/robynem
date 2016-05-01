@@ -2,10 +2,7 @@ package com.robynem.mit.web.persistence.dao.impl;
 
 import com.robynem.mit.web.persistence.dao.BaseDao;
 import com.robynem.mit.web.persistence.dao.MediaDao;
-import com.robynem.mit.web.persistence.entity.AudioEntity;
-import com.robynem.mit.web.persistence.entity.BandEntity;
-import com.robynem.mit.web.persistence.entity.ImageEntity;
-import com.robynem.mit.web.persistence.entity.UserEntity;
+import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.ImageHelper;
 import com.robynem.mit.web.util.PortalHelper;
 import org.apache.commons.io.IOUtils;
@@ -315,6 +312,72 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
                 bandEntity.setUpdated(Calendar.getInstance().getTime());
 
                 this.hibernateTemplate.update(bandEntity);
+            }
+
+
+
+
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } finally {
+            if (imageStream != null) {
+                try {
+                    imageStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public void updateClubLogoImage(Long clubId, InputStream imageStream) {
+        try {
+
+            // Retrieves club entity
+            ClubEntity clubEntity = this.hibernateTemplate.get(ClubEntity.class, clubId);
+
+            // Retrieves user profile image if any
+            ImageEntity logoImage = clubEntity.getClubLogo();
+
+            if (logoImage == null) {
+                logoImage = new ImageEntity();
+                logoImage.setCreated(Calendar.getInstance().getTime());
+            }
+
+            try (
+                    // Small
+                    InputStream smallFile = ImageHelper.scaleImage(imageStream,
+                            this.imageSmallWidth,
+                            this.imageSmallHeight,
+                            this.imageFormat);
+
+                    // Medium
+                    InputStream mediumFile = ImageHelper.scaleImage(imageStream,
+                            this.imageMediumWidth,
+                            this.imageMediumHeight,
+                            this.imageFormat);
+
+                    // Large
+                    InputStream largeFile = ImageHelper.scaleImage(imageStream,
+                            this.imageLargeWidth,
+                            this.imageLargeHeight,
+                            this.imageFormat)) {
+
+                // Execs updates
+                logoImage.setUpdated(Calendar.getInstance().getTime());
+                logoImage.setUpdated(Calendar.getInstance().getTime());
+                logoImage.setSmallFile(PortalHelper.getBlob(smallFile));
+                logoImage.setMediumFile(PortalHelper.getBlob(mediumFile));
+                logoImage.setLargeFile(PortalHelper.getBlob(largeFile));
+                logoImage.setOriginalFile(PortalHelper.getBlob(imageStream));
+
+                clubEntity.setClubLogo(logoImage);
+                clubEntity.setUpdated(Calendar.getInstance().getTime());
+
+                this.hibernateTemplate.update(clubEntity);
             }
 
 
