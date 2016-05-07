@@ -50,6 +50,23 @@ public class PortalHelper {
         return dateString;
     }
 
+    public static String formatTime(Date date) {
+        String dateString = null;
+
+        if (date != null) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+                dateString = sdf.format(date);
+            } catch (Exception e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
+
+
+        return dateString;
+    }
+
     public static Date parseDate(String value, Locale locale, int dateFormat) {
         Date date = null;
 

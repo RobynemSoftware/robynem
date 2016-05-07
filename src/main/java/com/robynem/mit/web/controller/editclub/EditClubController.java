@@ -14,6 +14,7 @@ import com.robynem.mit.web.persistence.entity.ClubEntity;
 import com.robynem.mit.web.persistence.entity.ClubGenreEntity;
 import com.robynem.mit.web.persistence.entity.ClubOwnershipEntity;
 import com.robynem.mit.web.util.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.AbstractView;
 
 import java.io.ByteArrayInputStream;
-import java.time.DayOfWeek;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -280,6 +280,27 @@ public class EditClubController extends BaseController {
         return this.getJsonView(modelMap);
     }
 
+    @RequestMapping(value = "/addEmptyOpeningInfo", method = RequestMethod.POST)
+    public ModelAndView addEmptyOpeningInfo(@ModelAttribute OpeningInfoModel[] dataList, ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("editClub/editClubOpeningInfo");
+
+        try {
+            ClubModel clubModel = new ClubModel();
+
+            clubModel.getOpeningInfos().addAll(Arrays.asList(dataList));
+            clubModel.getOpeningInfos().add(new OpeningInfoModel());
+
+            modelMap.put("clubModel", clubModel);
+
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        modelAndView.addObject(modelMap);
+
+        return modelAndView;
+    }
+
     private String getClubStatus(Long clubId) {
         String clubStatus = null;
 
@@ -386,11 +407,11 @@ public class EditClubController extends BaseController {
                 openingInfoModel.setOpened(oi.isOpened());
 
                 if (oi.getStartHour() != null) {
-                    openingInfoModel.setStartHour(PortalHelper.getHour(oi.getStartHour()));
+                    openingInfoModel.setStartHour(PortalHelper.formatTime(oi.getStartHour()));
                 }
 
                 if (oi.getEndHour() != null) {
-                    openingInfoModel.setEndHour(PortalHelper.getHour(oi.getEndHour()));
+                    openingInfoModel.setEndHour(PortalHelper.formatTime(oi.getEndHour()));
                 }
 
                 clubModel.getOpeningInfos().add(openingInfoModel);

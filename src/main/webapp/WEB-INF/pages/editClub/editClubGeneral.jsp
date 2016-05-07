@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 
 <jsp:include page="../common/messagesDisplayerAsync.jsp"></jsp:include>
 
@@ -207,103 +208,9 @@
                     <div id="collapseOpeningInfo" class="accordion-body collapse in">
                         <div class="accordion-inner">
 
-                            <!-- Email -->
+                            <!-- Opening info -->
                             <div class="row openingInfo">
-
-                                <!-- Opening info list -->
-                                <div id="openingInfoList" class="col-md-12">
-                                    <c:forEach var="info" items="${clubModel.openingInfos}" varStatus="status">
-                                        <div id="info_${status.index}" class="row">
-
-                                            <div class="col-md-12">
-
-                                                <div class="row headerRow">
-                                                    <div class="col-md-2">
-                                                        <span><spring:message code="club.opening-info.start-day"></spring:message> </span>
-                                                    </div>
-
-                                                    <div class="col-md-2">
-                                                        <span><spring:message code="club.opening-info.end-day"></spring:message> </span>
-                                                    </div>
-
-                                                    <div class="col-md-2">
-                                                        <span><spring:message code="club.opening-info.opening-hour"></spring:message> </span>
-                                                    </div>
-
-                                                    <div class="col-md-2">
-                                                        <span><spring:message code="club.opening-info.closing-hour"></spring:message> </span>
-                                                    </div>
-
-                                                    <div class="col-md-2">
-                                                        <span><spring:message code="club.opening-info.opened"></spring:message> </span>
-                                                    </div>
-
-                                                    <div id="addOpeningInfoLink" class="col-md-2">
-                                                        <img  src="${contextPath}/resources/images/add_32x32.png"
-                                                              class="img-responsive clickable"
-                                                              title="<spring:message code="club.opening-info.add-new.tooltip"></spring:message>"
-                                                              onclick="javascript:addOpeningInfo();">
-                                                    </div>
-                                                </div>
-
-                                                <div class="row dataRow">
-                                                        <%-- start day --%>
-                                                    <div class="col-md-2">
-                                                        <select class="form-control openingInfoControl">
-                                                            <option></option>
-                                                            <c:forEach var="day" items="${daysOfWeek}">
-                                                                <option value="${day.value}"
-                                                                        <c:if test="${day.value eq info.startDay}">selected="selected"</c:if>
-                                                                        >${day.text}</option>
-                                                            </c:forEach>
-                                                        </select>
-                                                    </div>
-
-                                                        <%-- end day --%>
-                                                    <div class="col-md-2">
-                                                        <select class="form-control openingInfoControl">
-                                                            <option></option>
-                                                            <c:forEach var="day" items="${daysOfWeek}">
-                                                                <option value="${day.value}"
-                                                                        <c:if test="${day.value eq info.endDay}">selected="selected"</c:if>
-                                                                        >${day.text}</option>
-                                                            </c:forEach>
-                                                        </select>
-                                                    </div>
-
-                                                        <%-- start hour --%>
-                                                    <div class="col-md-2">
-
-                                                        <input type="text" class="form-control timeText openingInfoControl" />
-
-                                                     </div>
-
-                                                        <%-- end hour --%>
-                                                    <div class="col-md-2">
-
-                                                        <input type="text" class="form-control timeText openingInfoControl" />
-
-                                                    </div>
-
-                                                    <div class="col-md-2">
-                                                        <input type="checkbox" class="openingInfoControl" <c:if test="${info.opened eq true}">checked="checked"</c:if> />
-                                                    </div>
-
-                                                    <div class="col-md-2">
-                                                        <img src="${contextPath}/resources/images/delete_32x32.png" class="img-responsive clickable" onclick="javascript:removeOpeningInfo('info_${status.index}')">
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-
-
-                                        </div>
-                                    </c:forEach>
-                                </div>
-
-
-
+                                <jsp:include page="editClubOpeningInfo.jsp"></jsp:include>
                             </div>
 
 
@@ -440,6 +347,8 @@
 </div>
 
 <script type="text/javascript">
+    var OI_APPEND_EXISTING = true; // If add new OpeningInfo needs to append stored ones.
+
     $(function() {
         initGeneralFormFields();
 
@@ -755,7 +664,7 @@
     }
 
     function initOpeningInfo() {
-        $(".timeText").timepicker({ 'timeFormat': 'H:i:s' });
+        $(".timeText").timepicker({ 'timeFormat': 'H:i' });
     }
 
     function addEmailContactField() {
@@ -813,6 +722,79 @@
     function removeContactField(id) {
         $("#" + id).remove();
         GENERAL_TAB_MODIFIED = true;
+    }
+
+    function removeOpeningInfo(id) {
+        $("#" + id).remove();
+        GENERAL_TAB_MODIFIED = true;
+    }
+
+    function addOpeningInfo() {
+
+        execInSession(function () {
+
+            //console.log("Param: " + $.param(getOpeningInfoData(), true));
+
+            $.ajax({
+                url : "${contextPath}/private/editClub/addEmptyOpeningInfo",
+                data : getOpeningInfoData(),
+                dataType : "html",
+                type : "post",
+                async : true,
+                cache : false,
+                global : false,
+                success : function (data) {
+                    $(".openingInfo").html(data);
+                }
+            });
+        });
+
+        GENERAL_TAB_MODIFIED = true;
+    }
+
+    function getOpeningInfoData_() {
+        var data = new Array();
+
+        $(".OI_dataRow").each(function () {
+            var model = new Object();
+
+            /*console.log("start day: " + $(this).find("[name=OI_startDay] option:selected").val());
+            console.log("start hour: " + $(this).find("[name=OI_startHour]").val());*/
+
+            model.startDay = $(this).find("[name=OI_startDay] option:selected").val();
+            model.endDay = $(this).find("[name=OI_endDay] option:selected").val();
+            model.startHour = $(this).find("[name=OI_startHour]").val();
+            model.endHour = $(this).find("[name=OI_endHour]").val();
+            model.opened = $(this).find("[name=OI_opened]").attr("checked");
+
+            data.push(model);
+        });
+
+
+
+        return data;
+    }
+
+    function getOpeningInfoData() {
+        var data = new FormData();
+
+        $(".OI_dataRow").each(function () {
+            var model = new Object();
+
+            /*console.log("start day: " + $(this).find("[name=OI_startDay] option:selected").val());
+             console.log("start hour: " + $(this).find("[name=OI_startHour]").val());*/
+
+            data.append("startDay", $(this).find("[name=OI_startDay] option:selected").val());
+            data.append("endDay", $(this).find("[name=OI_endDay] option:selected").val());
+            data.append("startHour", $(this).find("[name=OI_startHour]").val());
+            data.append("endHour", $(this).find("[name=OI_endHour]").val());
+            data.append("opened", $(this).find("[name=OI_opened]").attr("checked"));
+
+        });
+
+
+
+        return data;
     }
 
 

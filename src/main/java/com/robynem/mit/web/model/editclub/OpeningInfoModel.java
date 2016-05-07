@@ -11,9 +11,9 @@ public class OpeningInfoModel implements Serializable {
 
     private Integer endDay;
 
-    private Integer startHour;
+    private String startHour;
 
-    private Integer endHour;
+    private String endHour;
 
     private boolean opened;
 
@@ -33,19 +33,19 @@ public class OpeningInfoModel implements Serializable {
         this.endDay = endDay;
     }
 
-    public Integer getStartHour() {
+    public String getStartHour() {
         return startHour;
     }
 
-    public void setStartHour(Integer startHour) {
+    public void setStartHour(String startHour) {
         this.startHour = startHour;
     }
 
-    public Integer getEndHour() {
+    public String getEndHour() {
         return endHour;
     }
 
-    public void setEndHour(Integer endHour) {
+    public void setEndHour(String endHour) {
         this.endHour = endHour;
     }
 
