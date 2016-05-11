@@ -58,10 +58,14 @@ Creates the localized date format
 <link rel="stylesheet" href="${contextPath}/resources/css/jquery/jquery-ui.css?v=${softwareVersion}" />
 <link rel="stylesheet" href="${contextPath}/resources/css/jquery/jquery-ui.structure.css?v=${softwareVersion}" />
 <link rel="stylesheet" href="${contextPath}/resources/css/jquery/jquery-ui.theme.css?v=${softwareVersion}" />
+<link rel="stylesheet" href="${contextPath}/resources/css/jquery/jquery.timepicker.css?v=${softwareVersion}" />
+
 
 <!-- BOOTSTRAP -->
 <link rel="stylesheet" href="${contextPath}/resources/bootstrap/css/bootstrap.min.css?v=${softwareVersion}" />
 <link rel="stylesheet" href="${contextPath}/resources/bootstrap/css/bootstrap-theme.min.css?v=${softwareVersion}" />
+<link rel="stylesheet" href="${contextPath}/resources/bootstrap/css/bootstrap-datepicker.css?v=${softwareVersion}" />
+
 
 <!-- SITE -->
 <link rel="stylesheet" href="${contextPath}/resources/css/main.css?v=${softwareVersion}" />
@@ -70,9 +74,11 @@ Creates the localized date format
 <script src="${contextPath}/resources/js/jquery/jquery.js?v=${softwareVersion}"></script>
 <script src="${contextPath}/resources/js/jquery/jquery.i18n.properties-min-1.0.9.js?v=${softwareVersion}"></script>
 <script src="${contextPath}/resources/js/jquery/jquery.form.min.js?v=${softwareVersion}"></script>
+<script src="${contextPath}/resources/js/jquery/jquery.timepicker.min.js?v=${softwareVersion}"></script>
 
 <!-- BOOTSTRAP -->
 <script src="${contextPath}/resources/bootstrap/js/bootstrap.min.js?v=${softwareVersion}"></script>
+<script src="${contextPath}/resources/bootstrap/js/bootstrap-datepicker.js?v=${softwareVersion}"></script>
 
 <!-- JQUERY UI -->
 <script src="${contextPath}/resources/js/jquery/jquery-ui.js?v=${softwareVersion}"></script>

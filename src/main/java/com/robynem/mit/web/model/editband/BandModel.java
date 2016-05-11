@@ -1,4 +1,7 @@
-package com.robynem.mit.web.model.band;
+package com.robynem.mit.web.model.editband;
+
+import com.robynem.mit.web.model.ContactModel;
+import com.robynem.mit.web.model.MediaModel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,33 +12,33 @@ import java.util.List;
  */
 public class BandModel implements Serializable {
 
-    private Long id;
+    protected Long id;
 
-    private Long logoImageId;
+    protected Long logoImageId;
 
-    private String biography;
+    protected String biography;
 
-    private String name;
+    protected String name;
 
-    private List<String> genres;
+    protected List<String> genres;
 
     protected String town;
 
-    private String placeId;
+    protected String placeId;
 
-    private String webSite;
+    protected String webSite;
 
-    private List<ComponentModel> components;
+    protected List<ComponentModel> components;
 
-    private List<ContactModel> emailContacts = new ArrayList<ContactModel>();
+    protected List<ContactModel> emailContacts = new ArrayList<ContactModel>();
 
-    private List<ContactModel> phoneNumberContacts = new ArrayList<ContactModel>();
+    protected List<ContactModel> phoneNumberContacts = new ArrayList<ContactModel>();
 
-    private MediaModel mediaModel = new MediaModel();
+    protected MediaModel mediaModel = new MediaModel();
 
-    private boolean owner;
+    protected boolean owner;
 
-    private boolean admin;
+    protected boolean admin;
 
 
     public Long getId() {

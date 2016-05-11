@@ -1,4 +1,4 @@
-package com.robynem.mit.web.model.band;
+package com.robynem.mit.web.model;
 
 import java.io.Serializable;
 

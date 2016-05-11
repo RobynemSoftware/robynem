@@ -1,5 +1,6 @@
 package com.robynem.mit.web.persistence.dao;
 
+import com.robynem.mit.web.persistence.entity.ClubGenreEntity;
 import com.robynem.mit.web.persistence.entity.MusicGenreEntity;
 import com.robynem.mit.web.persistence.entity.MusicalInstrumentEntity;
 
@@ -13,4 +14,6 @@ public interface RegistryDao {
     List<MusicalInstrumentEntity> getAllMusicalInstruments();
 
     List<MusicGenreEntity> getAllMusicGenres();
+
+    List<ClubGenreEntity> getAllClubGenres();
 }

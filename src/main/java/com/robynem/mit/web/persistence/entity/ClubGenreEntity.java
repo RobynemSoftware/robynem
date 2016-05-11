@@ -16,6 +16,9 @@ public class ClubGenreEntity extends BaseEntity {
     @Column(nullable = false, unique = true)
     protected String name;
 
+    @Column
+    private String resourceBundleCode;
+
     public ClubGenreEntity() {
 
     }
@@ -30,5 +33,13 @@ public class ClubGenreEntity extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getResourceBundleCode() {
+        return resourceBundleCode;
+    }
+
+    public void setResourceBundleCode(String resourceBundleCode) {
+        this.resourceBundleCode = resourceBundleCode;
     }
 }

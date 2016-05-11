@@ -1,5 +1,6 @@
 package com.robynem.mit.web.util;
 
+import com.robynem.mit.web.model.ValueTextModel;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,11 +13,10 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.time.format.TextStyle;
+import java.util.*;
 
 /**
  * Created by robyn_000 on 16/12/2015.
@@ -39,6 +39,23 @@ public class PortalHelper {
         if (date != null) {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat(getDateFormat(locale, DateFormat.SHORT), locale);
+
+                dateString = sdf.format(date);
+            } catch (Exception e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
+
+
+        return dateString;
+    }
+
+    public static String formatTime(Date date) {
+        String dateString = null;
+
+        if (date != null) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 
                 dateString = sdf.format(date);
             } catch (Exception e) {
@@ -155,6 +172,49 @@ public class PortalHelper {
 
             fos.write(buff);
         }
+    }
+
+    public static Calendar getCalendar(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        return calendar;
+    }
+
+    public static int getHour(Date date) {
+        int hour = 0;
+
+        Calendar calendar = getCalendar(date);
+
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+
+        return hour;
+    }
+
+    public static List<ValueTextModel<Integer, String>> getDaysOfWeek(TextStyle textStyle, Locale locale) {
+        List<ValueTextModel<Integer, String>> values = new ArrayList<>();
+
+        ValueTextModel<Integer, String> model = null;
+        for (DayOfWeek d : DayOfWeek.values()) {
+            model = new ValueTextModel<>(d.getValue(), d.getDisplayName(textStyle, locale));
+
+            values.add(model);
+        }
+
+        return values;
+    }
+
+    public static List<ValueTextModel<Integer, String>> getHoursOfDay() {
+        List<ValueTextModel<Integer, String>> values = new ArrayList<>();
+
+        ValueTextModel<Integer, String> model = null;
+        for (int i = 0; i < 24; i++) {
+            model = new ValueTextModel<>(i, StringUtils.leftPad(String.valueOf(i), 2, '0'));
+
+            values.add(model);
+        }
+
+        return values;
     }
 
 

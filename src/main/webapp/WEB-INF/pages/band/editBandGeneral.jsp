@@ -20,7 +20,7 @@
 <div class="row">
 
     <!-- LOGO -->
-    <div class="col-md-4 col-xs-12">
+    <div class="col-md-12 col-xs-12">
 
         <div class="row">
 
@@ -50,11 +50,21 @@
 
     </div>
 
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <hr/>
+    </div>
+</div>
+
+<div class="row">
+
     <!-- FORM FIELDS -->
     <form:form id="editBandGeneralForm" cssClass="formFields" action="${contextPath}/private/editBand/save" method="post" modelAttribute="bandModel" >
         <input type="hidden" name="currentTabIndex" value="0">
 
-        <div class="col-md-8 col-xs-12">
+        <div class="col-md-12 col-xs-12">
 
             <!-- NAME -->
             <div class="row">
@@ -141,19 +151,26 @@
 
             <!-- BIOGRAPHY -->
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-10">
                     <label for="editBandBiography"><spring:message
                             code="profile.musician-form.biography"></spring:message> </label>
-                </div>
-                <div class="col-md-6">
-                                        <textarea id="editBandBiography" name="biography" class="form-control formField"
-                                                  rows="10"
-                                                  maxlength="<%=Constants.BIOGRAPHY_MAX_LENGHT%>">${bandModel.biography}</textarea>
                 </div>
                 <div class="col-md-2">
                     <img id="biographyTooltip" src="${contextPath}/resources/images/Info_16x16.png"
                          title="<spring:message code="band.biography.tooltip"></spring:message>">
                 </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <textarea id="editBandBiography" name="biography" class="form-control formField"
+                              rows="10"
+                              maxlength="<%=Constants.BIOGRAPHY_MAX_LENGHT%>">${bandModel.biography}</textarea>
+                </div>
+            </div>
+
+            <div class="row">
                 <!-- For mobile only -->
                 <div class="col-md-12 forMobile" style="display: none;">
                                         <span><spring:message
@@ -162,18 +179,12 @@
             </div>
 
             <div class="row">
-                <div class="col-md-4">
-                    &nbsp;
-                </div>
-                <div class="col-md-6">
-                                        <span class="charsLeft"><spring:message
-                                                code="profile.musician-form.biography.characters-left"></spring:message> </span>
+                <div class="col-md-12">
+                    <span class="charsLeft"><spring:message
+                            code="profile.musician-form.biography.characters-left"></spring:message> </span>
                     &nbsp;
                     <input type="text" id="biographyCharsLeft" class="charsLeft" value="1000" style="max-width: 20%; font-size: 10px;"
                            readonly="readonly">
-                </div>
-                <div class="col-md-2">
-                    &nbsp;
                 </div>
             </div>
 

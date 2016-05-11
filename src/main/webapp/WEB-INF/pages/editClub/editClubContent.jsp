@@ -37,10 +37,10 @@
                         <li><a href="#tabs-media"><spring:message code="band.tabs.media"></spring:message> </a></li>
                     </ul>
                     <div id="tabs-general">
-                        <%--<jsp:include page="editBandGeneral.jsp"></jsp:include>--%>
+
                     </div>
                     <div id="tabs-media">
-                        <%--<jsp:include page="editBandMedia.jsp"></jsp:include>--%>
+
                     </div>
                 </div>
 
@@ -223,7 +223,7 @@
         });
     }
 
-    function showBandStatus() {
+    function showClubStatus() {
 
         setTimeout(function () {
             $.ajax({
@@ -237,13 +237,16 @@
                 success : function (data) {
                     $(".clubStatus").val("");
 
+
+
                     if (data.clubStatus != null) {
                         var alertMessage = "";
                         if (data.clubStatus == '<%=EntityStatus.NOT_PUBLISHED.toString()%>') {
                             alertMessage = "<spring:message code="club.status.not-published.alert"></spring:message>";
-                        } else if (data.bandStatus == '<%=EntityStatus.STAGE.toString()%>') {
+                        } else if (data.clubStatus == '<%=EntityStatus.STAGE.toString()%>') {
                             alertMessage = "<spring:message code="club.status.stage.alert"></spring:message>";
                         }
+
 
                         $(".clubStatus").html(alertMessage);
                     }

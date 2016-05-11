@@ -2,10 +2,10 @@ package com.robynem.mit.web.controller.editband;
 
 import com.robynem.mit.web.controller.BaseController;
 import com.robynem.mit.web.model.authentication.PortalUserModel;
-import com.robynem.mit.web.model.band.BandModel;
-import com.robynem.mit.web.model.band.ComponentAutocompleteModel;
-import com.robynem.mit.web.model.band.ComponentModel;
-import com.robynem.mit.web.model.band.ContactModel;
+import com.robynem.mit.web.model.editband.BandModel;
+import com.robynem.mit.web.model.editband.ComponentAutocompleteModel;
+import com.robynem.mit.web.model.editband.ComponentModel;
+import com.robynem.mit.web.model.ContactModel;
 import com.robynem.mit.web.persistence.criteria.BandComponentsCriteria;
 import com.robynem.mit.web.persistence.dao.*;
 import com.robynem.mit.web.persistence.entity.*;
@@ -127,13 +127,6 @@ public class EditBandController extends BaseController {
             if (bandId != null) {
                 // ENTERING IN EDIT MODE
                 bandEntity = this.getBandToEdit(false, bandId, EditBandTabIndex.GENERAL);
-
-                // Checks if current user is allowed to edit this band
-                /*if (!this.canEdit(bandEntity)) {
-                    this.addApplicationMessage(this.getMessage("band.user-not-allowed-to-edit"), MessageSeverity.WARNING, null, null);
-
-                    return new ModelAndView("forward:/private/dashboard");
-                }*/
 
             } else if (this.getSessionAttribute(Constants.EDIT_BAND_ID) != null) {
                 // If we have band id in session, populate model.

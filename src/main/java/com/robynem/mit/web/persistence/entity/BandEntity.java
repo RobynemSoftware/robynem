@@ -123,13 +123,13 @@ public class BandEntity extends BaseEntity {
     @JoinColumn(name = "statusId")
     protected EntityStatusEntity status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "publishedBandId")
     /**
      * In the band staging mode, (when user hasn't published yet modifications),
      * we create a record on the band table, containig latest modifications, linked to its published version
      * with a self reference.
      */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publishedBandId")
     protected BandEntity publishedVersion;
 
     @OneToMany(mappedBy = "publishedVersion", fetch = FetchType.LAZY)

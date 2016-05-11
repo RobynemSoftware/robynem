@@ -5,9 +5,12 @@ import com.robynem.mit.web.persistence.dao.ClubDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.EntityStatus;
 import com.robynem.mit.web.util.OwnerType;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -122,11 +125,11 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
                 ClubEntity stageVersion = thisInstance.createStageVersion(parentClubEntity);
                 //session.saveOrUpdate(stageVersion); we save it into createStageVersioneMethod
 
-                // Save the band ownership
+                // Save the club ownership
                 ClubOwnershipEntity stageClubOwnershipEntity = new ClubOwnershipEntity(ownerUser, stageVersion, ownerOwnerTypeEntity);
                 session.saveOrUpdate(stageClubOwnershipEntity);
 
-                // Update stege version reference on parent one
+                // Update stage version reference on parent one
                 List<ClubEntity> stageVersions = new ArrayList<ClubEntity>();
                 stageVersions.add(stageVersion);
 
@@ -141,7 +144,26 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
 
     @Override
     public ClubEntity getClubGeneralInfo(Long clubId) {
-        return null;
+        return this.hibernateTemplate.execute(session -> {
+            ClubEntity clubEntity = null;
+
+            Criteria criteria = session.createCriteria(ClubEntity.class, "club");
+
+            criteria = criteria.add(Restrictions.idEq(clubId));
+
+            criteria = criteria.createAlias("club.owners", "owners", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.clubLogo", "clubLogo", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.status", "status", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.publishedVersion", "publishedVersion", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.stageVersions", "stageVersions", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.clubGenres", "clubGenres", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.contacts", "contacts", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.openingInfos", "openingInfos", CriteriaSpecification.LEFT_JOIN);
+
+            clubEntity = (ClubEntity) criteria.uniqueResult();
+
+            return clubEntity;
+        });
     }
 
     @Override
@@ -155,19 +177,10 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
         this.hibernateTemplate.execute(session -> {
 
             /*Deletes all contacts to recreate list*/
-            /*Query query = session.getNamedQuery("@HQL_DELETE_ALL_BAND_CONTACTS");
-            query.setParameter("bandId", clubEntity.getId());
+            Query query = session.getNamedQuery("@HQL_DELETE_ALL_CLUB_CONTACTS");
+            query.setParameter("clubId", clubEntity.getId());
 
-            query.executeUpdate();*/
-
-            /*session.clear();
-
-            *//*Stores new videos before associating them*//*
-            if (bandEntity.getVideos() != null) {
-                bandEntity.getVideos().stream().forEach(v -> {
-                    session.saveOrUpdate(v);
-                });
-            }*/
+            query.executeUpdate();
 
             session.update(clubEntity);
             return null;
@@ -206,11 +219,9 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
 
 
         if (destination.getOwners() == null) {
-            destination.setOwners(new ArrayList<ClubOwnershipEntity>());
+            destination.setOwners(new HashSet<>());
         }
         destination.getOwners().clear();
-
-
 
         // Create the owners set by setting null to band attribute so hibernate can associate destintion band id on save
         if (source.getOwners() != null) {
@@ -222,7 +233,7 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
 
 
         if (destination.getClubGenres() == null) {
-            destination.setClubGenres(new ArrayList<>());
+            destination.setClubGenres(new HashSet<>());
         }
         destination.getClubGenres().clear();
 
@@ -234,12 +245,11 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
             });
         }
 
+
         if (destination.getContacts() == null) {
-            destination.setContacts(new ArrayList<>());
+            destination.setContacts(new HashSet<>());
         }
         destination.getContacts().clear();
-
-
 
         if (source.getContacts() != null) {
 
@@ -253,7 +263,7 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
         }
 
         if (destination.getImages() == null) {
-            destination.setImages(new ArrayList<>());
+            destination.setImages(new HashSet<>());
         }
         destination.getImages().clear();
 
@@ -279,7 +289,7 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
         }
 
         if (destination.getOpeningInfos() == null) {
-            destination.setOpeningInfos(new ArrayList<>());
+            destination.setOpeningInfos(new HashSet<>());
         }
         destination.getOpeningInfos().clear();
 

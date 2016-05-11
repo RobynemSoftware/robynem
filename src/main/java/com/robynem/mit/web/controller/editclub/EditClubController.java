@@ -1,28 +1,35 @@
 package com.robynem.mit.web.controller.editclub;
 
 import com.robynem.mit.web.controller.BaseController;
+import com.robynem.mit.web.model.ContactModel;
 import com.robynem.mit.web.model.authentication.PortalUserModel;
+import com.robynem.mit.web.model.editclub.ClubModel;
+import com.robynem.mit.web.model.editclub.OpeningInfoModel;
 import com.robynem.mit.web.persistence.dao.ClubDao;
+import com.robynem.mit.web.persistence.dao.MediaDao;
+import com.robynem.mit.web.persistence.dao.RegistryDao;
 import com.robynem.mit.web.persistence.dao.UtilsDao;
+import com.robynem.mit.web.persistence.entity.ClubContactEntity;
 import com.robynem.mit.web.persistence.entity.ClubEntity;
+import com.robynem.mit.web.persistence.entity.ClubGenreEntity;
 import com.robynem.mit.web.persistence.entity.ClubOwnershipEntity;
-import com.robynem.mit.web.util.Constants;
-import com.robynem.mit.web.util.EditClubTabIndex;
-import com.robynem.mit.web.util.MessageSeverity;
-import com.robynem.mit.web.util.OwnerType;
+import com.robynem.mit.web.util.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.AbstractView;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.io.ByteArrayInputStream;
+import java.time.format.TextStyle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,22 +37,36 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("/private/editClub")
+@SessionAttributes({
+        "clubGenresList",
+        "daysOfWeek",
+        "hoursOfDay"
+})
 public class EditClubController extends BaseController {
 
     static final Logger LOG = LoggerFactory.getLogger(EditClubController.class);
 
     @Autowired
+    private RegistryDao registryDao;
+
+    @Autowired
     private ClubDao clubDao;
 
     @Autowired
+    private MediaDao mediaDao;
+
+    @Autowired
     private UtilsDao<ClubEntity> clubDaoUtils;
+
+    @Value("${media.image.max-size}")
+    private long maxImageFileSize;
 
     @RequestMapping(value = "/edit")
     public ModelAndView edit(@RequestParam(required = false) Long clubId, @RequestParam(required = false) boolean create, ModelMap modelMap) {
         ModelAndView modelAndView = new ModelAndView("editClub/editClub");
 
         try {
-            // try to retrieve bandId from request params first and then from request attribute. (It for sure comes from saveName action).
+            // try to retrieve clubId from request params first and then from request attribute. (It for sure comes from saveName action).
             if (clubId == null) {
                 clubId = this.getRequestAttribute("clubId");
             }
@@ -70,6 +91,10 @@ public class EditClubController extends BaseController {
 
                 modelMap.addAttribute("clubId", clubId);
             }
+
+            modelMap.addAttribute("clubGenresList", this.registryDao.getAllClubGenres());
+            modelMap.addAttribute("daysOfWeek", PortalHelper.getDaysOfWeek(TextStyle.SHORT, this.getLocale()));
+            modelMap.addAttribute("hoursOfDay", PortalHelper.getHoursOfDay());
 
         } catch (Exception e) {
             this.manageException(e, LOG, modelMap);
@@ -102,6 +127,296 @@ public class EditClubController extends BaseController {
         mv.addObject(modelMap);
 
         return mv;
+    }
+
+    @RequestMapping(value = "/showGeneralInfo")
+    public ModelAndView showGeneralInfo(@RequestParam(required = false) Long clubId, ModelMap modelMap) {
+
+        ModelAndView mv = new ModelAndView("editClub/editClubGeneral");
+
+        try {
+
+            ClubEntity clubEntity = null;
+
+            ClubModel clubModel = null;
+
+            if (clubId != null) {
+                // ENTERING IN EDIT MODE
+                clubEntity = this.getClubToEdit(false, clubId, EditClubTabIndex.GENERAL);
+
+            } else if (this.getSessionAttribute(Constants.EDIT_CLUB_ID) != null) {
+                // If we have band id in session, populate model.
+                clubEntity = this.getClubToEdit(false, null, EditClubTabIndex.GENERAL);
+            }
+
+            clubModel = this.getClubModel(clubEntity, EditClubTabIndex.GENERAL);
+
+            modelMap.addAttribute("clubModel", clubModel);
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+        } finally {
+            System.gc();
+        }
+
+        mv.addObject(modelMap);
+
+        return mv;
+
+    }
+
+    @RequestMapping("/getClubStatus")
+    public AbstractView getClubStatus(@RequestParam(required = false) Long clubId, ModelMap modelMap) {
+
+        try {
+            modelMap.addAttribute("clubStatus", this.getClubStatus(clubId));
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
+    @RequestMapping(value = "/saveGeneralInfo", method = RequestMethod.POST)
+    public ModelAndView saveGeneralInfo(@ModelAttribute ClubModel clubModel,
+                             @RequestParam(required = false) List<String> emailContact,
+                             @RequestParam(required = false) List<String> phoneContact,
+                             @RequestParam int currentTabIndex, ModelMap modelMap) {
+
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("forward:/private/editClub/showGeneralInfo");
+
+        modelMap.addAttribute("currentTabIndex", currentTabIndex);
+        modelMap.addAttribute("success", "true");
+
+        try {
+            EditClubTabIndex tabIndex = EditClubTabIndex.fromInt(currentTabIndex);
+
+            if (emailContact != null) {
+                emailContact.stream().distinct().forEach(c -> {
+                    clubModel.getEmailContacts().add(new ContactModel(c));
+                });
+            }
+
+            if (phoneContact != null) {
+                phoneContact.stream().distinct().forEach(c -> {
+                    clubModel.getPhoneNumberContacts().add(new ContactModel(c));
+                });
+            }
+
+            ClubEntity clubEntity = this.getClubToEdit(true, null, EditClubTabIndex.GENERAL);
+
+            clubEntity.setName(StringUtils.trimToNull(clubModel.getName()));
+            clubEntity.setPlaceId(StringUtils.trimToNull(clubModel.getPlaceId()));
+            clubEntity.setTown(StringUtils.trimToNull(clubModel.getTown()));
+            clubEntity.setAddress(StringUtils.trimToNull(clubModel.getAddress()));
+            clubEntity.setWebSite(StringUtils.trimToNull(clubModel.getWebSite()));
+            clubEntity.setDescription(StringUtils.trimToNull(clubModel.getDescription()));
+
+            // Save genres
+            clubEntity.setClubGenres(new HashSet<ClubGenreEntity>());
+
+            if (clubModel.getGenres() != null) {
+                clubModel.getGenres().stream().forEach(g -> clubEntity.getClubGenres().add(new ClubGenreEntity(Long.parseLong(g))));
+            }
+
+            // Save contacts
+            clubEntity.setContacts(new HashSet<>());
+
+            // Email
+            clubModel.getEmailContacts().stream().forEach(c -> {
+                clubEntity.getContacts().add(new ClubContactEntity(StringUtils.trimToNull(c.getValue()), null, clubEntity));
+            });
+
+            // Phone numbers
+            clubModel.getPhoneNumberContacts().stream().forEach(c -> {
+                clubEntity.getContacts().add(new ClubContactEntity(null, StringUtils.trimToNull(c.getValue()), clubEntity));
+            });
+
+
+            this.clubDao.update(clubEntity);
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+            modelMap.addAttribute("success", false);
+        }
+
+        mv.addObject(modelMap);
+
+        return mv;
+    }
+
+    @RequestMapping(value = "/uploadLogoImage", method = RequestMethod.POST)
+    public AbstractView uploadLogoImage(@RequestParam MultipartFile pictureFile, ModelMap modelMap) {
+
+        try {
+            if (!pictureFile.isEmpty()) {
+
+                if (!StringUtils.trimToEmpty(pictureFile.getContentType()).toLowerCase().contains("image")) {
+                    this.addApplicationMessage(this.getMessage("profile.validation.invalid-image"),
+                            MessageSeverity.FATAL, null, modelMap);
+                } else if (pictureFile.getSize() > this.maxImageFileSize) {
+                    this.addApplicationMessage(this.getMessage("profile.validation.image-to-large"),
+                            MessageSeverity.FATAL, null, modelMap);
+                } else {
+
+                    ByteArrayInputStream bais = new ByteArrayInputStream(pictureFile.getBytes());
+
+                    ClubEntity clubToEdit = this.getClubToEdit(true, null, EditClubTabIndex.GENERAL);
+
+                    this.mediaDao.updateClubLogoImage(clubToEdit.getId(), bais);
+
+                    // Retrive band entity from db to get logo image id to pass to the view and let it to refresh the image on page
+                    clubToEdit = this.clubDaoUtils.getByIdWithFetchedObjects(ClubEntity.class, clubToEdit.getId(), "clubLogo");
+
+                    Long imageId = clubToEdit.getClubLogo().getId();
+                    modelMap.put("success", true);
+                    modelMap.put("uploadedImageId", imageId);
+                }
+            }
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
+    @RequestMapping(value = "/addEmptyOpeningInfo", method = RequestMethod.POST)
+    public ModelAndView addEmptyOpeningInfo(@ModelAttribute OpeningInfoModel[] dataList, ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView("editClub/editClubOpeningInfo");
+
+        try {
+            ClubModel clubModel = new ClubModel();
+
+            clubModel.getOpeningInfos().addAll(Arrays.asList(dataList));
+            clubModel.getOpeningInfos().add(new OpeningInfoModel());
+
+            modelMap.put("clubModel", clubModel);
+
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        modelAndView.addObject(modelMap);
+
+        return modelAndView;
+    }
+
+    private String getClubStatus(Long clubId) {
+        String clubStatus = null;
+
+        if (clubId != null) {
+            // Retrives band status
+            ClubEntity clubEntity = this.clubDaoUtils.getByIdWithFetchedObjects(ClubEntity.class, clubId, "status", "publishedVersion", "stageVersions");
+
+            if (EntityStatus.NOT_PUBLISHED.toString().equals(clubEntity.getStatus().getCode()) ||  EntityStatus.STAGE.toString().equals(clubEntity.getStatus().getCode())) {
+                clubStatus = clubEntity.getStatus().getCode();
+            } else if (EntityStatus.PUBLISHED.toString().equals(clubEntity.getStatus().getCode())
+                    && (clubEntity.getStageVersions() != null && clubEntity.getStageVersions().size() > 0)) {
+                clubStatus = EntityStatus.STAGE.toString();
+            } else {
+                clubStatus = clubEntity.getStatus().getCode();
+            }
+        }
+
+
+        return clubStatus;
+    }
+
+    private ClubModel getClubModel(ClubEntity clubEntity, EditClubTabIndex tabIndex) {
+        ClubModel clubModel = null;
+
+        if (clubEntity != null) {
+            clubModel = new ClubModel();
+
+            switch (tabIndex) {
+                case GENERAL:
+
+                    clubModel.setName(clubEntity.getName());
+                    clubModel.setDescription(clubEntity.getDescription());
+
+                    if (clubEntity.getClubLogo() != null) {
+                        clubModel.setLogoImageId(clubEntity.getClubLogo().getId());
+                    }
+
+                    clubModel.setWebSite(clubEntity.getWebSite());
+                    clubModel.setTown(clubEntity.getTown());
+                    clubModel.setPlaceId(clubEntity.getPlaceId());
+                    clubModel.setAddress(clubEntity.getAddress());
+
+                    if (clubEntity.getClubGenres() != null) {
+                        final List<String> clubGeneres = new ArrayList<String>();
+                        clubEntity.getClubGenres().stream().forEach(g -> clubGeneres.add(g.getId().toString()));
+
+                        clubModel.setGenres(clubGeneres);
+                    }
+
+                    this.setContactsModel(clubModel, clubEntity);
+                    this.setOpeningInfoModel(clubModel, clubEntity);
+                    break;
+
+
+                case MEDIA:
+                    this.setMediaModel(clubModel, clubEntity);
+                    break;
+            }
+
+        }
+
+        return clubModel;
+    }
+
+    private void setMediaModel(ClubModel clubModel, ClubEntity clubEntity) {
+
+
+
+        if (clubEntity.getImages() != null) {
+            clubEntity.getImages().stream().forEach(i -> {
+                clubModel.getMediaModel().getImageIds().add(i.getId());
+            });
+        }
+
+    }
+
+    private void setContactsModel(ClubModel clubModel, ClubEntity clubEntity) {
+        // Email
+        if (clubEntity.getContacts() != null) {
+            clubEntity.getContacts().stream()
+                    .filter(c -> StringUtils.isNotBlank(c.getEmailAddress()))
+                    .forEach(c -> {
+                        clubModel.getEmailContacts().add(new ContactModel(c.getId(), c.getEmailAddress()));
+                    });
+        }
+
+        // Phone numbers
+        if (clubEntity.getContacts() != null) {
+            clubEntity.getContacts().stream()
+                    .filter(c -> StringUtils.isNotBlank(c.getPhoneNumber()))
+                    .forEach(c -> {
+                        clubModel.getPhoneNumberContacts().add(new ContactModel(c.getId(), c.getPhoneNumber()));
+                    });
+        }
+    }
+
+    private void setOpeningInfoModel(ClubModel clubModel, ClubEntity clubEntity) {
+        if (clubEntity.getOpeningInfos() != null) {
+            clubEntity.getOpeningInfos().stream().forEach(oi -> {
+                OpeningInfoModel openingInfoModel = new OpeningInfoModel();
+
+                openingInfoModel.setStartDay(oi.getStartDay());
+                openingInfoModel.setEndDay(oi.getEndDay());
+                openingInfoModel.setOpened(oi.isOpened());
+
+                if (oi.getStartHour() != null) {
+                    openingInfoModel.setStartHour(PortalHelper.formatTime(oi.getStartHour()));
+                }
+
+                if (oi.getEndHour() != null) {
+                    openingInfoModel.setEndHour(PortalHelper.formatTime(oi.getEndHour()));
+                }
+
+                clubModel.getOpeningInfos().add(openingInfoModel);
+            });
+        }
     }
 
     /**

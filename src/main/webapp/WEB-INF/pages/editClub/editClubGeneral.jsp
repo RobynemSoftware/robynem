@@ -2,13 +2,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 
 <jsp:include page="../common/messagesDisplayerAsync.jsp"></jsp:include>
 
 <div class="row">
 
-    <div class="col-md-12 saveBandLink">
-        <span class="saveBandLink">
+    <div class="col-md-12 saveClubLink">
+        <span class="saveClubLink">
             <spring:message code="band.general.save-alert"></spring:message>
 
             <a id="saveGeneralInfoLink" href="#"><spring:message code="global.here"></spring:message> </a>
@@ -26,8 +27,8 @@
 
             <div class="col-md-12">
                 <c:choose>
-                    <c:when test="${not empty bandModel.logoImageId}">
-                        <img src="${contextPath}/media/getBandImage?imageId=${bandModel.logoImageId}&size=MEDIUM"
+                    <c:when test="${not empty clubModel.logoImageId}">
+                        <img src="${contextPath}/media/getImage?imageId=${clubModel.logoImageId}&size=MEDIUM"
                              class="img-responsive logoImage">
                     </c:when>
                     <c:otherwise>
@@ -42,8 +43,8 @@
         <div class="row">
 
             <div class="col-md-12">
-                <a id="editBandOpenImageUpload" href="#"><spring:message
-                        code="band.load-logo"></spring:message> </a>
+                <a id="editClubOpenImageUpload" href="#"><spring:message
+                        code="club.load-logo"></spring:message> </a>
             </div>
 
         </div>
@@ -61,7 +62,7 @@
 <div class="row">
 
     <!-- FORM FIELDS -->
-    <form:form id="editBandGeneralForm" cssClass="formFields" action="${contextPath}/private/editBand/save" method="post" modelAttribute="bandModel" >
+    <form:form id="editClubGeneralForm" cssClass="formFields" action="${contextPath}/private/editClub/saveGeneralInfo" method="post" modelAttribute="clubModel" >
         <input type="hidden" name="currentTabIndex" value="0">
 
         <div class="col-md-12 col-xs-12">
@@ -70,10 +71,10 @@
             <div class="row">
 
                 <div class="col-md-3">
-                    <label for="editBandName"><spring:message code="band.name"></spring:message></label>
+                    <label for="editClubName"><spring:message code="band.name"></spring:message></label>
                 </div>
                 <div class="col-md-9">
-                    <input type="text" id="editBandName" name="name" class="form-control formField"/>
+                    <input type="text" id="editClubName" name="name" class="form-control formField"/>
                 </div>
 
             </div>
@@ -84,22 +85,22 @@
                 </div>
             </div>
 
-            <!-- BAND GENRES -->
+            <!-- CLUB GENRES -->
             <div class="row">
                 <div class="col-md-12">
                     <label><spring:message code="band.genres"></spring:message> </label>
                 </div>
 
-                <div id="bandGenresList" class="col-md-12">
+                <div id="clubGenresList" class="col-md-12">
 
                 </div>
 
                 <div class="col-md-12">
-                    <select id="bandGenresSelect" class="formSelect formField">
-                        <option><spring:message  code="band.genres.placeholder"></spring:message></option>
-                        <c:if test="${not empty musicGenresList}">
-                            <c:forEach var="genre" items="${musicGenresList}">
-                                <option value="${genre.id}">${genre.name}</option>
+                    <select id="clubGenresSelect" class="formSelect formField">
+                        <option><spring:message  code="club.genres.placeholder"></spring:message></option>
+                        <c:if test="${not empty clubGenresList}">
+                            <c:forEach var="genre" items="${clubGenresList}">
+                                <option value="${genre.id}"><spring:message code="${genre.resourceBundleCode}"></spring:message></option>
                             </c:forEach>
                         </c:if>
                     </select>
@@ -115,13 +116,13 @@
             <!-- TOWN -->
             <div class="row">
                 <div class="col-md-3">
-                    <label for="editBandTown"><spring:message code="profile.town"></spring:message> </label>
+                    <label for="editClubTown"><spring:message code="profile.town"></spring:message> </label>
                 </div>
 
                 <div class="col-md-9">
-                    <input type="text" class="form-control formField" id="editBandTown" name="town"
+                    <input type="text" class="form-control formField" id="editClubTown" name="town"
                            placeholder="<spring:message code="smart-search.insert.location"></spring:message>"/>
-                    <input type="hidden" id="editBandPlaceId" name="placeId">
+                    <input type="hidden" id="editClubPlaceId" name="placeId">
                 </div>
             </div>
 
@@ -135,10 +136,10 @@
             <div class="row">
 
                 <div class="col-md-3">
-                    <label for="editBandWebSite"><spring:message code="band.web-site"></spring:message></label>
+                    <label for="editClubWebSite"><spring:message code="band.web-site"></spring:message></label>
                 </div>
                 <div class="col-md-9">
-                    <input type="text" id="editBandWebSite" name="webSite" class="form-control formField"/>
+                    <input type="text" id="editClubWebSite" name="webSite" class="form-control formField"/>
                 </div>
 
             </div>
@@ -149,32 +150,34 @@
                 </div>
             </div>
 
-            <!-- BIOGRAPHY -->
+            <!-- DESCRIPTION -->
             <div class="row">
                 <div class="col-md-10">
-                    <label for="editBandBiography"><spring:message
-                            code="profile.musician-form.biography"></spring:message> </label>
-                </div>
-                <div class="col-md-2">
-                    <img id="biographyTooltip" src="${contextPath}/resources/images/Info_16x16.png"
-                         title="<spring:message code="band.biography.tooltip"></spring:message>">
+                    <label for="editClubDescription"><spring:message
+                            code="club.description"></spring:message> </label>
                 </div>
 
+                <div class="col-md-2">
+                    <img id="descriptionTooltip" src="${contextPath}/resources/images/Info_16x16.png"
+                         title="<spring:message code="club.description.tooltip"></spring:message>">
+                </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <textarea id="editBandBiography" name="biography" class="form-control formField"
-                              rows="10"
-                              maxlength="<%=Constants.BIOGRAPHY_MAX_LENGHT%>">${bandModel.biography}</textarea>
+                        <textarea id="editClubDescription" name="description" class="form-control formField"
+                                  rows="10"
+                                  maxlength="<%=Constants.BIOGRAPHY_MAX_LENGHT%>">${clubModel.description}</textarea>
                 </div>
             </div>
+
+
 
             <div class="row">
                 <!-- For mobile only -->
                 <div class="col-md-12 forMobile" style="display: none;">
                                         <span><spring:message
-                                                code="band.biography.tooltip"></spring:message></span>
+                                                code="club.description.tooltip"></spring:message></span>
                 </div>
             </div>
 
@@ -183,7 +186,7 @@
                     <span class="charsLeft"><spring:message
                             code="profile.musician-form.biography.characters-left"></spring:message> </span>
                     &nbsp;
-                    <input type="text" id="biographyCharsLeft" class="charsLeft" value="1000" style="max-width: 20%; font-size: 10px;"
+                    <input type="text" id="descriptionCharsLeft" class="charsLeft" value="1000" style="max-width: 20%; font-size: 10px;"
                            readonly="readonly">
                 </div>
             </div>
@@ -194,13 +197,42 @@
                 </div>
             </div>
 
+            <!-- OPENING INFO -->
+            <div class="accordion" id="editClubOpeningInfoAccordion">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#editClubOpeningInfoAccordion" href="#collapseOpeningInfo">
+                            <span><spring:message code="club.opening-info.title"></spring:message> </span>
+                        </a>
+                    </div>
+                    <div id="collapseOpeningInfo" class="accordion-body collapse in">
+                        <div class="accordion-inner">
+
+                            <!-- Opening info -->
+                            <div class="row openingInfo">
+                                <jsp:include page="editClubOpeningInfo.jsp"></jsp:include>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <hr/>
+                </div>
+            </div>
+
             <!-- CONTACTS -->
-            <div class="accordion" id="editBandContactsAccordion">
+            <div class="accordion" id="editClubContactsAccordion">
 
                 <div class="accordion-group">
                     <div class="accordion-heading">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#editBandContactsAccordion" href="#collapseContacts">
-                            <span><spring:message code="band.contacts.title"></spring:message> </span>
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#editClubContactsAccordion" href="#collapseContacts">
+                            <span><spring:message code="club.contacts.title"></spring:message> </span>
                         </a>
                     </div>
                     <div id="collapseContacts" class="accordion-body collapse in">
@@ -215,7 +247,7 @@
 
                                 <!-- Contacts list -->
                                 <div id="emailList" class="col-md-10">
-                                    <c:forEach var="contact" items="${bandModel.emailContacts}" varStatus="status">
+                                    <c:forEach var="contact" items="${clubModel.emailContacts}" varStatus="status">
                                         <div id="email_${status.index}" class="row">
                                             <div class="col-md-10">
                                                 <input type="email" name="emailContact" class="form-control emailText formField" value="${contact.value}" />
@@ -247,7 +279,7 @@
 
                                 <!-- Contacts list -->
                                 <div id="phoneList" class="col-md-10">
-                                    <c:forEach var="contact" items="${bandModel.phoneNumberContacts}" varStatus="status">
+                                    <c:forEach var="contact" items="${clubModel.phoneNumberContacts}" varStatus="status">
                                         <div id="phone_${status.index}" class="row">
                                             <div class="col-md-10">
                                                 <input type="tel" name="phoneContact" class="form-control phoneText formField" value="${contact.value}"/>
@@ -279,8 +311,8 @@
 
 </div>
 
-<div id="editBandUploadLogoImageDialog" style="display: none;">
-    <form id="editBandUploadImageForm" action="${contextPath}/private/editBand/uploadLogoImage" method="post" enctype="multipart/form-data">
+<div id="editClubUploadLogoImageDialog" style="display: none;">
+    <form id="editClubUploadImageForm" action="${contextPath}/private/editClub/uploadLogoImage" method="post" enctype="multipart/form-data">
         <div class="row">
             <div class="col-md-12">
                 <span><spring:message code="profile.choose-profile-image.title"></spring:message> </span>
@@ -289,11 +321,11 @@
 
         <div class="row">
             <div class="col-md-8 col-xs-12">
-                <input type="file" id="editBandPictureFile" name="pictureFile" class="form-control"/>
+                <input type="file" id="editClubPictureFile" name="pictureFile" class="form-control"/>
             </div>
 
             <div class="col-md-4 col-xs-12">
-                <button id="editBandUploadImageButton" class="btn btn-default">
+                <button id="editClubUploadImageButton" class="btn btn-default">
                     <spring:message code="profile.choose-profile-image.load"></spring:message>
                 </button>
             </div>
@@ -315,6 +347,8 @@
 </div>
 
 <script type="text/javascript">
+    var OI_APPEND_EXISTING = true; // If add new OpeningInfo needs to append stored ones.
+
     $(function() {
         initGeneralFormFields();
 
@@ -324,7 +358,7 @@
     });
 
     function initLogoLoad() {
-        $("#editBandUploadLogoImageDialog").dialog({
+        $("#editClubUploadLogoImageDialog").dialog({
             modal: true,
             height: 'auto',
             width: 'auto',
@@ -345,17 +379,17 @@
             ]
         });
 
-        $("#editBandOpenImageUpload").click(function () {
+        $("#editClubOpenImageUpload").click(function () {
             openLogoLoadDialog()
         });
 
-        $("#editBandUploadImageButton").click(function() {
+        $("#editClubUploadImageButton").click(function() {
 
-            var file = $.trim($("#editBandPictureFile").val());
+            var file = $.trim($("#editClubPictureFile").val());
 
             if (file != "") {
                 execInSession(function() {
-                    $("#editBandUploadImageForm").submit();
+                    $("#editClubUploadImageForm").submit();
                 });
             }
 
@@ -396,18 +430,18 @@
 
                 //console.log("uploadedImageId: " + data.uploadedImageId);
                 if (data.uploadedImageId != null) {
-                    $(".logoImage").attr("src", "${contextPath}/media/getBandImage?imageId=" + data.uploadedImageId + "&size=MEDIUM&" + new Date().getTime());
+                    $(".logoImage").attr("src", "${contextPath}/media/getImage?imageId=" + data.uploadedImageId + "&size=MEDIUM&" + new Date().getTime());
                     console.log("Img src attr: " + $(".logoImage").attr("src"));
-                    setTimeout(function() {$("#editBandUploadLogoImageDialog").dialog("close", 600);}, 600);
+                    setTimeout(function() {$("#editClubUploadLogoImageDialog").dialog("close", 600);}, 600);
 
                     GENERAL_TAB_MODIFIED = true;
 
-                    showBandStatus();
+                    showClubStatus();
                 }
             },
             complete: function(response)
             {
-                $("#editBandPictureFile").val("");
+                $("#editClubPictureFile").val("");
             },
             error: function()
             {
@@ -416,9 +450,9 @@
 
         };
 
-        $("#editBandUploadImageForm").ajaxForm(options);
+        $("#editClubUploadImageForm").ajaxForm(options);
 
-        $("#editBandUploadLogoImageDialog").dialog("open");
+        $("#editClubUploadLogoImageDialog").dialog("open");
     }
 
     function initGeneralFormFields() {
@@ -426,45 +460,43 @@
         initGeneralForm();
 
         $("#saveGeneralInfoLink").click(function() {
-            $("#editBandGeneralForm").submit();
+            $("#editClubGeneralForm").submit();
 
         });
 
         var genresTagViewer = new TagViewer({
-            selectId: "bandGenresSelect",
-            tagContainerId: "bandGenresList",
+            selectId: "clubGenresSelect",
+            tagContainerId: "clubGenresList",
             paramName: "genres",
             deleteTooltip: "<spring:message code="band.genres.delete-tooltip"></spring:message>",
             deleteHandler : function (tag) {
                 GENERAL_TAB_MODIFIED = true;
 
-                console.log("formField modified!");
-
                 return true;
             }
         });
 
-        $("#editBandName").val("${bandModel.name}");
+        $("#editClubName").val("${clubModel.name}");
 
-        <c:if test="${not empty bandModel.genres}">
-            <c:forEach var="genre" items="${bandModel.genres}">
+        <c:if test="${not empty clubModel.genres}">
+            <c:forEach var="genre" items="${clubModel.genres}">
                 genresTagViewer.addTagById("${genre}");
             </c:forEach>
         </c:if>
 
-        $("#editBandTown").val("${bandModel.town}");
-        $("#editBandPlaceId").val("${bandModel.placeId}");
+        $("#editClubTown").val("${clubModel.town}");
+        $("#editClubPlaceId").val("${clubModel.placeId}");
 
-        $("#editBandWebSite").val("${bandModel.webSite}");
+        $("#editClubWebSite").val("${clubModel.webSite}");
 
         countBioCharsLeft();
 
-        $("#editBandBiography").keyup(function () {
+        $("#editClubDescription").keyup(function () {
             countBioCharsLeft();
         });
 
         // Form validation
-        $("#editBandGeneralForm").on("submit", function(e) {
+        $("#editClubGeneralForm").on("submit", function(e) {
 
             var validated = validateGeneralForm();
 
@@ -477,15 +509,13 @@
         });
 
         // Set general form modified on formField change
-        $("#editBandGeneralForm .formField").change(function () {
+        $("#editClubGeneralForm .formField").change(function () {
             GENERAL_TAB_MODIFIED = true;
-
-            console.log("formField modified!");
         }).keydown(function () {
             GENERAL_TAB_MODIFIED = true;
-
-            console.log("formField modified!");
         });
+
+        initOpeningInfo();
     }
 
     function initGeneralForm() {
@@ -515,7 +545,7 @@
                 // If publish command is requested.
                 //console.log("General form aved: DO_PUBLISH: " + DO_PUBLISH);
                 if (DO_PUBLISH == true) {
-                    $("#publishBandForm").submit();
+                    $("#publishClubForm").submit();
                 }
 
                 // If tab switch is requested.
@@ -525,7 +555,7 @@
                     $("#tabs").tabs("option", "active", index);
                 }
 
-                showBandStatus();
+                showClubStatus();
             },
             complete: function(response)
             {
@@ -538,25 +568,25 @@
 
         };
 
-        $("#editBandGeneralForm").ajaxForm(options);
+        $("#editClubGeneralForm").ajaxForm(options);
     }
 
-    <c:set var="biographyMaxLenght" >
+    <c:set var="descriptionMaxLenght" >
         <%=Constants.BIOGRAPHY_MAX_LENGHT%>
     </c:set>
 
     function countBioCharsLeft() {
-        var contentValue = $("#editBandBiography").val();
+        var contentValue = $("#editClubDescription").val();
         var numOfReturn = (contentValue.match(/\n/g) || []).length;
 
         // Since the length of the content doesn't consider the carriage in carriage return, I add those manually
-        var charsLeft = ${biographyMaxLenght} -(contentValue.length + numOfReturn);
+        var charsLeft = ${descriptionMaxLenght} -(contentValue.length + numOfReturn);
 
 
         if (charsLeft < 0) {
-            $("#biographyCharsLeft").val("0");
+            $("#descriptionCharsLeft").val("0");
         } else {
-            $("#biographyCharsLeft").val(charsLeft);
+            $("#descriptionCharsLeft").val(charsLeft);
         }
     }
 
@@ -567,7 +597,7 @@
         var placeId;
         var placeDescription;
 
-        var locationField = document.getElementById("editBandTown");
+        var locationField = document.getElementById("editClubTown");
 
         var options = {
             types: ['(cities)']
@@ -597,8 +627,8 @@
                 }
 
                 if (!match) {
-                    $("#editBandPlaceId").val("");
-                    $("#editBandTown").val("");
+                    $("#editClubPlaceId").val("");
+                    $("#editClubTown").val("");
 
                     showApplicationMessages({
                         "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
@@ -612,11 +642,11 @@
                 } else {
                     placeId = place.place_id;
 
-                    $("#editBandPlaceId").val(placeId);
+                    $("#editClubPlaceId").val(placeId);
                 }
             } else {
-                $("#editBandPlaceId").val("");
-                $("#editBandTown").val("");
+                $("#editClubPlaceId").val("");
+                $("#editClubTown").val("");
 
                 showApplicationMessages({
                     "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
@@ -631,6 +661,10 @@
 
 
         });
+    }
+
+    function initOpeningInfo() {
+        $(".timeText").timepicker({ 'timeFormat': 'H:i' });
     }
 
     function addEmailContactField() {
@@ -688,6 +722,79 @@
     function removeContactField(id) {
         $("#" + id).remove();
         GENERAL_TAB_MODIFIED = true;
+    }
+
+    function removeOpeningInfo(id) {
+        $("#" + id).remove();
+        GENERAL_TAB_MODIFIED = true;
+    }
+
+    function addOpeningInfo() {
+
+        execInSession(function () {
+
+            //console.log("Param: " + $.param(getOpeningInfoData(), true));
+
+            $.ajax({
+                url : "${contextPath}/private/editClub/addEmptyOpeningInfo",
+                data : getOpeningInfoData(),
+                dataType : "html",
+                type : "post",
+                async : true,
+                cache : false,
+                global : false,
+                success : function (data) {
+                    $(".openingInfo").html(data);
+                }
+            });
+        });
+
+        GENERAL_TAB_MODIFIED = true;
+    }
+
+    function getOpeningInfoData_() {
+        var data = new Array();
+
+        $(".OI_dataRow").each(function () {
+            var model = new Object();
+
+            /*console.log("start day: " + $(this).find("[name=OI_startDay] option:selected").val());
+            console.log("start hour: " + $(this).find("[name=OI_startHour]").val());*/
+
+            model.startDay = $(this).find("[name=OI_startDay] option:selected").val();
+            model.endDay = $(this).find("[name=OI_endDay] option:selected").val();
+            model.startHour = $(this).find("[name=OI_startHour]").val();
+            model.endHour = $(this).find("[name=OI_endHour]").val();
+            model.opened = $(this).find("[name=OI_opened]").attr("checked");
+
+            data.push(model);
+        });
+
+
+
+        return data;
+    }
+
+    function getOpeningInfoData() {
+        var data = new FormData();
+
+        $(".OI_dataRow").each(function () {
+            var model = new Object();
+
+            /*console.log("start day: " + $(this).find("[name=OI_startDay] option:selected").val());
+             console.log("start hour: " + $(this).find("[name=OI_startHour]").val());*/
+
+            data.append("startDay", $(this).find("[name=OI_startDay] option:selected").val());
+            data.append("endDay", $(this).find("[name=OI_endDay] option:selected").val());
+            data.append("startHour", $(this).find("[name=OI_startHour]").val());
+            data.append("endHour", $(this).find("[name=OI_endHour]").val());
+            data.append("opened", $(this).find("[name=OI_opened]").attr("checked"));
+
+        });
+
+
+
+        return data;
     }
 
 

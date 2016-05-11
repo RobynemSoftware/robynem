@@ -8,3 +8,16 @@
     border-left-color: black;
     height: auto;
 }
+
+.saveClubLink {
+    margin-bottom: 50px;
+}
+
+.clubStatus {
+    font-size: 11px;
+    color: red;
+}
+
+.ui-widget .openingInfoControl {
+    font-size: 10px;
+}
