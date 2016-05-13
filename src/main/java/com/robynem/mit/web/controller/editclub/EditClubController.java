@@ -281,16 +281,17 @@ public class EditClubController extends BaseController {
     }
 
     @RequestMapping(value = "/addEmptyOpeningInfo", method = RequestMethod.POST)
-    public ModelAndView addEmptyOpeningInfo(@ModelAttribute OpeningInfoModel[] dataList, ModelMap modelMap) {
+    public ModelAndView addEmptyOpeningInfo(ModelMap modelMap) {
         ModelAndView modelAndView = new ModelAndView("editClub/editClubOpeningInfo");
 
         try {
             ClubModel clubModel = new ClubModel();
 
-            clubModel.getOpeningInfos().addAll(Arrays.asList(dataList));
+            clubModel.getOpeningInfos().addAll(this.getOpeningInfoFromRequest(modelMap));
             clubModel.getOpeningInfos().add(new OpeningInfoModel());
 
             modelMap.put("clubModel", clubModel);
+            modelMap.put("reloadTimePicker", true);
 
         } catch (Throwable e) {
             this.manageException(e, LOG, modelMap);
@@ -299,6 +300,43 @@ public class EditClubController extends BaseController {
         modelAndView.addObject(modelMap);
 
         return modelAndView;
+    }
+
+    private List<OpeningInfoModel> getOpeningInfoFromRequest(ModelMap modelMap) {
+        List<OpeningInfoModel> list = new ArrayList<>();
+
+        String[] indexes = this.request.getParameterValues(OpeningInfoModel.INDEX_KEY);
+
+        for (String index : indexes) {
+            list.add(this.getOpeningInfoFromRequest(index));
+        }
+
+        return list;
+    }
+
+    private OpeningInfoModel getOpeningInfoFromRequest(String index) {
+        OpeningInfoModel openingInfoModel = new OpeningInfoModel();
+
+
+
+        String value = this.request.getParameter(OpeningInfoModel.START_DAY_KEY + index);
+
+        if (StringUtils.isNotBlank(value)) {
+            openingInfoModel.setStartDay(Integer.valueOf(value));
+        }
+
+        value = this.request.getParameter(OpeningInfoModel.END_DAY_KEY + index);
+
+        if (StringUtils.isNotBlank(value)) {
+            openingInfoModel.setEndDay(Integer.valueOf(value));
+        }
+
+
+        openingInfoModel.setStartHour(this.request.getParameter(OpeningInfoModel.START_HOUR_KEY + index));
+        openingInfoModel.setEndHour(this.request.getParameter(OpeningInfoModel.END_HOUR_KEY + index));
+        openingInfoModel.setOpened(this.request.getParameter(OpeningInfoModel.OPENED_KEY + index) != null);
+
+        return openingInfoModel;
     }
 
     private String getClubStatus(Long clubId) {
@@ -401,6 +439,8 @@ public class EditClubController extends BaseController {
         if (clubEntity.getOpeningInfos() != null) {
             clubEntity.getOpeningInfos().stream().forEach(oi -> {
                 OpeningInfoModel openingInfoModel = new OpeningInfoModel();
+
+                openingInfoModel.setId(oi.getId());
 
                 openingInfoModel.setStartDay(oi.getStartDay());
                 openingInfoModel.setEndDay(oi.getEndDay());

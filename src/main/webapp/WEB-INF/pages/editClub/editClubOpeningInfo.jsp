@@ -1,3 +1,4 @@
+<%@ page import="com.robynem.mit.web.model.editclub.OpeningInfoModel" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -38,10 +39,15 @@
       </div>
 
       <c:forEach var="info" items="${clubModel.openingInfos}" varStatus="status">
+
+
         <div class="row OI_dataRow" id="info_${status.index}">
+            <input type="hidden" name="<%=OpeningInfoModel.INDEX_KEY%>" value="${status.index}">
+
+
             <%-- start day --%>
           <div class="col-md-2">
-            <select class="form-control openingInfoControl" name="OI_startDay">
+            <select class="form-control openingInfoControl" name="<%=OpeningInfoModel.START_DAY_KEY%>${status.index}">
               <option></option>
               <c:forEach var="day" items="${daysOfWeek}">
                 <option value="${day.value}"
@@ -53,7 +59,7 @@
 
             <%-- end day --%>
           <div class="col-md-2">
-            <select class="form-control openingInfoControl" name="OI_endDay">
+            <select class="form-control openingInfoControl" name="<%=OpeningInfoModel.END_DAY_KEY%>${status.index}">
               <option></option>
               <c:forEach var="day" items="${daysOfWeek}">
                 <option value="${day.value}"
@@ -65,19 +71,19 @@
 
             <%-- start hour --%>
           <div class="col-md-2">
-            <input type="text" class="form-control timeText openingInfoControl" value="${info.startHour}" name="OI_startHour" />
+            <input type="text" class="form-control timeText openingInfoControl" value="${info.startHour}" name="<%=OpeningInfoModel.START_HOUR_KEY%>${status.index}" />
 
           </div>
 
             <%-- end hour --%>
           <div class="col-md-2">
 
-            <input type="text" class="form-control timeText openingInfoControl" value="${info.endHour}" name="OI_startEnd"/>
+            <input type="text" class="form-control timeText openingInfoControl" value="${info.endHour}" name="<%=OpeningInfoModel.END_HOUR_KEY%>${status.index}"/>
 
           </div>
 
           <div class="col-md-2">
-            <input type="checkbox" class="openingInfoControl" <c:if test="${info.opened eq true}">checked="checked"</c:if> name="OI_opened" />
+            <input type="checkbox" class="openingInfoControl" <c:if test="${info.opened eq true}">checked="checked"</c:if> name="<%=OpeningInfoModel.OPENED_KEY%>${status.index}" />
           </div>
 
           <div class="col-md-2">
@@ -91,3 +97,11 @@
   </div>
 
 </div>
+
+<c:if test="${not empty reloadTimePicker}">
+    <script type="text/javascript">
+        $(function () {
+            initOpeningInfo();
+        });
+    </script>
+</c:if>

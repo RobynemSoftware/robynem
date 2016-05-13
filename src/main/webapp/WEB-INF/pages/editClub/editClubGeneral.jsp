@@ -460,6 +460,8 @@
         initGeneralForm();
 
         $("#saveGeneralInfoLink").click(function() {
+
+            $("#editClubGeneralForm").attr("action", "${contextPath}/private/editClub/saveGeneralInfo");
             $("#editClubGeneralForm").submit();
 
         });
@@ -731,13 +733,16 @@
 
     function addOpeningInfo() {
 
+        /*$("#editClubGeneralForm").attr("action", "${contextPath}/private/editClub/addEmptyOpeningInfo");
+        $("#editClubGeneralForm").submit();*/
+
         execInSession(function () {
 
             //console.log("Param: " + $.param(getOpeningInfoData(), true));
 
             $.ajax({
                 url : "${contextPath}/private/editClub/addEmptyOpeningInfo",
-                data : getOpeningInfoData(),
+                data : $("#editClubGeneralForm").serialize(),
                 dataType : "html",
                 type : "post",
                 async : true,

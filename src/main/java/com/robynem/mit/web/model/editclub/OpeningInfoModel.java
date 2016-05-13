@@ -7,6 +7,15 @@ import java.io.Serializable;
  */
 public class OpeningInfoModel implements Serializable {
 
+    public static final String INDEX_KEY = "OI_index";
+    public static final String START_DAY_KEY = "OI_startDay_";
+    public static final String END_DAY_KEY = "OI_endDay_";
+    public static final String START_HOUR_KEY = "OI_startHour_";
+    public static final String END_HOUR_KEY = "OI_endHour_";
+    public static final String OPENED_KEY = "OI_opened_";
+
+    private Long id;
+
     private Integer startDay;
 
     private Integer endDay;
@@ -16,6 +25,14 @@ public class OpeningInfoModel implements Serializable {
     private String endHour;
 
     private boolean opened;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Integer getStartDay() {
         return startDay;
