@@ -277,14 +277,14 @@
     }
 
     function validateGeneralForm() {
-        var validated = validateGeneralFormMandatoryFields() && validateEmailContacts() && validatePhoneNumberContacts();
+        var validated = validateGeneralFormMandatoryFields() && validateEmailContacts() && validatePhoneNumberContacts() && validateOpeningInfo();
 
         return validated;
     }
 
     function validateEmailContacts() {
         var valid = true;
-        var message = "<spring:message code="band.validation.invalid-email-contact"></spring:message>"
+        var message = "<spring:message code="band.validation.invalid-email-contact"></spring:message>";
         $(".emailText").each(function() {
             var value = $.trim($(this).val());
 
@@ -309,7 +309,7 @@
 
     function validatePhoneNumberContacts() {
         var valid = true;
-        var message = "<spring:message code="band.validation.invalid-phone-contact"></spring:message>"
+        var message = "<spring:message code="band.validation.invalid-phone-contact"></spring:message>";
         $(".phoneText").each(function() {
             var value = $.trim($(this).val());
 
@@ -343,7 +343,7 @@
             messages.push({
                 severity: "FATAL",
                 link: null,
-                message: "<spring:message code="club.validation.band-name-mandatory"></spring:message>"
+                message: "<spring:message code="club.validation.club-name-mandatory"></spring:message>"
             });
             valid = false;
         }
@@ -358,5 +358,86 @@
 
         return valid;
 
+    }
+
+    function validateOpeningInfo() {
+        var valid = true;
+
+        var invalidTimeMessage = "<spring:message code="club.validation.invalid-time"></spring:message>";
+        var mandatoryFieldsMessage = "<spring:message code="club.validation.opening-info.mandatory-fields"></spring:message>";
+        var mandatoryMessage = "<spring:message code="club.validation.opening-info.mandatory"></spring:message>";
+
+        if ($(".OI_dataRow").length == 0) {
+            showApplicationMessages({
+                "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
+                    {
+                        severity: "FATAL",
+                        link: null,
+                        message: mandatoryMessage
+                    }
+                ]
+            });
+
+            valid = false;
+            return;
+        }
+
+        if (valid == true) {
+            $(".daySelect").each(function () {
+                var value = $.trim($(this).val());
+
+                if (value == "") {
+                    showApplicationMessages({
+                        "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
+                            {
+                                severity: "FATAL",
+                                link: null,
+                                message: mandatoryFieldsMessage
+                            }
+                        ]
+                    });
+
+                    valid = false;
+                    return;
+                }
+            });
+        }
+
+        if (valid == true) {
+            $(".timeText").each(function() {
+                var value = $.trim($(this).val());
+
+                if (value == "") {
+                    showApplicationMessages({
+                        "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
+                            {
+                                severity: "FATAL",
+                                link: null,
+                                message: mandatoryFieldsMessage
+                            }
+                        ]
+                    });
+
+                    valid = false;
+                    return;
+                } else if (value != "" && !isTime(value)) {
+                    showApplicationMessages({
+                        "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
+                            {
+                                severity: "FATAL",
+                                link: null,
+                                message: invalidTimeMessage.replace("{0}", value)
+                            }
+                        ]
+                    });
+
+                    valid = false;
+                    return;
+                }
+            });
+        }
+
+
+        return valid;
     }
 </script>

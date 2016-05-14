@@ -733,12 +733,7 @@
 
     function addOpeningInfo() {
 
-        /*$("#editClubGeneralForm").attr("action", "${contextPath}/private/editClub/addEmptyOpeningInfo");
-        $("#editClubGeneralForm").submit();*/
-
         execInSession(function () {
-
-            //console.log("Param: " + $.param(getOpeningInfoData(), true));
 
             $.ajax({
                 url : "${contextPath}/private/editClub/addEmptyOpeningInfo",
@@ -756,51 +751,5 @@
 
         GENERAL_TAB_MODIFIED = true;
     }
-
-    function getOpeningInfoData_() {
-        var data = new Array();
-
-        $(".OI_dataRow").each(function () {
-            var model = new Object();
-
-            /*console.log("start day: " + $(this).find("[name=OI_startDay] option:selected").val());
-            console.log("start hour: " + $(this).find("[name=OI_startHour]").val());*/
-
-            model.startDay = $(this).find("[name=OI_startDay] option:selected").val();
-            model.endDay = $(this).find("[name=OI_endDay] option:selected").val();
-            model.startHour = $(this).find("[name=OI_startHour]").val();
-            model.endHour = $(this).find("[name=OI_endHour]").val();
-            model.opened = $(this).find("[name=OI_opened]").attr("checked");
-
-            data.push(model);
-        });
-
-
-
-        return data;
-    }
-
-    function getOpeningInfoData() {
-        var data = new FormData();
-
-        $(".OI_dataRow").each(function () {
-            var model = new Object();
-
-            /*console.log("start day: " + $(this).find("[name=OI_startDay] option:selected").val());
-             console.log("start hour: " + $(this).find("[name=OI_startHour]").val());*/
-
-            data.append("startDay", $(this).find("[name=OI_startDay] option:selected").val());
-            data.append("endDay", $(this).find("[name=OI_endDay] option:selected").val());
-            data.append("startHour", $(this).find("[name=OI_startHour]").val());
-            data.append("endHour", $(this).find("[name=OI_endHour]").val());
-            data.append("opened", $(this).find("[name=OI_opened]").attr("checked"));
-
-        });
-
-
-
-        return data;
-    }
-
 
 </script>

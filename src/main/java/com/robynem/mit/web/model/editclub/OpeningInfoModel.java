@@ -26,6 +26,14 @@ public class OpeningInfoModel implements Serializable {
 
     private boolean opened;
 
+    public OpeningInfoModel() {
+
+    }
+
+    public OpeningInfoModel(boolean opened) {
+        this.opened = opened;
+    }
+
     public Long getId() {
         return id;
     }

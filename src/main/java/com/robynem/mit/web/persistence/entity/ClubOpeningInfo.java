@@ -9,6 +9,9 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "mit_clubOpeningInfo")
+@NamedQueries({
+        @NamedQuery(name = "@HQL_DELETE_ALL_CLUB_OPENING_INFO", query = "delete from ClubOpeningInfo oi where oi.club.id = :clubId")
+})
 public class ClubOpeningInfo extends BaseEntity {
 
     @Column
@@ -27,6 +30,10 @@ public class ClubOpeningInfo extends BaseEntity {
 
     @Column(columnDefinition = "TINYINT DEFAULT 0")
     private boolean opened;
+
+    @ManyToOne
+    @JoinColumn(name = "clubId", nullable = false, insertable = false, updatable = false)
+    protected ClubEntity club;
 
     public Integer getStartDay() {
         return startDay;
@@ -66,5 +73,13 @@ public class ClubOpeningInfo extends BaseEntity {
 
     public void setOpened(boolean opened) {
         this.opened = opened;
+    }
+
+    public ClubEntity getClub() {
+        return club;
+    }
+
+    public void setClub(ClubEntity club) {
+        this.club = club;
     }
 }

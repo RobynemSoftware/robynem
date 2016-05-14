@@ -9,10 +9,7 @@ import com.robynem.mit.web.persistence.dao.ClubDao;
 import com.robynem.mit.web.persistence.dao.MediaDao;
 import com.robynem.mit.web.persistence.dao.RegistryDao;
 import com.robynem.mit.web.persistence.dao.UtilsDao;
-import com.robynem.mit.web.persistence.entity.ClubContactEntity;
-import com.robynem.mit.web.persistence.entity.ClubEntity;
-import com.robynem.mit.web.persistence.entity.ClubGenreEntity;
-import com.robynem.mit.web.persistence.entity.ClubOwnershipEntity;
+import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -233,6 +230,9 @@ public class EditClubController extends BaseController {
                 clubEntity.getContacts().add(new ClubContactEntity(null, StringUtils.trimToNull(c.getValue()), clubEntity));
             });
 
+            // Opening info
+            clubEntity.setOpeningInfos(this.getOpeningInfoEntities(modelMap));
+
 
             this.clubDao.update(clubEntity);
         } catch (Throwable e) {
@@ -288,7 +288,7 @@ public class EditClubController extends BaseController {
             ClubModel clubModel = new ClubModel();
 
             clubModel.getOpeningInfos().addAll(this.getOpeningInfoFromRequest(modelMap));
-            clubModel.getOpeningInfos().add(new OpeningInfoModel());
+            clubModel.getOpeningInfos().add(new OpeningInfoModel(true));
 
             modelMap.put("clubModel", clubModel);
             modelMap.put("reloadTimePicker", true);
@@ -302,13 +302,35 @@ public class EditClubController extends BaseController {
         return modelAndView;
     }
 
+    private Set<ClubOpeningInfo> getOpeningInfoEntities(ModelMap modelMap) {
+        Set<ClubOpeningInfo> list = new HashSet<>();
+
+        List<OpeningInfoModel> modelList = this.getOpeningInfoFromRequest(modelMap);
+
+        ClubOpeningInfo entity = null;
+        for (OpeningInfoModel model : modelList) {
+            entity = new ClubOpeningInfo();
+            entity.setOpened(model.isOpened());
+            entity.setStartDay(model.getStartDay());
+            entity.setEndDay(model.getEndDay());
+            entity.setStartHour(PortalHelper.parseTime(model.getStartHour()));
+            entity.setEndHour(PortalHelper.parseTime(model.getEndHour()));
+
+            list.add(entity);
+        }
+
+        return list;
+    }
+
     private List<OpeningInfoModel> getOpeningInfoFromRequest(ModelMap modelMap) {
         List<OpeningInfoModel> list = new ArrayList<>();
 
         String[] indexes = this.request.getParameterValues(OpeningInfoModel.INDEX_KEY);
 
-        for (String index : indexes) {
-            list.add(this.getOpeningInfoFromRequest(index));
+        if (indexes != null) {
+            for (String index : indexes) {
+                list.add(this.getOpeningInfoFromRequest(index));
+            }
         }
 
         return list;

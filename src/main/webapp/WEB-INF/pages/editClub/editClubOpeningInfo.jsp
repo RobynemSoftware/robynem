@@ -47,7 +47,7 @@
 
             <%-- start day --%>
           <div class="col-md-2">
-            <select class="form-control openingInfoControl" name="<%=OpeningInfoModel.START_DAY_KEY%>${status.index}">
+            <select class="form-control daySelect openingInfoControl" name="<%=OpeningInfoModel.START_DAY_KEY%>${status.index}">
               <option></option>
               <c:forEach var="day" items="${daysOfWeek}">
                 <option value="${day.value}"
@@ -59,7 +59,7 @@
 
             <%-- end day --%>
           <div class="col-md-2">
-            <select class="form-control openingInfoControl" name="<%=OpeningInfoModel.END_DAY_KEY%>${status.index}">
+            <select class="form-control daySelect openingInfoControl" name="<%=OpeningInfoModel.END_DAY_KEY%>${status.index}">
               <option></option>
               <c:forEach var="day" items="${daysOfWeek}">
                 <option value="${day.value}"
