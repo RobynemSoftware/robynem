@@ -402,6 +402,7 @@ public class EditClubController extends BaseController {
                     clubModel.setTown(clubEntity.getTown());
                     clubModel.setPlaceId(clubEntity.getPlaceId());
                     clubModel.setAddress(clubEntity.getAddress());
+                    clubModel.setAddressPlaceId(clubEntity.getAddressPlaceId());
 
                     if (clubEntity.getClubGenres() != null) {
                         final List<String> clubGeneres = new ArrayList<String>();

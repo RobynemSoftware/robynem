@@ -378,8 +378,7 @@
                 ]
             });
 
-            valid = false;
-            return;
+            return false;
         }
 
         if (valid == true) {
@@ -436,7 +435,6 @@
                 }
             });
         }
-
 
         return valid;
     }

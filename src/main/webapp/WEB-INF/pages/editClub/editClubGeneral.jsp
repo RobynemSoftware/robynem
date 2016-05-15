@@ -113,6 +113,25 @@
                 </div>
             </div>
 
+            <!-- ADDRESS -->
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="editClubAddress"><spring:message code="global.address"></spring:message> </label>
+                </div>
+
+                <div class="col-md-9">
+                    <input type="text" class="form-control formField" id="editClubAddress" name="town"
+                           placeholder="<spring:message code="global.insert.address"></spring:message>"/>
+                    <input type="hidden" id="editClubAddressPlaceId" name="addressPlaceId">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <hr/>
+                </div>
+            </div>
+
             <!-- TOWN -->
             <div class="row">
                 <div class="col-md-3">
@@ -354,6 +373,8 @@
 
         initLocationAutocomplete();
 
+        initAddressAutocomplete();
+
         initLogoLoad();
     });
 
@@ -460,10 +481,7 @@
         initGeneralForm();
 
         $("#saveGeneralInfoLink").click(function() {
-
-            $("#editClubGeneralForm").attr("action", "${contextPath}/private/editClub/saveGeneralInfo");
             $("#editClubGeneralForm").submit();
-
         });
 
         var genresTagViewer = new TagViewer({
@@ -489,6 +507,9 @@
         $("#editClubTown").val("${clubModel.town}");
         $("#editClubPlaceId").val("${clubModel.placeId}");
 
+        $("#editClubAddress").val("${clubModel.address}");
+        $("#editClubAddressPlaceId").val("${clubModel.addressPlaceId}");
+
         $("#editClubWebSite").val("${clubModel.webSite}");
 
         countBioCharsLeft();
@@ -502,7 +523,7 @@
 
             var validated = validateGeneralForm();
 
-            if (validated) {
+            if (validated == true) {
                 $.blockUI();
             } else {
                 e.preventDefault();
@@ -656,6 +677,85 @@
                             severity: "WARNING",
                             link: null,
                             message: CHOOSE_A_LOCALITY_MESSAGE
+                        }
+                    ]
+                });
+            }
+
+
+        });
+    }
+
+    function initAddressAutocomplete() {
+
+        $("#editClubAddress").keydown(function () {
+            $("#editClubAddressPlaceId").val("");
+        });
+
+        var accepted_google_types = ["route"];
+        var CHOOSE_AN_ADDRESS_MESSAGE = '<spring:message code="global.choose-an-address"></spring:message>!';
+
+        var placeId;
+
+        var locationField = document.getElementById("editClubAddress");
+
+        var options = {
+            types: ['address']
+        };
+
+        var autocomplete = new google.maps.places.Autocomplete(locationField, options);
+
+        autocomplete.addListener('place_changed', function () {
+            var place = autocomplete.getPlace();
+
+
+            if (place.place_id != undefined && place.types != undefined) {
+
+                var match = false;
+
+                var types = place.types;
+                for (var i = 0; i < accepted_google_types.length; i++) {
+
+                    for (var j = 0; j < types.length; j++) {
+
+                        console.log("Type[" + j + "]: " + types[j]);
+
+                        if (types[j] == accepted_google_types[i]) {
+                            match = true;
+                            break;
+                        }
+                    }
+
+                }
+
+                if (!match) {
+                    $("#editClubAddressPlaceId").val("");
+                    $("#editClubAddress").val("");
+
+                    showApplicationMessages({
+                        "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
+                            {
+                                severity: "WARNING",
+                                link: null,
+                                message: CHOOSE_AN_ADDRESS_MESSAGE
+                            }
+                        ]
+                    });
+                } else {
+                    placeId = place.place_id;
+
+                    $("#editClubAddressPlaceId").val(placeId);
+                }
+            } else {
+                $("#editClubAddressPlaceId").val("");
+                $("#editClubAddress").val("");
+
+                showApplicationMessages({
+                    "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
+                        {
+                            severity: "WARNING",
+                            link: null,
+                            message: CHOOSE_AN_ADDRESS_MESSAGE
                         }
                     ]
                 });

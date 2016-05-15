@@ -21,6 +21,9 @@ public class ClubEntity extends BaseEntity {
     private String placeId;
 
     @Column
+    private String addressPlaceId;
+
+    @Column
     private String address;
 
     @Column
@@ -231,5 +234,13 @@ public class ClubEntity extends BaseEntity {
 
     public void setOwners(Set<ClubOwnershipEntity> owners) {
         this.owners = owners;
+    }
+
+    public String getAddressPlaceId() {
+        return addressPlaceId;
+    }
+
+    public void setAddressPlaceId(String addressPlaceId) {
+        this.addressPlaceId = addressPlaceId;
     }
 }

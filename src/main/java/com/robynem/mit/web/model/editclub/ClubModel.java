@@ -14,6 +14,8 @@ public class ClubModel extends BandModel {
 
     protected String address;
 
+    protected String addressPlaceId;
+
     protected List<OpeningInfoModel> openingInfos = new ArrayList<>();
 
     public String getDescription() {
@@ -38,5 +40,13 @@ public class ClubModel extends BandModel {
 
     public void setOpeningInfos(List<OpeningInfoModel> openingInfos) {
         this.openingInfos = openingInfos;
+    }
+
+    public String getAddressPlaceId() {
+        return addressPlaceId;
+    }
+
+    public void setAddressPlaceId(String addressPlaceId) {
+        this.addressPlaceId = addressPlaceId;
     }
 }
