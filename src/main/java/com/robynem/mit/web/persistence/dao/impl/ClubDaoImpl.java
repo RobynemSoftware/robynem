@@ -180,6 +180,8 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
             Query query = session.getNamedQuery("@HQL_DELETE_ALL_CLUB_CONTACTS");
             query.setParameter("clubId", clubEntity.getId());
 
+            query.executeUpdate();
+
             /*Deletes all opening info to recreate list*/
             query = session.getNamedQuery("@HQL_DELETE_ALL_CLUB_OPENING_INFO");
             query.setParameter("clubId", clubEntity.getId());

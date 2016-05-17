@@ -120,7 +120,7 @@
                 </div>
 
                 <div class="col-md-9">
-                    <input type="text" class="form-control formField" id="editClubAddress" name="town"
+                    <input type="text" class="form-control formField" id="editClubAddress" name="address"
                            placeholder="<spring:message code="global.insert.address"></spring:message>"/>
                     <input type="hidden" id="editClubAddressPlaceId" name="addressPlaceId">
                 </div>
@@ -139,8 +139,7 @@
                 </div>
 
                 <div class="col-md-9">
-                    <input type="text" class="form-control formField" id="editClubTown" name="town"
-                           placeholder="<spring:message code="smart-search.insert.location"></spring:message>"/>
+                    <input type="text" class="form-control formField" id="editClubTown" name="town" readonly="readonly"/>
                     <input type="hidden" id="editClubPlaceId" name="placeId">
                 </div>
             </div>
@@ -371,7 +370,7 @@
     $(function() {
         initGeneralFormFields();
 
-        initLocationAutocomplete();
+        //initLocationAutocomplete();
 
         initAddressAutocomplete();
 
@@ -692,7 +691,7 @@
             $("#editClubAddressPlaceId").val("");
         });
 
-        var accepted_google_types = ["route"];
+        var accepted_google_types = ["route", "street_address"];
         var CHOOSE_AN_ADDRESS_MESSAGE = '<spring:message code="global.choose-an-address"></spring:message>!';
 
         var placeId;
@@ -718,7 +717,7 @@
 
                     for (var j = 0; j < types.length; j++) {
 
-                        //console.log("Type[" + j + "]: " + types[j]);
+                        console.log("Type[" + j + "]: " + types[j]);
 
                         if (types[j] == accepted_google_types[i]) {
                             match = true;
@@ -731,6 +730,7 @@
                 if (!match) {
                     $("#editClubAddressPlaceId").val("");
                     $("#editClubAddress").val("");
+                    $("#editClubTown").val("");
 
                     showApplicationMessages({
                         "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
@@ -752,6 +752,7 @@
             } else {
                 $("#editClubAddressPlaceId").val("");
                 $("#editClubAddress").val("");
+                $("#editClubTown").val("");
 
                 showApplicationMessages({
                     "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
@@ -869,6 +870,11 @@
                 cache : false,
                 success : function (data) {
 
+                    showApplicationMessages(data);
+
+                    if (data.locality != null) {
+                        $("#editClubTown").val(data.locality);
+                    }
                 }
             });
         });

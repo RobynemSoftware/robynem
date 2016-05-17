@@ -1,6 +1,7 @@
 package com.robynem.mit.web.google;
 
 import com.robynem.mit.web.google.model.PlaceDetails;
+import com.robynem.mit.web.google.model.PlaceDetailsExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class GoogleHelper {
     @Value(value = "${google.apy-key}")
     private String key;
 
-    public PlaceDetails getPlaceDetails(String placeId) {
+    public PlaceDetailsExt getPlaceDetails(String placeId) {
 
         Map<String, Objects> parameters = new HashMap() {
             {
@@ -35,7 +36,7 @@ public class GoogleHelper {
         };
 
 
-        ResponseEntity<PlaceDetails> responseEntity = this.restTemplate.getForEntity(GET_PLACE_DETAILS_URL, PlaceDetails.class, parameters);
+        ResponseEntity<PlaceDetailsExt> responseEntity = this.restTemplate.getForEntity(GET_PLACE_DETAILS_URL, PlaceDetailsExt.class, parameters);
 
         return responseEntity.getBody();
     }

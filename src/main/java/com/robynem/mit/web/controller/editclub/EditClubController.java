@@ -3,6 +3,7 @@ package com.robynem.mit.web.controller.editclub;
 import com.robynem.mit.web.controller.BaseController;
 import com.robynem.mit.web.google.GoogleHelper;
 import com.robynem.mit.web.google.model.PlaceDetails;
+import com.robynem.mit.web.google.model.PlaceDetailsExt;
 import com.robynem.mit.web.model.ContactModel;
 import com.robynem.mit.web.model.authentication.PortalUserModel;
 import com.robynem.mit.web.model.editclub.ClubModel;
@@ -191,7 +192,6 @@ public class EditClubController extends BaseController {
         modelMap.addAttribute("success", "true");
 
         try {
-            EditClubTabIndex tabIndex = EditClubTabIndex.fromInt(currentTabIndex);
 
             if (emailContact != null) {
                 emailContact.stream().distinct().forEach(c -> {
@@ -209,8 +209,9 @@ public class EditClubController extends BaseController {
 
             clubEntity.setName(StringUtils.trimToNull(clubModel.getName()));
             clubEntity.setPlaceId(StringUtils.trimToNull(clubModel.getPlaceId()));
-            clubEntity.setTown(StringUtils.trimToNull(clubModel.getTown()));
+            clubEntity.setAddressPlaceId(StringUtils.trimToNull(clubModel.getAddressPlaceId()));
             clubEntity.setAddress(StringUtils.trimToNull(clubModel.getAddress()));
+            clubEntity.setTown(StringUtils.trimToNull(clubModel.getTown()));
             clubEntity.setWebSite(StringUtils.trimToNull(clubModel.getWebSite()));
             clubEntity.setDescription(StringUtils.trimToNull(clubModel.getDescription()));
 
@@ -308,10 +309,11 @@ public class EditClubController extends BaseController {
 
     @RequestMapping(value = "/retrieveTownFromGooglePlaceId")
     public AbstractView retrieveTownFromGooglePlaceId(@RequestParam String placeId, ModelMap modelMap) {
-        PlaceDetails placeDetails = null;
+        PlaceDetailsExt placeDetails = null;
 
         try {
             placeDetails = this.googleHelper.getPlaceDetails(placeId);
+            modelMap.put("locality", placeDetails.getLocality());
 
         } catch (Throwable e) {
             this.manageException(e, LOG, modelMap);
