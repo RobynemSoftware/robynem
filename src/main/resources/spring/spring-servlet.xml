@@ -83,4 +83,12 @@
     <bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
     </bean>
 
+    <bean name="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <property name="messageConverters">
+            <list>
+                <ref bean="jsonMessageConverter" />
+            </list>
+        </property>
+    </bean>
+
 </beans>

@@ -1,6 +1,8 @@
 package com.robynem.mit.web.controller.editclub;
 
 import com.robynem.mit.web.controller.BaseController;
+import com.robynem.mit.web.google.GoogleHelper;
+import com.robynem.mit.web.google.model.PlaceDetails;
 import com.robynem.mit.web.model.ContactModel;
 import com.robynem.mit.web.model.authentication.PortalUserModel;
 import com.robynem.mit.web.model.editclub.ClubModel;
@@ -11,7 +13,6 @@ import com.robynem.mit.web.persistence.dao.RegistryDao;
 import com.robynem.mit.web.persistence.dao.UtilsDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.*;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,9 @@ public class EditClubController extends BaseController {
 
     @Autowired
     private UtilsDao<ClubEntity> clubDaoUtils;
+
+    @Autowired
+    private GoogleHelper googleHelper;
 
     @Value("${media.image.max-size}")
     private long maxImageFileSize;
@@ -300,6 +304,20 @@ public class EditClubController extends BaseController {
         modelAndView.addObject(modelMap);
 
         return modelAndView;
+    }
+
+    @RequestMapping(value = "/retrieveTownFromGooglePlaceId")
+    public AbstractView retrieveTownFromGooglePlaceId(@RequestParam String placeId, ModelMap modelMap) {
+        PlaceDetails placeDetails = null;
+
+        try {
+            placeDetails = this.googleHelper.getPlaceDetails(placeId);
+
+        } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
     }
 
     private Set<ClubOpeningInfo> getOpeningInfoEntities(ModelMap modelMap) {

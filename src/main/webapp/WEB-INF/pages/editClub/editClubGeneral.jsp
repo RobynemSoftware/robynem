@@ -718,7 +718,7 @@
 
                     for (var j = 0; j < types.length; j++) {
 
-                        console.log("Type[" + j + "]: " + types[j]);
+                        //console.log("Type[" + j + "]: " + types[j]);
 
                         if (types[j] == accepted_google_types[i]) {
                             match = true;
@@ -745,6 +745,9 @@
                     placeId = place.place_id;
 
                     $("#editClubAddressPlaceId").val(placeId);
+
+                    retrieveTownFromGooglePlaceId(placeId);
+
                 }
             } else {
                 $("#editClubAddressPlaceId").val("");
@@ -850,6 +853,25 @@
         });
 
         GENERAL_TAB_MODIFIED = true;
+    }
+
+    function retrieveTownFromGooglePlaceId(placeId) {
+        execInSession(function () {
+
+            $.ajax({
+                url : "${contextPath}/private/editClub/retrieveTownFromGooglePlaceId",
+                data : {
+                    placeId : placeId
+                },
+                dataType : "json",
+                type : "get",
+                async : false,
+                cache : false,
+                success : function (data) {
+
+                }
+            });
+        });
     }
 
 </script>
