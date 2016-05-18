@@ -2,7 +2,6 @@ package com.robynem.mit.web.controller.editclub;
 
 import com.robynem.mit.web.controller.BaseController;
 import com.robynem.mit.web.google.GoogleHelper;
-import com.robynem.mit.web.google.model.PlaceDetails;
 import com.robynem.mit.web.google.model.PlaceDetailsExt;
 import com.robynem.mit.web.model.ContactModel;
 import com.robynem.mit.web.model.authentication.PortalUserModel;
@@ -155,6 +154,43 @@ public class EditClubController extends BaseController {
 
             modelMap.addAttribute("clubModel", clubModel);
         } catch (Throwable e) {
+            this.manageException(e, LOG, modelMap);
+        } finally {
+            System.gc();
+        }
+
+        mv.addObject(modelMap);
+
+        return mv;
+
+    }
+
+    @RequestMapping(value = "/showMedia")
+    public ModelAndView showMedia(@RequestParam(required = false) Long clubId, ModelMap modelMap) {
+
+        ModelAndView mv = new ModelAndView("editClub/editClubMedia");
+
+        try {
+
+            ClubEntity clubEntity = null;
+
+            ClubModel clubModel = null;
+
+            if (clubId != null) {
+                // ENTERING IN EDIT MODE
+                clubEntity = this.getClubToEdit(false, clubId, EditClubTabIndex.MEDIA);
+
+
+
+            } else if (this.getSessionAttribute(Constants.EDIT_CLUB_ID) != null) {
+                // If we have band id in session, populate model.
+                clubEntity = this.getClubToEdit(false, null, EditClubTabIndex.MEDIA);
+            }
+
+            clubModel = this.getClubModel(clubEntity, EditClubTabIndex.MEDIA);
+
+            modelMap.addAttribute("clubModel", clubModel);
+        } catch (Exception e) {
             this.manageException(e, LOG, modelMap);
         } finally {
             System.gc();
