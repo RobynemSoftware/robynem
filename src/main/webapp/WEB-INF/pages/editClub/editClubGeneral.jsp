@@ -1,4 +1,5 @@
 <%@ page import="com.robynem.mit.web.util.Constants" %>
+<%@ page import="com.robynem.mit.web.model.editclub.OpeningInfoModel" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -454,7 +455,7 @@
                     console.log("Img src attr: " + $(".logoImage").attr("src"));
                     setTimeout(function() {$("#editClubUploadLogoImageDialog").dialog("close", 600);}, 600);
 
-                    GENERAL_TAB_MODIFIED = true;
+                    //GENERAL_TAB_MODIFIED = true;
 
                     showClubStatus();
                 }
@@ -771,6 +772,27 @@
 
     function initOpeningInfo() {
         $(".timeText").timepicker({ 'timeFormat': 'H:i' });
+    }
+
+    /**
+    * When user chenges the checkbox value of an opening info row.
+    * @param index
+    * @param checkboxElem
+     */
+    function openingInfoOpenedChanged(index, checkboxElem) {
+
+        if (!$(checkboxElem).is(":checked")) {
+            $("#OPENING_INFO_<%=OpeningInfoModel.START_HOUR_KEY%>" + index).val("");
+            $("#OPENING_INFO_<%=OpeningInfoModel.END_HOUR_KEY%>" + index).val("");
+
+            $("#OPENING_INFO_<%=OpeningInfoModel.START_HOUR_KEY%>" + index).attr("disabled", true);
+            $("#OPENING_INFO_<%=OpeningInfoModel.END_HOUR_KEY%>" + index).attr("disabled", true);
+        } else {
+            $("#OPENING_INFO_<%=OpeningInfoModel.START_HOUR_KEY%>" + index).attr("disabled", false);
+            $("#OPENING_INFO_<%=OpeningInfoModel.END_HOUR_KEY%>" + index).attr("disabled", false);
+        }
+
+        GENERAL_TAB_MODIFIED = true;
     }
 
     function addEmailContactField() {

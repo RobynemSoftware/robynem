@@ -475,6 +475,77 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public Long addClubGalleryImage(Long clubId, InputStream imageStream) {
+        Long newImageId = null;
+
+        try {
+
+            // Retrieves band entity
+            ClubEntity clubEntity = this.hibernateTemplate.get(ClubEntity.class, clubId);
+
+            // Creates a new ImageEntity
+            ImageEntity image = new ImageEntity();
+            image.setCreated(Calendar.getInstance().getTime());
+            image.setLinkId(PortalHelper.getUniqueId());
+
+
+
+            try (
+                    // Small
+                    InputStream smallFile = ImageHelper.scaleImage(imageStream,
+                            this.imageSmallWidth,
+                            this.imageSmallHeight,
+                            this.imageFormat);
+
+                    // Medium
+                    InputStream mediumFile = ImageHelper.scaleImage(imageStream,
+                            this.imageMediumWidth,
+                            this.imageMediumHeight,
+                            this.imageFormat);
+
+                    // Large
+                    InputStream largeFile = ImageHelper.scaleImage(imageStream,
+                            this.imageLargeWidth,
+                            this.imageLargeHeight,
+                            this.imageFormat)) {
+
+                // Execs updates
+                image.setSmallFile(PortalHelper.getBlob(smallFile));
+                image.setMediumFile(PortalHelper.getBlob(mediumFile));
+                image.setLargeFile(PortalHelper.getBlob(largeFile));
+                image.setOriginalFile(PortalHelper.getBlob(imageStream));
+
+                newImageId = (Long) this.hibernateTemplate.save(image);
+
+                if (clubEntity.getImages() == null) {
+                    clubEntity.setImages(new HashSet<ImageEntity>());
+                }
+
+                clubEntity.getImages().add(image);
+
+                clubEntity.setUpdated(Calendar.getInstance().getTime());
+
+                this.hibernateTemplate.update(clubEntity);
+            }
+
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } finally {
+            if (imageStream != null) {
+                try {
+                    imageStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return newImageId;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
     public void removeBandGalleryImage(Long bandId, Long imageId) {
         this.hibernateTemplate.execute(session -> {
 
@@ -498,6 +569,30 @@ public class MediaDaoImpl extends BaseDao implements MediaDao {
         });
     }
 
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public void removeClubGalleryImage(Long clubId, Long imageId) {
+        this.hibernateTemplate.execute(session -> {
+
+            ClubEntity clubEntity = (ClubEntity) session.get(ClubEntity.class, clubId);
+
+            List<ImageEntity> imagesToDelete = new ArrayList<ImageEntity>();
+
+            if (clubEntity.getImages() != null) {
+                clubEntity.getImages().stream().filter(i -> i.getId().equals(imageId)).forEach(i -> {
+                    imagesToDelete.add(i);
+                });
+            }
+
+            imagesToDelete.stream().forEach(i -> {
+                clubEntity.getImages().remove(i);
+            });
+
+            session.update(clubEntity);
+
+            return null;
+        });
+    }
 
 
     @Override

@@ -20,4 +20,8 @@ public interface ClubDao {
     ClubEntity getClubMedia(Long clubId);
 
     void update(ClubEntity clubEntity);
+
+    String getClubStatusCode(Long clubId);
+
+    Long getStageGalleryImageId(Long publishedClubId, Long publishedImageId);
 }

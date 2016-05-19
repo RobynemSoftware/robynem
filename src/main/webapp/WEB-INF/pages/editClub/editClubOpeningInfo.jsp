@@ -71,19 +71,27 @@
 
             <%-- start hour --%>
           <div class="col-md-2">
-            <input type="text" class="form-control timeText openingInfoControl" value="${info.startHour}" name="<%=OpeningInfoModel.START_HOUR_KEY%>${status.index}" />
+            <input type="text" class="form-control timeText openingInfoControl"
+                   <c:if test="${info.opened eq false}">disabled="disabled"</c:if>
+                   value="${info.startHour}"
+                   name="<%=OpeningInfoModel.START_HOUR_KEY%>${status.index}"
+                   id="OPENING_INFO_<%=OpeningInfoModel.START_HOUR_KEY%>${status.index}" />
 
           </div>
 
             <%-- end hour --%>
           <div class="col-md-2">
 
-            <input type="text" class="form-control timeText openingInfoControl" value="${info.endHour}" name="<%=OpeningInfoModel.END_HOUR_KEY%>${status.index}"/>
+            <input type="text" class="form-control timeText openingInfoControl"
+                   <c:if test="${info.opened eq false}">disabled="disabled"</c:if>
+                   value="${info.endHour}"
+                   name="<%=OpeningInfoModel.END_HOUR_KEY%>${status.index}"
+                   id="OPENING_INFO_<%=OpeningInfoModel.END_HOUR_KEY%>${status.index}"/>
 
           </div>
 
           <div class="col-md-2">
-            <input type="checkbox" class="openingInfoControl" <c:if test="${info.opened eq true}">checked="checked"</c:if> name="<%=OpeningInfoModel.OPENED_KEY%>${status.index}" />
+            <input type="checkbox" class="openingInfoControl" <c:if test="${info.opened eq true}">checked="checked"</c:if> name="<%=OpeningInfoModel.OPENED_KEY%>${status.index}" onclick="javascript:openingInfoOpenedChanged(${status.index}, this);" />
           </div>
 
           <div class="col-md-2">

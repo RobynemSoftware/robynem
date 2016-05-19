@@ -12,6 +12,17 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "mit_club")
+@NamedQueries({
+        @NamedQuery(name = "@HQL_GET_CLUB_STATUS_CODE", query = "select s.code from ClubEntity c " +
+                "inner join c.status s " +
+                "where c.id = :clubId"),
+        @NamedQuery(name = "@HQL_GET_STAGE_CLUB_IMAGE_ID", query = "select si.id\n" +
+                "    from ClubEntity pc\n" +
+                "        inner join pc.images pi\n" +
+                "        inner join pc.stageVersions sc\n" +
+                "        inner join sc.images si\n" +
+                "    where pc.id = :clubId and pi.id = :imageId and pi.linkId = si.linkId")
+})
 public class ClubEntity extends BaseEntity {
 
     @Column

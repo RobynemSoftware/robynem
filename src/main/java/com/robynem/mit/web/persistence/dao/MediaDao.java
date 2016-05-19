@@ -18,7 +18,11 @@ public interface MediaDao {
 
     Long addBandGalleryImage(Long bandId, InputStream imageStream);
 
+    Long addClubGalleryImage(Long clubId, InputStream imageStream);
+
     void removeBandGalleryImage(Long bandId, Long imageId);
+
+    void removeClubGalleryImage(Long clubId, Long imageId);
 
     ImageEntity getImageById(Long id);
 

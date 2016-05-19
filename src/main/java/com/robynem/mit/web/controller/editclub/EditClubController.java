@@ -202,6 +202,39 @@ public class EditClubController extends BaseController {
 
     }
 
+    @RequestMapping(value = "/addGalleryImage", method = RequestMethod.POST)
+    public AbstractView addGalleryImage(@RequestParam MultipartFile image, ModelMap modelMap) {
+
+        try {
+            if (!image.isEmpty()) {
+
+                if (!StringUtils.trimToEmpty(image.getContentType()).toLowerCase().contains("image")) {
+                    this.addApplicationMessage(this.getMessage("profile.validation.invalid-image"),
+                            MessageSeverity.FATAL, null, modelMap);
+                } else if (image.getSize() > this.maxImageFileSize) {
+                    this.addApplicationMessage(this.getMessage("profile.validation.image-to-large"),
+                            MessageSeverity.FATAL, null, modelMap);
+                } else {
+
+                    // We need it to create a stage version if needed
+                    ClubEntity clubEntity = this.getClubToEdit(true, this.getSessionAttribute(Constants.EDIT_CLUB_ID), EditClubTabIndex.MEDIA);
+
+                    ByteArrayInputStream bais = new ByteArrayInputStream(image.getBytes());
+
+                    Long imageId = this.mediaDao.addClubGalleryImage(clubEntity.getId(), bais);
+
+                    modelMap.put("success", true);
+                    modelMap.put("uploadedImageId", imageId);
+                }
+            }
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
     @RequestMapping("/getClubStatus")
     public AbstractView getClubStatus(@RequestParam(required = false) Long clubId, ModelMap modelMap) {
 
@@ -358,6 +391,41 @@ public class EditClubController extends BaseController {
         return this.getJsonView(modelMap);
     }
 
+    @RequestMapping(value = "/removeGalleryImage", method = RequestMethod.POST)
+    public AbstractView removeGalleryImage(@RequestParam Long imageId, ModelMap modelMap) {
+
+        try {
+            Long clubId = null;
+
+            // Checks actual band status
+            String code = this.clubDao.getClubStatusCode(this.getSessionAttribute(Constants.EDIT_CLUB_ID));
+
+            if (EntityStatus.PUBLISHED.toString().equals(code)) {
+                /*We store the published id before createìing a stage version. After session id will be replaced.*/
+                Long publishedClubId = this.getSessionAttribute(Constants.EDIT_CLUB_ID);
+
+                // We need it to create a stage version for modification
+                ClubEntity clubEntity = this.getClubToEdit(true, this.getSessionAttribute(Constants.EDIT_CLUB_ID), EditClubTabIndex.MEDIA);
+
+                // Rtrieves the imzage id belonging to the stage version
+                imageId = this.clubDao.getStageGalleryImageId(publishedClubId, imageId);
+
+                clubId = clubEntity.getId();
+            } else {
+                clubId = this.getSessionAttribute(Constants.EDIT_CLUB_ID);
+            }
+
+            this.mediaDao.removeClubGalleryImage(clubId, imageId);
+
+            modelMap.put("success", true);
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
     private Set<ClubOpeningInfo> getOpeningInfoEntities(ModelMap modelMap) {
         Set<ClubOpeningInfo> list = new HashSet<>();
 
@@ -389,7 +457,7 @@ public class EditClubController extends BaseController {
             }
         }
 
-        return list;
+        return list.stream().sorted((oi1, oi2) -> oi1.getStartDay().compareTo(oi2.getStartDay())).collect(Collectors.toList());
     }
 
     private OpeningInfoModel getOpeningInfoFromRequest(String index) {
@@ -516,25 +584,27 @@ public class EditClubController extends BaseController {
 
     private void setOpeningInfoModel(ClubModel clubModel, ClubEntity clubEntity) {
         if (clubEntity.getOpeningInfos() != null) {
-            clubEntity.getOpeningInfos().stream().forEach(oi -> {
-                OpeningInfoModel openingInfoModel = new OpeningInfoModel();
+            clubEntity.getOpeningInfos().stream()
+                    .sorted((oi1, oi2) -> oi1.getStartDay().compareTo(oi2.getStartDay()))
+                    .forEach(oi -> {
+                        OpeningInfoModel openingInfoModel = new OpeningInfoModel();
 
-                openingInfoModel.setId(oi.getId());
+                        openingInfoModel.setId(oi.getId());
 
-                openingInfoModel.setStartDay(oi.getStartDay());
-                openingInfoModel.setEndDay(oi.getEndDay());
-                openingInfoModel.setOpened(oi.isOpened());
+                        openingInfoModel.setStartDay(oi.getStartDay());
+                        openingInfoModel.setEndDay(oi.getEndDay());
+                        openingInfoModel.setOpened(oi.isOpened());
 
-                if (oi.getStartHour() != null) {
-                    openingInfoModel.setStartHour(PortalHelper.formatTime(oi.getStartHour()));
-                }
+                        if (oi.getStartHour() != null) {
+                            openingInfoModel.setStartHour(PortalHelper.formatTime(oi.getStartHour()));
+                        }
 
-                if (oi.getEndHour() != null) {
-                    openingInfoModel.setEndHour(PortalHelper.formatTime(oi.getEndHour()));
-                }
+                        if (oi.getEndHour() != null) {
+                            openingInfoModel.setEndHour(PortalHelper.formatTime(oi.getEndHour()));
+                        }
 
-                clubModel.getOpeningInfos().add(openingInfoModel);
-            });
+                        clubModel.getOpeningInfos().add(openingInfoModel);
+                    });
         }
     }
 

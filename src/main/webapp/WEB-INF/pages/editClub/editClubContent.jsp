@@ -367,7 +367,8 @@
         var mandatoryFieldsMessage = "<spring:message code="club.validation.opening-info.mandatory-fields"></spring:message>";
         var mandatoryMessage = "<spring:message code="club.validation.opening-info.mandatory"></spring:message>";
 
-        if ($(".OI_dataRow").length == 0) {
+        /*This control is mandatory on publish*/
+        /*if ($(".OI_dataRow").length == 0) {
             showApplicationMessages({
                 "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
                     {
@@ -379,7 +380,7 @@
             });
 
             return false;
-        }
+        }*/
 
         if (valid == true) {
             $(".daySelect").each(function () {
@@ -404,35 +405,40 @@
 
         if (valid == true) {
             $(".timeText").each(function() {
-                var value = $.trim($(this).val());
 
-                if (value == "") {
-                    showApplicationMessages({
-                        "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
-                            {
-                                severity: "FATAL",
-                                link: null,
-                                message: mandatoryFieldsMessage
-                            }
-                        ]
-                    });
+                /*If field is enabled, check is necessary. If it's disabled, it means that this row marks a closing day.*/
+                if (!$(this).attr("disabled")) {
+                    var value = $.trim($(this).val());
 
-                    valid = false;
-                    return;
-                } else if (value != "" && !isTime(value)) {
-                    showApplicationMessages({
-                        "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
-                            {
-                                severity: "FATAL",
-                                link: null,
-                                message: invalidTimeMessage.replace("{0}", value)
-                            }
-                        ]
-                    });
+                    if (value == "") {
+                        showApplicationMessages({
+                            "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
+                                {
+                                    severity: "FATAL",
+                                    link: null,
+                                    message: mandatoryFieldsMessage
+                                }
+                            ]
+                        });
 
-                    valid = false;
-                    return;
+                        valid = false;
+                        return;
+                    } else if (value != "" && !isTime(value)) {
+                        showApplicationMessages({
+                            "<%=Constants.APPLICATION_MESSAGES_KEY%>": [
+                                {
+                                    severity: "FATAL",
+                                    link: null,
+                                    message: invalidTimeMessage.replace("{0}", value)
+                                }
+                            ]
+                        });
+
+                        valid = false;
+                        return;
+                    }
                 }
+
             });
         }
 

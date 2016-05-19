@@ -168,7 +168,23 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
 
     @Override
     public ClubEntity getClubMedia(Long clubId) {
-        return null;
+        return this.hibernateTemplate.execute(session -> {
+            ClubEntity clubEntity = null;
+
+            Criteria criteria = session.createCriteria(ClubEntity.class, "club");
+
+            criteria = criteria.add(Restrictions.idEq(clubId));
+
+            criteria = criteria.createAlias("club.owners", "owners", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.images", "images", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.status", "status", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.publishedVersion", "publishedVersion", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.stageVersions", "stageVersions", CriteriaSpecification.LEFT_JOIN);
+
+            clubEntity = (ClubEntity) criteria.uniqueResult();
+
+            return clubEntity;
+        });
     }
 
     @Override
@@ -191,6 +207,35 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
             session.update(clubEntity);
             return null;
         });
+    }
+
+    @Override
+    public String getClubStatusCode(Long clubId) {
+        String code = null;
+
+        List<String> result = this.hibernateTemplate.findByNamedQueryAndNamedParam(
+                "@HQL_GET_CLUB_STATUS_CODE", "clubId", clubId);
+
+        if (result != null && result.size() > 0) {
+            code = result.get(0);
+        }
+
+        return code;
+    }
+
+    @Override
+    public Long getStageGalleryImageId(Long publishedClubId, Long publishedImageId) {
+        Long imageId = null;
+
+        List<Long> result = this.hibernateTemplate.findByNamedQueryAndNamedParam(
+                "@HQL_GET_STAGE_CLUB_IMAGE_ID", new String[] {"clubId", "imageId"},
+                new Object[] {publishedClubId, publishedImageId});
+
+        if (result != null && result.size() > 0) {
+            imageId = result.get(0);
+        }
+
+        return imageId;
     }
 
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
