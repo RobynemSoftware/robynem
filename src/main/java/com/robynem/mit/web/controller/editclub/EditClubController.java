@@ -202,6 +202,39 @@ public class EditClubController extends BaseController {
 
     }
 
+    @RequestMapping(value = "/addGalleryImage", method = RequestMethod.POST)
+    public AbstractView addGalleryImage(@RequestParam MultipartFile image, ModelMap modelMap) {
+
+        try {
+            if (!image.isEmpty()) {
+
+                if (!StringUtils.trimToEmpty(image.getContentType()).toLowerCase().contains("image")) {
+                    this.addApplicationMessage(this.getMessage("profile.validation.invalid-image"),
+                            MessageSeverity.FATAL, null, modelMap);
+                } else if (image.getSize() > this.maxImageFileSize) {
+                    this.addApplicationMessage(this.getMessage("profile.validation.image-to-large"),
+                            MessageSeverity.FATAL, null, modelMap);
+                } else {
+
+                    // We need it to create a stage version if needed
+                    ClubEntity clubEntity = this.getClubToEdit(true, this.getSessionAttribute(Constants.EDIT_CLUB_ID), EditClubTabIndex.MEDIA);
+
+                    ByteArrayInputStream bais = new ByteArrayInputStream(image.getBytes());
+
+                    Long imageId = this.mediaDao.addClubGalleryImage(clubEntity.getId(), bais);
+
+                    modelMap.put("success", true);
+                    modelMap.put("uploadedImageId", imageId);
+                }
+            }
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        }
+
+        return this.getJsonView(modelMap);
+    }
+
     @RequestMapping("/getClubStatus")
     public AbstractView getClubStatus(@RequestParam(required = false) Long clubId, ModelMap modelMap) {
 

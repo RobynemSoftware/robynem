@@ -454,7 +454,7 @@
                     console.log("Img src attr: " + $(".logoImage").attr("src"));
                     setTimeout(function() {$("#editClubUploadLogoImageDialog").dialog("close", 600);}, 600);
 
-                    GENERAL_TAB_MODIFIED = true;
+                    //GENERAL_TAB_MODIFIED = true;
 
                     showClubStatus();
                 }

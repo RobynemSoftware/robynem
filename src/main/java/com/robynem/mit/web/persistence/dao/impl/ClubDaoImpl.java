@@ -168,7 +168,23 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
 
     @Override
     public ClubEntity getClubMedia(Long clubId) {
-        return null;
+        return this.hibernateTemplate.execute(session -> {
+            ClubEntity clubEntity = null;
+
+            Criteria criteria = session.createCriteria(ClubEntity.class, "club");
+
+            criteria = criteria.add(Restrictions.idEq(clubId));
+
+            criteria = criteria.createAlias("club.owners", "owners", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.images", "images", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.status", "status", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.publishedVersion", "publishedVersion", CriteriaSpecification.LEFT_JOIN);
+            criteria = criteria.createAlias("club.stageVersions", "stageVersions", CriteriaSpecification.LEFT_JOIN);
+
+            clubEntity = (ClubEntity) criteria.uniqueResult();
+
+            return clubEntity;
+        });
     }
 
     @Override
