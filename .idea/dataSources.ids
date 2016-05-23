@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="dataSourceStorage">
   <data-source name="MySQL - mit@localhost" uuid="fafe3f77-da94-4102-b3e7-6833bdabd12b">
-    <database-info product="MySQL" version="5.6.22-log" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
+    <database-info product="MySQL" version="5.7.12-log" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
       <extra-name-characters>#@</extra-name-characters>
       <identifier-quote-string>`</identifier-quote-string>
     </database-info>
@@ -12,10 +12,10 @@
       <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="file" sqlType="LONGBLOB" precision="2147483647" scale="0" nullable="true" jdbcType="-4"/>
-      <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="fileName" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
-      <column name="soundCloudUrl" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="linkId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="soundCloudUrl" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="FK5C69D17A3F215BB7" table="mit_bandaudio" schema="" catalog="mit" columns="audioId"/>
       <index name="id" unique="true" columns="id"/>
@@ -29,11 +29,11 @@
       <column name="placeId" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="town" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="webSite" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="bandLogo" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
       <column name="createdByUserId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
       <column name="modifiedByUserId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
       <column name="publishedBandId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
       <column name="statusId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
-      <column name="bandLogo" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
       <column name="firstPublishDate" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="FKB8A94FBC18F49407" columns="modifiedByUserId" ref-table="mit_user" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
@@ -71,10 +71,10 @@
       <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="confirmed" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
-      <column name="bandId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
-      <column name="userId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="discJockey" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
       <column name="singer" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
+      <column name="bandId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="userId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="FK294FE0A1D6063B27" columns="userId" ref-table="mit_user" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="FK294FE0A1E8B085FB" columns="bandId" ref-table="mit_band" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
@@ -135,9 +135,9 @@
       <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
       <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
-      <column name="bandId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="bandId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="ownerTypeId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
-      <column name="userId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="userId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="FK7DDBFF134868CB85" columns="ownerTypeId" ref-table="mit_ownertype" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="FK7DDBFF13D6063B27" columns="userId" ref-table="mit_user" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
@@ -161,6 +161,7 @@
       <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="address" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="addressPlaceId" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="description" sqlType="LONGTEXT" precision="2147483647" scale="0" nullable="true" jdbcType="-1"/>
       <column name="firstPublishDate" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
@@ -183,6 +184,7 @@
       <exported-key name="FK9B85BF23AB9981FD" table="mit_clubcontact" schema="" catalog="mit" columns="clubId"/>
       <exported-key name="FKD6AA291EAB9981FD" table="mit_clubimage" schema="" catalog="mit" columns="clubId"/>
       <exported-key name="FKD93123A9AB9981FD" table="mit_clubopeninginfo" schema="" catalog="mit" columns="clubId"/>
+      <exported-key name="FKEAAF21B2AB9981FD" table="mit_clubownership" schema="" catalog="mit" columns="clubId"/>
       <index name="id" unique="true" columns="id"/>
       <index name="FKB8A9EE3D184B856C" unique="false" columns="clubLogo"/>
       <index name="FKB8A9EE3D18F49407" unique="false" columns="modifiedByUserId"/>
@@ -193,6 +195,7 @@
     <table name="mit_club_clubgenre" schema="" catalog="mit" type="TABLE">
       <column name="clubId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="clubGenreId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <primary-key name="PRIMARY" columns="clubId,clubGenreId"/>
       <foreign-key name="FK7B59F6EB6FA46385" columns="clubGenreId" ref-table="mit_clubgenre" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="FK7B59F6EBAB9981FD" columns="clubId" ref-table="mit_club" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <index name="FK7B59F6EB6FA46385" unique="false" columns="clubGenreId"/>
@@ -215,6 +218,7 @@
       <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="name" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="resourceBundleCode" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="FK7B59F6EB6FA46385" table="mit_club_clubgenre" schema="" catalog="mit" columns="clubGenreId"/>
       <index name="id" unique="true" columns="id"/>
@@ -223,6 +227,7 @@
     <table name="mit_clubimage" schema="" catalog="mit" type="TABLE">
       <column name="clubId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <column name="imageId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <primary-key name="PRIMARY" columns="clubId,imageId"/>
       <foreign-key name="FKD6AA291E3FCD31C1" columns="imageId" ref-table="mit_image" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <foreign-key name="FKD6AA291EAB9981FD" columns="clubId" ref-table="mit_club" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <index name="FKD6AA291E3FCD31C1" unique="false" columns="imageId"/>
@@ -233,15 +238,31 @@
       <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="endDay" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
-      <column name="endHour" sqlType="TINYBLOB" precision="255" scale="0" nullable="true" jdbcType="-2"/>
+      <column name="endHour" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
       <column name="opened" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
       <column name="startDay" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
-      <column name="startHour" sqlType="TINYBLOB" precision="255" scale="0" nullable="true" jdbcType="-2"/>
+      <column name="startHour" sqlType="TIME" precision="8" scale="0" nullable="true" jdbcType="92"/>
       <column name="clubId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="FKD93123A9AB9981FD" columns="clubId" ref-table="mit_club" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
       <index name="id" unique="true" columns="id"/>
       <index name="FKD93123A9AB9981FD" unique="false" columns="clubId"/>
+    </table>
+    <table name="mit_clubownership" schema="" catalog="mit" type="TABLE">
+      <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
+      <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="clubId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="ownerTypeId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="userId" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <primary-key name="PRIMARY" columns="id"/>
+      <foreign-key name="FKEAAF21B24868CB85" columns="ownerTypeId" ref-table="mit_ownertype" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FKEAAF21B2AB9981FD" columns="clubId" ref-table="mit_club" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <foreign-key name="FKEAAF21B2D6063B27" columns="userId" ref-table="mit_user" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
+      <index name="id" unique="true" columns="id"/>
+      <index name="FKEAAF21B24868CB85" unique="false" columns="ownerTypeId"/>
+      <index name="FKEAAF21B2AB9981FD" unique="false" columns="clubId"/>
+      <index name="FKEAAF21B2D6063B27" unique="false" columns="userId"/>
     </table>
     <table name="mit_entitystatus" schema="" catalog="mit" type="TABLE">
       <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
@@ -257,11 +278,11 @@
       <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
       <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="filePath" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="largeFile" sqlType="MEDIUMBLOB" precision="16777215" scale="0" nullable="true" jdbcType="-4"/>
       <column name="mediumFile" sqlType="MEDIUMBLOB" precision="16777215" scale="0" nullable="true" jdbcType="-4"/>
       <column name="originalFile" sqlType="MEDIUMBLOB" precision="16777215" scale="0" nullable="true" jdbcType="-4"/>
       <column name="smallFile" sqlType="MEDIUMBLOB" precision="16777215" scale="0" nullable="true" jdbcType="-4"/>
-      <column name="filePath" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="linkId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="FKB8A94FBC5EB00F6B" table="mit_band" schema="" catalog="mit" columns="bandLogo"/>
@@ -339,30 +360,31 @@
       <column name="code" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
       <exported-key name="FK7DDBFF134868CB85" table="mit_bandownership" schema="" catalog="mit" columns="ownerTypeId"/>
+      <exported-key name="FKEAAF21B24868CB85" table="mit_clubownership" schema="" catalog="mit" columns="ownerTypeId"/>
       <index name="code" unique="true" columns="code"/>
       <index name="id" unique="true" columns="id"/>
     </table>
     <table name="mit_user" schema="" catalog="mit" type="TABLE">
       <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" autoIncrement="true"/>
       <column name="created" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="biography" sqlType="LONGTEXT" precision="2147483647" scale="0" nullable="true" jdbcType="-1"/>
+      <column name="birthDate" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
+      <column name="discJockey" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
       <column name="emailAddress" sqlType="VARCHAR" precision="100" scale="0" nullable="false" jdbcType="12"/>
-      <column name="engagementAvailable" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
+      <column name="engagementAvailable" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MQ=="/>
       <column name="facebookId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
       <column name="firstName" sqlType="VARCHAR" precision="50" scale="0" nullable="false" jdbcType="12"/>
+      <column name="gender" sqlType="VARCHAR" precision="10" scale="0" nullable="true" jdbcType="12"/>
       <column name="lastLogin" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="lastName" sqlType="VARCHAR" precision="50" scale="0" nullable="false" jdbcType="12"/>
+      <column name="musicMaster" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
+      <column name="musician" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
       <column name="password" sqlType="VARCHAR" precision="50" scale="0" nullable="false" jdbcType="12"/>
-      <column name="updated" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
-      <column name="gender" sqlType="VARCHAR" precision="10" scale="0" nullable="true" jdbcType="12"/>
-      <column name="birthDate" sqlType="DATETIME" precision="19" scale="0" nullable="true" jdbcType="93"/>
       <column name="placeId" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="singer" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
       <column name="town" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <column name="profileImage" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
-      <column name="biography" sqlType="LONGTEXT" precision="2147483647" scale="0" nullable="true" jdbcType="-1"/>
-      <column name="musicMaster" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
-      <column name="singer" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
-      <column name="musician" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
-      <column name="discJockey" sqlType="TINYINT" precision="3" scale="0" nullable="true" jdbcType="-6" def="MA=="/>
       <column name="language" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
       <primary-key name="PRIMARY" columns="id"/>
       <foreign-key name="FKB8B235521754275D" columns="profileImage" ref-table="mit_image" ref-schema="" ref-catalog="mit" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2"/>
@@ -372,6 +394,7 @@
       <exported-key name="FK7DDBFF13D6063B27" table="mit_bandownership" schema="" catalog="mit" columns="userId"/>
       <exported-key name="FKB8A9EE3D18F49407" table="mit_club" schema="" catalog="mit" columns="modifiedByUserId"/>
       <exported-key name="FKB8A9EE3DB7008126" table="mit_club" schema="" catalog="mit" columns="createdByUserId"/>
+      <exported-key name="FKEAAF21B2D6063B27" table="mit_clubownership" schema="" catalog="mit" columns="userId"/>
       <exported-key name="FKBE1A8EF0D6063B27" table="mit_masterinstrument" schema="" catalog="mit" columns="userId"/>
       <exported-key name="FKE4B35B725070B5D6" table="mit_notification" schema="" catalog="mit" columns="receiverUserId"/>
       <exported-key name="FKE4B35B7275B5199C" table="mit_notification" schema="" catalog="mit" columns="senderUserId"/>

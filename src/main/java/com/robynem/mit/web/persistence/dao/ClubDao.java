@@ -1,6 +1,7 @@
 package com.robynem.mit.web.persistence.dao;
 
 import com.robynem.mit.web.persistence.entity.ClubEntity;
+import com.robynem.mit.web.util.PublishClubResult;
 
 /**
  * Created by robyn_000 on 18/04/2016.
@@ -24,4 +25,6 @@ public interface ClubDao {
     String getClubStatusCode(Long clubId);
 
     Long getStageGalleryImageId(Long publishedClubId, Long publishedImageId);
+
+    PublishClubResult publishClub(Long clubId, Long userId);
 }

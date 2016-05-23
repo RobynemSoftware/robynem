@@ -426,6 +426,50 @@ public class EditClubController extends BaseController {
         return this.getJsonView(modelMap);
     }
 
+    @RequestMapping("/publishClub")
+    public ModelAndView publishBand(ModelMap modelMap) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("forward:/private/editClub/edit");
+
+        this.addRequestAttribute("fromPublish", true);
+
+        Map<String, Integer> errorTabMap = new HashMap<String,Integer>(){
+            {
+                put(PublishClubErrorCode.NAME_MISSING.toString(), 0);
+                put(PublishClubErrorCode.ADDRESS_MISSING.toString(), 0);
+                put(PublishClubErrorCode.GENRE_MISSING.toString(), 0);
+                put(PublishClubErrorCode.OPENING_INFO_MISSING.toString(), 0);
+                put(PublishClubErrorCode.OPENING_INFO_INCORRECT.toString(), 0);
+            }
+        };
+
+        try {
+            PublishClubResult publishClubResult = this.clubDao.publishClub(this.getSessionAttribute(Constants.EDIT_CLUB_ID), this.getAuthenticatedUser().getId());
+            this.addRequestAttribute("clubId", this.getSessionAttribute(Constants.EDIT_CLUB_ID));
+
+            if (!publishClubResult.isSuccess()) {
+                Integer currentTabIndex = errorTabMap.get(publishClubResult.getErrorCode().toString());
+
+                this.addRequestAttribute("currentTabIndex", currentTabIndex);
+
+                if (!PublishBandErrorCode.NOT_A_STAGE_VERSION.equals(publishClubResult.getErrorCode())) {
+                    this.addApplicationMessage(this.getMessage(String.format("club.publish.validation.%s", publishClubResult.getErrorCode().toString())),
+                            MessageSeverity.FATAL, null, null);
+                }
+            } else {
+                this.addApplicationMessage(this.getMessage("club.publish.success"), MessageSeverity.INFO, null, null);
+                this.addRequestAttribute("clubId", publishClubResult.getPublishedClubId());
+            }
+        } catch (Throwable e) {
+            modelMap.addAttribute("success", false);
+            this.manageException(e, LOG, modelMap);
+        } finally {
+            System.gc();
+        }
+
+        return modelAndView;
+    }
+
     private Set<ClubOpeningInfo> getOpeningInfoEntities(ModelMap modelMap) {
         Set<ClubOpeningInfo> list = new HashSet<>();
 

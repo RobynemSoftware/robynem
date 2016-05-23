@@ -5,6 +5,9 @@ import com.robynem.mit.web.persistence.dao.ClubDao;
 import com.robynem.mit.web.persistence.entity.*;
 import com.robynem.mit.web.util.EntityStatus;
 import com.robynem.mit.web.util.OwnerType;
+import com.robynem.mit.web.util.PublishClubErrorCode;
+import com.robynem.mit.web.util.PublishClubResult;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -236,6 +239,49 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
         }
 
         return imageId;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public PublishClubResult publishClub(Long clubId, Long userId) {
+        return this.hibernateTemplate.execute(session -> {
+            PublishClubResult publishClubResult = new PublishClubResult();
+
+            ClubEntity clubEntity = (ClubEntity) session.get(ClubEntity.class, clubId);
+
+            ClubEntity publishedVersion = null;
+
+            if (clubEntity.getPublishedVersion() == null) {
+                publishClubResult = new PublishClubResult(false, null, PublishClubErrorCode.NOT_A_STAGE_VERSION);
+            } else {
+
+                publishedVersion = clubEntity.getPublishedVersion();
+
+                // Does validations
+                if (StringUtils.isBlank(clubEntity.getName())) {
+                    publishClubResult = new PublishClubResult(false, null, PublishClubErrorCode.NAME_MISSING);
+                } else if (StringUtils.isBlank(clubEntity.getAddressPlaceId())) {
+                    publishClubResult = new PublishClubResult(false, null, PublishClubErrorCode.ADDRESS_MISSING);
+                } else if (clubEntity.getOpeningInfos() == null || clubEntity.getOpeningInfos().size() == 0) {
+                    publishClubResult = new PublishClubResult(false, null, PublishClubErrorCode.OPENING_INFO_MISSING);
+                }  else if (clubEntity.getClubGenres() == null || clubEntity.getClubGenres().size() == 0) {
+                    publishClubResult = new PublishClubResult(false, null, PublishClubErrorCode.GENRE_MISSING);
+                } else {
+
+
+                    Query callableQuery = session.createSQLQuery("call mit_spPublishClub(:stageClubId, :publishedClubId, :publishUserId)");
+                    callableQuery.setParameter("stageClubId", clubEntity.getId());
+                    callableQuery.setParameter("publishedClubId", publishedVersion.getId());
+                    callableQuery.setParameter("publishUserId", userId);
+
+                    callableQuery.executeUpdate();
+
+                    publishClubResult = new PublishClubResult(true, publishedVersion.getId(), null);
+                }
+            }
+
+            return publishClubResult;
+        });
     }
 
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
