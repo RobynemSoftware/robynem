@@ -439,7 +439,9 @@ public class EditClubController extends BaseController {
                 put(PublishClubErrorCode.ADDRESS_MISSING.toString(), 0);
                 put(PublishClubErrorCode.GENRE_MISSING.toString(), 0);
                 put(PublishClubErrorCode.OPENING_INFO_MISSING.toString(), 0);
-                put(PublishClubErrorCode.OPENING_INFO_INCORRECT.toString(), 0);
+                put(PublishClubErrorCode.OPENING_INFO_INCORRECT_DATE_RANGE.toString(), 0);
+                put(PublishClubErrorCode.OPENING_INFO_INCORRECT_DATE_RANGE_SAME_ROW.toString(), 0);
+                put(PublishClubErrorCode.OPENING_INFO_NO_OPENING.toString(), 0);
             }
         };
 

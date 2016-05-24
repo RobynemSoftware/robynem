@@ -94,9 +94,12 @@ CREATE DEFINER =`root`@`localhost` PROCEDURE `mit_spPublishClub`(
         opened,
         startDay,
         startHour,
-        clubId
+        publishedClubId
       FROM mit_clubopeninginfo
       WHERE clubId = stageClubId;
+
+    DELETE from mit_clubopeninginfo
+    where clubId = stageClubId;
 
     -- update published club images
     CREATE TEMPORARY TABLE imagesToDelete

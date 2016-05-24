@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by robyn_000 on 18/04/2016.
@@ -257,6 +258,8 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
 
                 publishedVersion = clubEntity.getPublishedVersion();
 
+                PublishClubErrorCode openingInfoValidationCode = this.validateOpeningInfo(clubEntity);
+
                 // Does validations
                 if (StringUtils.isBlank(clubEntity.getName())) {
                     publishClubResult = new PublishClubResult(false, null, PublishClubErrorCode.NAME_MISSING);
@@ -266,6 +269,8 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
                     publishClubResult = new PublishClubResult(false, null, PublishClubErrorCode.OPENING_INFO_MISSING);
                 }  else if (clubEntity.getClubGenres() == null || clubEntity.getClubGenres().size() == 0) {
                     publishClubResult = new PublishClubResult(false, null, PublishClubErrorCode.GENRE_MISSING);
+                } else if (openingInfoValidationCode != null) {
+                    publishClubResult = new PublishClubResult(false, null, openingInfoValidationCode);
                 } else {
 
 
@@ -282,6 +287,37 @@ public class ClubDaoImpl extends BaseDao implements ClubDao {
 
             return publishClubResult;
         });
+    }
+
+    /**
+     * Checks if opening info are correct configured.
+     * @param clubEntity
+     * @return
+     */
+    private PublishClubErrorCode validateOpeningInfo(ClubEntity clubEntity) {
+
+        if (clubEntity.getOpeningInfos() != null) {
+            List<ClubOpeningInfo> list = clubEntity.getOpeningInfos().stream().sorted((oi1, oi2) -> oi1.getStartDay().compareTo(oi2.getStartDay())).collect(Collectors.toList());
+
+            // Date range
+            for (ClubOpeningInfo oi : list) {
+                if (list.stream().filter(oi1 -> oi1.getStartDay() >= oi.getStartDay() && oi1.getStartDay() <= oi.getEndDay() && !oi1.equals(oi)).findFirst().isPresent()) {
+                    return PublishClubErrorCode.OPENING_INFO_INCORRECT_DATE_RANGE;
+                }
+            }
+
+            // Date range - same row (day from gt day to)
+            if (list.stream().filter(oi -> oi.getStartDay() > oi.getEndDay()).findFirst().isPresent()) {
+                return PublishClubErrorCode.OPENING_INFO_INCORRECT_DATE_RANGE_SAME_ROW;
+            }
+
+            // At least one opening day
+            if (!list.stream().filter(oi -> oi.isOpened()).findFirst().isPresent()) {
+                return PublishClubErrorCode.OPENING_INFO_NO_OPENING;
+            }
+        }
+
+        return null;
     }
 
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
