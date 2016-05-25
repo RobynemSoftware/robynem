@@ -17,6 +17,7 @@
         <slf4j.version>1.7.13</slf4j.version>
         <spring.social.version>1.1.4.RELEASE</spring.social.version>
         <spring.social.google.version>1.0.0.RELEASE</spring.social.google.version>
+        <tiles.version>3.0.5</tiles.version>
     </properties>
 
     <repositories>
@@ -412,6 +413,12 @@
             <version>0.3.6</version>
         </dependency>
 
+        <!-- http://mvnrepository.com/artifact/org.apache.tiles/tiles-extras -->
+        <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-extras</artifactId>
+            <version>${tiles.version}</version>
+        </dependency>
 
 
     </dependencies>
