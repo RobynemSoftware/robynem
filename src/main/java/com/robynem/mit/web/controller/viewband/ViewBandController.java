@@ -192,7 +192,16 @@ public class ViewBandController extends BaseController {
         boolean result = false;
 
         if (this.getAuthenticatedUser() != null) {
-            BandComponentEntity bandComponentEntity = this.bandDao.getBandComponent(this.getSessionAttribute(Constants.VIEW_BAND_ID), this.getAuthenticatedUser().getId());
+
+            Long bandId = this.getSessionAttribute(Constants.VIEW_BAND_ID);
+
+            BandEntity bandEntity = this.bandUtilsDao.getByIdWithFetchedObjects(BandEntity.class, bandId, "publishedVersion", "stageVersions", "components");
+
+            if (bandEntity.getStageVersions() != null && bandEntity.getStageVersions().stream().findFirst().isPresent()) {
+                bandId = bandEntity.getStageVersions().stream().sorted((sv1, sv2) -> sv2.getId().compareTo(sv1.getId())).findFirst().get().getId();
+            }
+
+            BandComponentEntity bandComponentEntity = this.bandDao.getBandComponent(bandId, this.getAuthenticatedUser().getId());
 
             if (bandComponentEntity != null && !bandComponentEntity.isConfirmed()) {
                 result = true;

@@ -445,5 +445,12 @@
         <parameter name="publishUserId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5" type="1" index="3"/>
       </prototype>
     </procedure>
+    <procedure name="mit_spPublishClub" schema="" catalog="mit" type="1">
+      <prototype>
+        <parameter name="stageClubId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5" type="1" index="1"/>
+        <parameter name="publishedClubId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5" type="1" index="2"/>
+        <parameter name="publishUserId" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5" type="1" index="3"/>
+      </prototype>
+    </procedure>
   </data-source>
 </component>
