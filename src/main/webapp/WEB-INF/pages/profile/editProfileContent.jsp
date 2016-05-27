@@ -642,7 +642,7 @@
     }
 
     function initLocationAutocomplete() {
-        var accepted_google_types = ["locality", "administrative_area_level_2"];
+        var accepted_google_types = ["locality", "administrative_area_level_2", "administrative_area_level_3"];
         var CHOOSE_A_LOCALITY_MESSAGE = '<spring:message code="smart-search.choose-a-location"></spring:message>!';
         var saveLink = $("#editProfileTownButtonSave").children("a");
 
@@ -669,7 +669,7 @@
                 for (var i = 0; i < accepted_google_types.length; i++) {
 
                     for (var j = 0; j < types.length; j++) {
-
+console.log("Type: " + types[j]);
                         if (types[j] == accepted_google_types[i]) {
                             match = true;
                             break;

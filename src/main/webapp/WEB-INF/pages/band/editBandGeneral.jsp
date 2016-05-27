@@ -561,7 +561,7 @@
     }
 
     function initLocationAutocomplete() {
-        var accepted_google_types = ["locality", "administrative_area_level_2"];
+        var accepted_google_types = ["locality", "administrative_area_level_2", "administrative_area_level_3"];
         var CHOOSE_A_LOCALITY_MESSAGE = '<spring:message code="smart-search.choose-a-location"></spring:message>!';
 
         var placeId;
