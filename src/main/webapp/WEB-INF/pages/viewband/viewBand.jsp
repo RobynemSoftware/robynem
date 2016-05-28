@@ -25,7 +25,7 @@
 
         <div id="viewBandContainer" class="row">
 
-        </div>
+    </div>
 
     </div>
 </body>
