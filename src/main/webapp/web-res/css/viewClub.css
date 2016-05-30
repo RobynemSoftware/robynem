@@ -1,0 +1,186 @@
+.pageContent {
+    background-color: white;
+    min-height: 100%;
+}
+
+@media (min-width: 640px) {
+    .viewClub .actions #requestDDContent {
+        float: right;
+    }
+}
+
+@media (max-width: 640px) {
+    .viewClub .actions .dropdown-header {
+        font-size: 8px;
+    }
+}
+
+
+
+.viewClub {
+    align-content: center;
+}
+
+.viewClub .header {
+    background-color: #454447;
+    margin-bottom: 15px;
+}
+
+.viewClub .actions {
+    margin-bottom: 15px;
+}
+
+.viewClub .info {
+    margin-bottom: 15px;
+}
+
+.viewClub .headerDescription {
+    margin-left: 40px;
+}
+
+.viewClub .headerRow {
+    margin-bottom: 20px;
+}
+
+.viewClub .headerRow .edit {
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.viewClub .headerText {
+    color: white;
+    font-size: 32px;
+}
+
+.viewClub .clubGenre {
+    font-size: 14px;
+}
+
+.viewClub .address {
+    color: white;
+    font-size: 28px;
+}
+
+.viewClub .town {
+    color: white;
+    font-size: 28px;
+}
+
+.viewClub .vote {
+    font-size: 14px;
+    color: #ffb514;
+    font-weight: bold;
+}
+
+.viewClub .voteLink {
+    cursor: pointer;
+    max-width: 20px;
+    max-height: 20px;
+}
+
+.viewClub button {
+    min-width: 160px;
+}
+
+
+
+.viewClub .contactsList {
+    margin-top: 30px;
+}
+
+.viewClub .contactsTitle {
+    color: black;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.viewClub .contactItem {
+    color: black;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+
+.viewClub .descriptionTitle {
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.viewClub .descriptionContent  {
+    background-color: #dae2c5;
+    height: 200px;
+    overflow-y: auto;
+}
+
+.viewClub .descriptionContentPre {
+    background-color: #dae2c5;
+}
+
+.viewClub .videos {
+    margin-top: 30px;
+}
+
+.viewClub .gallery {
+    margin-top: 30px;
+}
+
+
+
+.viewClub .videos .videosTitle {
+    background-color: #454447;
+    min-height: 60px;
+    text-align: center;
+}
+
+.viewClub .gallery .galleryTitle {
+    background-color: #454447;
+    min-height: 60px;
+    text-align: center;
+}
+
+
+
+.viewClub .videos .videosTitle span {
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.viewClub .gallery .galleryTitle span {
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+
+
+.viewClub .videoColumn {
+    margin-top: 50px;
+}
+
+.viewClub #showNextVideos {
+     text-align: center;
+     margin-top: 50px;
+ }
+
+.viewClub #showNextGallery {
+    text-align: center;
+    margin-top: 50px;
+}
+
+
+.viewClub .noVideos {
+    text-align: center;
+    margin-top: 50px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #e22b20;
+}
+
+.viewClub #photoViewer {
+    min-height: 80vh;
+    min-width: 80vw;
+}

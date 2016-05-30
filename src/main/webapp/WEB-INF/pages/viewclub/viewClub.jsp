@@ -4,7 +4,7 @@
 <tiles:insertDefinition name="defaultTemplate">
     <tiles:putAttribute name="contextVariables">
         <c:set var="redirectView" value="forward:/viewClub?clubId=${clubId}" scope="session" />
-        &nbsp;
+        <div style="display: none"></div>
     </tiles:putAttribute>
 
     <tiles:putAttribute name="headDeclarations">
@@ -14,7 +14,7 @@
                 $.ajax({
                     url : "${contextPath}/viewClub/viewContent",
                     data : {
-                        bandId : ${clubId}
+                        clubId : ${clubId}
                     },
                     dataType : "html",
                     cache : false,
