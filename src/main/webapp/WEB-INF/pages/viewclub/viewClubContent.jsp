@@ -70,6 +70,7 @@
 
     </div>
 
+
     <%-- ACTIONS --%>
     <div class="row actions">
 
@@ -150,6 +151,7 @@
         </div>
 
     </div>
+
 
 </div>
 
